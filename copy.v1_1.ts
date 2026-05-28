@@ -125,17 +125,23 @@ export const CT_DOSSIER_COPY_V120 = {
         "Autonomous Command: swarm, simulation, and operational prototypes that show system behavior under load.",
         "High-Assurance Safety: human-factors, bias mitigation, and trust-building interfaces for consequential decisions.",
       ],
-      first30Title: "WHAT EACH PROJECT PROVES",
-      first30:
-        [
-          "DEADLIGHT: I can codify a visual operating language instead of styling page by page.",
-          "GREY-EARTH: I can ship a live workstation that joins terrain analysis, interface design, and real technical constraints.",
-          "TAK-G: I can build a theater-level C2 simulator managing 1,500+ tracks with real swarm physics, not scripted demos.",
-          "TACTICAL CANVAS: I can prototype a mission workflow so the operator understands what happens next.",
-          "WAR-F / MINI-D / SENTINEL: I can turn dense autonomy or sensing concepts into clear evaluation artifacts."
-        ].join("\n"),
-      companiesTitle: "SELECTED CASEWORK",
-      companies: [
+      // first30 retired — per-project proof lines now live on the
+      // three portfolio sites (artdirector.rocks / brandproduct.dev /
+      // defense.observer). The dossier no longer doubles as casework.
+      first30Title: "",
+      first30: "",
+      companiesTitle: "",
+      companies: [] as Array<{
+        name: string;
+        tagline: string;
+        why: string;
+        match: string;
+        proof: string;
+        artifact: string;
+        link: string;
+        doctrineExcerpt?: { quote: string; source: string };
+      }>,
+      _archivedCompanies: [
         {
            name: "DEADLIGHT",
            tagline: "Visual governance for high-assurance systems",
@@ -143,6 +149,10 @@ export const CT_DOSSIER_COPY_V120 = {
            match: "Design system + strategic narrative",
            proof: "Proves I can codify a full visual operating system rather than style artifacts one by one.",
            artifact: "Three-layer brand architecture (Trust + Proof + Consequence), four visual modes, and a Tactical Brutalism doctrine used across 10 defense-adjacent projects.",
+           doctrineExcerpt: {
+             quote: "If the dramatic styling is removed, does the artifact still communicate authority? If the answer is no, the frame is relying on style instead of system.",
+             source: "Five-Question Gate, Q5 — BRAND_DECISION_MATRIX"
+           },
            link: "https://github.com/augustave/deadlight"
         },
         {
@@ -151,7 +161,11 @@ export const CT_DOSSIER_COPY_V120 = {
            why: "A visual operating specification that turns geospatial and intelligence interfaces into a coherent system.",
            match: "Interface grammar + documentation",
            proof: "Proves I can define tokens, layout rules, and map-facing interface language at the system level.",
-           artifact: "A public-facing design-system repo aligned to the dossier-style geospatial product direction.",
+           artifact: "RFC 7946-compliant token system: 11-step substrate palette, nine fixed-vocabulary semantic states, GeoJSON projection engine, intel-card anatomy, three-column operational grid, motion and z-index discipline.",
+           doctrineExcerpt: {
+             quote: "Raw Substrate, Hyper-Visible Data. The interface simulates a physical, heavily-handled intelligence dossier. The base is utilitarian and drab; the data layers are explosive and precise.",
+             source: "DOSSIER VOL Specification v3.0, §0 Ethos"
+           },
            link: "https://github.com/augustave/DossierMap"
         },
         {
@@ -182,6 +196,15 @@ export const CT_DOSSIER_COPY_V120 = {
            link: "https://github.com/augustave/MINI-D"
         },
         {
+           name: "WAR-F",
+           tagline: "Brutalist typographic swarm simulator",
+           why: "A 64-agent drone-swarm doctrine simulator rendered as a Maciunas-Fluxus / Swiss-brutalist diagram in pure black and white.",
+           match: "Simulation design + visual doctrine",
+           proof: "Proves I can render system behavior as a structural diagram, not a sci-fi UI — and that doctrine and aesthetic can be the same artifact.",
+           artifact: "Four finite cost surfaces (Latency / Bandwidth / Endurance / Attention), gated commitment doctrine, trust-degradation visuals, inverted-block state grammar.",
+           link: "https://github.com/augustave/warfare"
+        },
+        {
            name: "CCRT",
            tagline: "Human-factors and bias mitigation study",
            why: "An evidence-led interface direction for warfighter-centered command environments and safer decision-making.",
@@ -197,10 +220,120 @@ export const CT_DOSSIER_COPY_V120 = {
            match: "Simulation design + systems UI + front-end engineering",
            proof: "Proves I can build production-grade interaction systems for high-density operational environments, not just concepts.",
            artifact: "Three.js WebGL renderer, topological swarm cohesion, EMCON confidence decay, uncertain pointer framework, and full telemetry HUD.",
-           link: "https://github.com/augustave/TAK-FLOW"
+           link: "https://tak-h.vercel.app/"
         }
       ],
-      companiesSynthesis: "Taken together, the work signals a specific profile: a creative technologist who can define the visual language, prototype the product behavior, and articulate the system clearly enough for design, product, engineering, recruiting, and stakeholder review. All 10 defense-adjacent projects have passed a four-gate validation program: artifact completeness, maturity review, evidence-linked claims, and repo readiness. The links below are public proof, not just narrative summaries."
+      companiesSynthesis: "The built work lives at three dedicated portfolio sites — art direction, product, and defense — so this dossier does not double as a gallery. What stays here is the doctrine layer: the rule-systems that govern how the built work behaves, and the through-line none of the portfolios show on its own.",
+      portfolioSitesTitle: "WHERE THE BUILT WORK LIVES",
+      portfolioSites: [
+        {
+          domain: "artdirector.rocks",
+          register: "Art direction",
+          frame: "Editorial, typographic, identity. Where the page is the product."
+        },
+        {
+          domain: "brandproduct.dev",
+          register: "Brand × product",
+          frame: "Design systems, interface grammar, shipped product surfaces. The non-defense lane."
+        },
+        {
+          domain: "defense.observer",
+          register: "Defense",
+          frame: "Doctrine-driven visual systems for autonomy, sensing, and command. The lane this dossier orbits."
+        }
+      ],
+      doctrineCardsTitle: "DOCTRINE LAYER",
+      doctrineCardsHero: "Below the built systems is a thinner layer of codified rule-systems — installable, opinionated, fixed-typology artifacts that govern how the practice behaves.",
+      doctrineCards: [
+        {
+          name: "SEAL",
+          thesisLine: "Brand doctrine for defense-tech, organized along the sea / air / land operational taxonomy.",
+          doctrineExcerpt: {
+            quote: "Sea, air, land — every domain has a doctrine. Every doctrine has a look.",
+            source: "SEAL README"
+          },
+          artifactFormat: "skill" as const,
+          governingUnits: "5 palettes / 8 iron rules / 6 document types",
+          proves: "I can codify a brand doctrine as a distributable skill — typology, rules, and document grammar that other practitioners can install and obey.",
+          link: "https://augustave.github.io/SEAL/",
+          domain: "cross-domain" as const,
+          implementations: [
+            { name: "DEADRISE — Coldwater Pragmatism v1.0",   link: "https://github.com/augustave/DEADRISE",         pending: true },
+            { name: "ARS-RUSBELT — Rustbelt Kinetic",         link: "https://github.com/augustave/ARS-RUSBELT",      pending: true },
+            { name: "ANECHOIC MINIMAL — spectrum doctrine",   link: "https://github.com/augustave/ANECHOIC-MINIMAL", pending: true }
+          ]
+        },
+        {
+          name: "DYNAMISM DOSSIER",
+          thesisLine: "Declassified-archive presentation of the American Dynamism thesis, derived from 7+ hours of primary-source interviews.",
+          doctrineExcerpt: {
+            quote: "How do we win the next century? Not by becoming more like them. By becoming more like us.",
+            source: "Dynamism Dossier, Plate 10"
+          },
+          artifactFormat: "interactive" as const,
+          governingUnits: "66 entities / 10 transcripts / 8 doctrines / 12 archival plates",
+          proves: "I can run a real corpus-to-structure pipeline — entity extraction, thesis decomposition, doctrine extraction via a reusable 18-field YAML template — and render the result as a navigable feedback-looped interface.",
+          link: "https://augustave.github.io/dynamism/",
+          domain: "editorial" as const,
+          implementations: [
+            { name: "New Media Operating System (a16z-style swarm)", link: "https://augustave.github.io/new-media-operating-system-demo/" },
+            { name: "A16Z Editorial Webapp (4-surface product)",     link: "https://github.com/augustave/AD-A16Z",                            pending: true }
+          ]
+        },
+        {
+          name: "LIFT BENCH",
+          thesisLine: "Founder engineering bench for the DARPA Lift Challenge — agent orchestration as a substitute for a traditional aero/mech team.",
+          doctrineExcerpt: {
+            quote: "The realistic competitive target is one of the three $500K innovation awards. The 'most promising overall' category rewards novel configuration and systems-level thinking.",
+            source: "LIFT_BENCH.md, Strategic Position"
+          },
+          artifactFormat: "framework" as const,
+          governingUnits: "3 cells (Airframe / Power / Program) / star topology / 1 decision gate",
+          proves: "I can design a multi-agent engineering bench against a real DARPA constraint set (≤55 lbs, 4:1 payload-to-weight, 5 NM VTOL circuit) and reason explicitly about what agents can and cannot do.",
+          link: "https://github.com/augustave/LIFT-STDY",
+          domain: "air" as const
+        }
+      ]
+    },
+
+    worldModel: {
+      title: "WORLD MODEL",
+      prompt: "WHAT MY THREE PICKS REVEAL",
+      hero: "I'd recruit three people into a Skunkworks. The picks reveal the practice.",
+      intro:
+        "Levin, Hughes, Johnson — three operators of invisible systems. Not doers, not talkers; people who steer reality by understanding the control layer underneath it. Read as a stack, they are three layers of one machine.",
+      layersTitle: "THREE LAYERS OF ONE MACHINE",
+      layers: [
+        {
+          layer: "KERNEL",
+          sub: "Self-organizing substrate",
+          person: "Michael Levin · Tufts",
+          body: "Treats biology as a programmable, goal-seeking information system — bioelectric signals as the control layer for form and repair. He gives me a framework for designing systems where parts reliably assemble into wholes, even after damage."
+        },
+        {
+          layer: "MIDDLEWARE",
+          sub: "Human interface",
+          person: "Chase Hughes",
+          body: "Operationalizes human behavior under uncertainty — baseline, deviation, incentive, frame control. Treats persuasion as systems engineering, not charisma. The difference between great tech and a system humans actually adopt."
+        },
+        {
+          layer: "APPLICATION",
+          sub: "Ship engine",
+          person: "Kelly Johnson · Skunk Works",
+          body: "Built impossible machines fast by making constraints and simplicity do the heavy lifting. Skunk Works wasn't a vibe; it was an operating system — small teams, direct comms, rapid decisions, test early."
+        }
+      ],
+      revealTitle: "WHAT THE PICKS SAY",
+      reveal:
+        "Control systems over aesthetics. High-stakes environments over comfort. Paradigm-changers over optimizers. A bias toward synthesis. I am not trying to make a product — I am trying to make an operating system for outcomes.",
+      frameworkTitle: "THE LOOP",
+      framework: [
+        "Coherence — what must stay true for the system to work; the signals that separate healthy from drifting.",
+        "Influence — who must believe what, and what behavior must change for adoption.",
+        "Ship — the smallest real deployment that proves value in the wild."
+      ],
+      close:
+        "Three failure modes kill ambitious work: the system won't cohere, the humans won't align, the thing won't ship. Each pick solves one."
     },
   },
 };

@@ -73,13 +73,13 @@ describe('Manifest overlay', () => {
     window.location.hash = '';
   });
 
-  it('opens from the INDEX button and renders the expected module order (02, 01, 03, 04, 05)', async () => {
+  it('opens from the INDEX button and renders the expected module order (02, 01, 03, 04, 05, 06)', async () => {
     render(<App />);
     fireEvent.click(screen.getByText(/INDEX \(00\)/i));
 
     const items = await screen.findAllByTestId('manifest-item');
     const order = items.map(el => el.getAttribute('data-index'));
-    expect(order).toEqual(['02', '01', '03', '04', '05']);
+    expect(order).toEqual(['02', '01', '03', '04', '05', '06']);
   });
 
   it('closes when the Close Index button is clicked', async () => {

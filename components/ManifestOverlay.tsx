@@ -53,12 +53,12 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
           <h2 className="font-sans text-9xl font-bold tracking-tighter opacity-ghost select-none">INDEX</h2>
         </div>
 
-        {/* Module List - Current custom order: 02, 01, 03, 04, 05 */}
+        {/* Module List - Current custom order: 02, 01, 03, 04, 05, 06 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
           {CONTENT_MODULES
             .filter(m => m.id !== ModuleType.MANIFEST)
             .sort((a, b) => {
-                const order = ["02", "01", "03", "04", "05"];
+                const order = ["02", "01", "03", "04", "05", "06"];
                 return order.indexOf(a.index) - order.indexOf(b.index);
             })
             .map((m) => (

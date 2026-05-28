@@ -114,6 +114,15 @@ const App: React.FC = () => {
       <main className="w-full">
         <section className="pt-28 md:pt-36 pb-6 md:pb-10 bg-strata-cream text-strata-black border-b border-black/10">
           <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+            <div className="mb-5 md:mb-6 max-w-3xl">
+              <p className="font-sans text-base md:text-lg leading-relaxed">
+                <span className="font-bold">This is not a portfolio.</span> The built work lives at three dedicated sites —{' '}
+                <a href="https://artdirector.rocks" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">artdirector.rocks</a>,{' '}
+                <a href="https://brandproduct.dev" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">brandproduct.dev</a>, and{' '}
+                <a href="https://defense.observer" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">defense.observer</a>.
+                {' '}This is the practice behind them: how I think, how I work, what I recruit for.
+              </p>
+            </div>
             <div className="border border-black/15 bg-white/70 backdrop-blur-sm p-5 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
                 <div className="md:w-56 shrink-0">
