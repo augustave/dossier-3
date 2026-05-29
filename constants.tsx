@@ -271,218 +271,24 @@ export const CONTENT_MODULES: ModuleData[] = [
         <p className="font-serif text-2xl md:text-4xl leading-relaxed">
           {COPY.modules["04"].hero}
         </p>
-        <div className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed">
-           {COPY.modules["04"].body.split('\n\n').map((para, i) => (
-             <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
-           ))}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {COPY.modules["04"].portfolioSites.map((site, idx) => (
+                <a
+                    key={idx}
+                    href={`https://${site.domain}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/site"
+                    onClick={(event) => event.stopPropagation()}
+                >
+                    <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{site.register}</div>
+                    <div className="font-mono text-lg md:text-xl tracking-tight mb-3 group-hover/site:underline">{site.domain}</div>
+                    <p className="font-sans text-sm opacity-secondary leading-relaxed">{site.frame}</p>
+                </a>
+            ))}
         </div>
 
-        <div className="bg-black/5 p-6 border border-black/10">
-           <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules["04"].wedgesTitle}</h4>
-           <ul className="space-y-3">
-             {COPY.modules["04"].wedges.map((w, i) => (
-               <li key={i} className="flex gap-3 items-start">
-                 <span className="font-mono text-xs opacity-muted pt-0.5">0{i + 1}</span>
-                 <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{w}</span>
-               </li>
-             ))}
-           </ul>
-        </div>
-
-        {COPY.modules["04"].first30 && COPY.modules["04"].first30.length > 0 && (
-        <div>
-             <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules["04"].first30Title}</h4>
-             <div className="space-y-4">
-               {COPY.modules["04"].first30.split('\n').map((line, i) => {
-                 const colonIndex = line.indexOf(':');
-                 const label = line.substring(0, colonIndex);
-                 const content = line.substring(colonIndex + 1).trim();
-                 return (
-                   <div key={i} className="flex gap-4 items-start">
-                     <span className="font-mono text-xs uppercase tracking-wider opacity-muted whitespace-nowrap pt-1">
-                       {label}:
-                     </span>
-                     <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">
-                       {content}
-                     </span>
-                   </div>
-                 );
-               })}
-             </div>
-        </div>
-        )}
-
-        {COPY.modules["04"].companies.length > 0 && (
-        <div className="mt-8">
-             <CollapsibleDrawer title={COPY.modules["04"].companiesTitle} defaultOpen={true}>
-                 <AnimatedGrid>
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                       {COPY.modules["04"].companies.map((c, idx) => (
-                     <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
-                        <div className="flex items-start justify-between mb-2 gap-3">
-                          <h4 className="font-serif text-xl md:text-2xl italic">{c.name}</h4>
-                          {(c.link.includes('vercel.app') || c.link.includes('netlify.app') || c.link.includes('github.io')) && (
-                            <span className="font-mono text-micro uppercase tracking-widest border border-current px-2 py-0.5 opacity-tertiary whitespace-nowrap mt-1">LIVE</span>
-                          )}
-                        </div>
-                        <div className="font-mono text-xs uppercase tracking-widest mb-4 opacity-tertiary">{c.tagline}</div>
-                        <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4">{c.why}</p>
-                        <p className="font-mono text-xs uppercase tracking-wide opacity-muted mb-3">
-                          PROVES: {c.proof}
-                        </p>
-                        <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4">
-                          {c.artifact}
-                        </p>
-                        {c.doctrineExcerpt && (
-                          <blockquote className="border-l-2 border-current/40 pl-3 py-1 mb-4">
-                            <p className="font-serif italic text-sm leading-relaxed opacity-secondary">
-                              &ldquo;{c.doctrineExcerpt.quote}&rdquo;
-                            </p>
-                            <p className="font-mono text-micro uppercase tracking-widest opacity-tertiary mt-2">
-                              — {c.doctrineExcerpt.source}
-                            </p>
-                          </blockquote>
-                        )}
-                        <div className="pt-4 border-t border-current/20 flex items-center gap-2">
-                           <span className="font-mono text-micro uppercase opacity-tertiary">{c.match}</span>
-                        </div>
-                        <a
-                          href={c.link}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 mt-4 font-mono text-xs uppercase tracking-widest border border-current px-3 py-2 hover:bg-black hover:text-white transition-colors"
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          Review Artifact
-                        </a>
-                     </div>
-                   ))}
-                 </div>
-                 </AnimatedGrid>
-             </CollapsibleDrawer>
-        </div>
-        )}
-
-        {COPY.modules["04"].companiesSynthesis && (
-        <div className="mt-8 p-6 border-t border-current/20">
-            <p className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">
-                {COPY.modules["04"].companiesSynthesis}
-            </p>
-        </div>
-        )}
-
-        <div className="mt-8">
-            <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">
-                {COPY.modules["04"].portfolioSitesTitle}
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {COPY.modules["04"].portfolioSites.map((site, idx) => (
-                    <a
-                        key={idx}
-                        href={`https://${site.domain}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/site"
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{site.register}</div>
-                        <div className="font-mono text-lg md:text-xl tracking-tight mb-3 group-hover/site:underline">{site.domain}</div>
-                        <p className="font-sans text-sm opacity-secondary leading-relaxed">{site.frame}</p>
-                    </a>
-                ))}
-            </div>
-        </div>
-
-        <div className="mt-12 pt-8 border-t-2 border-current/30">
-            <div className="mb-6">
-                <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">
-                    {COPY.modules["04"].doctrineCardsTitle}
-                </h4>
-                <p className="font-sans text-base md:text-lg opacity-secondary leading-relaxed max-w-3xl">
-                    {COPY.modules["04"].doctrineCardsHero}
-                </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {COPY.modules["04"].doctrineCards.map((d, idx) => (
-                    <div key={idx} className="p-6 border border-current bg-black/5 opacity-secondary hover:opacity-primary transition-opacity">
-                        <div className="flex items-baseline justify-between mb-3 gap-3">
-                            <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">
-                                DOCTRINE // {String(idx + 1).padStart(2, '0')}
-                            </span>
-                            {d.domain && (
-                                <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">
-                                    {d.domain}
-                                </span>
-                            )}
-                        </div>
-                        <h4 className="font-mono text-xl md:text-2xl uppercase tracking-wide mb-3">{d.name}</h4>
-                        <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4">{d.thesisLine}</p>
-
-                        <blockquote className="border-l-2 border-current/40 pl-3 py-1 mb-4">
-                            <p className="font-serif italic text-sm leading-relaxed opacity-secondary">
-                                &ldquo;{d.doctrineExcerpt.quote}&rdquo;
-                            </p>
-                            <p className="font-mono text-micro uppercase tracking-widest opacity-tertiary mt-2">
-                                — {d.doctrineExcerpt.source}
-                            </p>
-                        </blockquote>
-
-                        <div className="font-mono text-xs uppercase tracking-wide opacity-muted mb-2">
-                            FORMAT: {d.artifactFormat}
-                        </div>
-                        <div className="font-mono text-xs uppercase tracking-wide opacity-muted mb-3">
-                            UNITS: {d.governingUnits}
-                        </div>
-                        <p className="font-mono text-xs uppercase tracking-wide opacity-muted mb-3">
-                            PROVES: {d.proves}
-                        </p>
-
-                        {d.implementations && d.implementations.length > 0 && (
-                            <div className="mt-4 pt-3 border-t border-current/20">
-                                <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">
-                                    Implementations
-                                </div>
-                                <ul className="space-y-1">
-                                    {d.implementations.map((impl, j) => (
-                                        <li key={j} className="font-mono text-xs opacity-secondary flex items-start gap-2">
-                                            {impl.pending ? (
-                                                <>
-                                                    <span>· {impl.name}</span>
-                                                    <span className="font-mono text-micro uppercase tracking-widest border border-current/40 px-1.5 py-0 opacity-tertiary whitespace-nowrap" aria-label="Repository link pending verification">
-                                                        REPO PENDING
-                                                    </span>
-                                                </>
-                                            ) : (
-                                                <a
-                                                    href={impl.link}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="hover:underline"
-                                                    onClick={(event) => event.stopPropagation()}
-                                                >
-                                                    · {impl.name}
-                                                </a>
-                                            )}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-
-                        <a
-                            href={d.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-2 mt-4 font-mono text-xs uppercase tracking-widest border border-current px-3 py-2 hover:bg-black hover:text-white transition-colors"
-                            onClick={(event) => event.stopPropagation()}
-                        >
-                            Open Doctrine
-                        </a>
-                    </div>
-                ))}
-            </div>
-        </div>
       </div>
     ),
   },

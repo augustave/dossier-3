@@ -110,16 +110,13 @@ export const CT_DOSSIER_COPY_V120 = {
     },
 
     "04": {
-      title: "SELECTED SYSTEMS",
-      prompt: "WHERE THE WORK SHOWS UP",
-      hero: "The portfolio is a set of proof artifacts, not a gallery of disconnected images.",
-      body:
-        [
-          "Each project is doing a different job: visual governance, live workstation design, tactical interface prototyping, autonomy simulation, or technical evidence translation.",
-          "The common thread is the same one described in the docs: make consequential systems legible without collapsing into generic 'defense sci-fi' or generic SaaS polish."
-        ].join("\n\n"),
-      wedgesTitle: "FOUR PILLARS",
-      wedges: [
+      title: "PORTFOLIOS",
+      prompt: "WHERE THE WORK LIVES",
+      hero: "The built work lives at three dedicated sites — one per register.",
+      body: "",
+      wedgesTitle: "",
+      wedges: [] as string[],
+      _archivedWedges: [
         "Tactical OS: visual governance, component grammar, and interface rules for high-assurance environments.",
         "Spatial Intelligence: terrain, sensor, and geospatial products that make evidence readable across surfaces.",
         "Autonomous Command: swarm, simulation, and operational prototypes that show system behavior under load.",
@@ -223,8 +220,8 @@ export const CT_DOSSIER_COPY_V120 = {
            link: "https://tak-h.vercel.app/"
         }
       ],
-      companiesSynthesis: "The built work lives at three dedicated portfolio sites — art direction, product, and defense — so this dossier does not double as a gallery. What stays here is the doctrine layer: the rule-systems that govern how the built work behaves, and the through-line none of the portfolios show on its own.",
-      portfolioSitesTitle: "WHERE THE BUILT WORK LIVES",
+      companiesSynthesis: "",
+      portfolioSitesTitle: "",
       portfolioSites: [
         {
           domain: "artdirector.rocks",
@@ -242,9 +239,10 @@ export const CT_DOSSIER_COPY_V120 = {
           frame: "Doctrine-driven visual systems for autonomy, sensing, and command. The lane this dossier orbits."
         }
       ],
-      doctrineCardsTitle: "DOCTRINE LAYER",
-      doctrineCardsHero: "Below the built systems is a thinner layer of codified rule-systems — installable, opinionated, fixed-typology artifacts that govern how the practice behaves.",
-      doctrineCards: [
+      doctrineCardsTitle: "",
+      doctrineCardsHero: "",
+      doctrineCards: [] as Array<any>,
+      _archivedDoctrineCards: [
         {
           name: "SEAL",
           thesisLine: "Brand doctrine for defense-tech, organized along the sea / air / land operational taxonomy.",
