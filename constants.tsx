@@ -3,6 +3,7 @@ import { ModuleData, ModuleType } from './types';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
 import { CollapsibleDrawer } from './components/CollapsibleDrawer';
 import { AnimatedGrid } from './components/AnimatedGrid';
+import { DoctrineExplorer } from './components/DoctrineExplorer';
 
 export const COLORS = {
   blue: 'bg-strata-blue text-white border-white/20 theme-blue',
@@ -188,6 +189,21 @@ export const CONTENT_MODULES: ModuleData[] = [
 
           <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
             {COPY.modules["01"].fieldPositionBelow}
+          </p>
+        </div>
+
+        {/* Doctrine in motion — tabbed register explorer.
+            See PRD-DOCTRINE-EXPLORER.md. */}
+        <div className="mt-12 pt-8 border-t border-white/20">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
+            {COPY.modules["01"].doctrineExplorerTitle}
+          </h4>
+          <p className="font-serif text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl">
+            {COPY.modules["01"].doctrineExplorerHero}
+          </p>
+          <DoctrineExplorer registers={COPY.modules["01"].registers} />
+          <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
+            {COPY.modules["01"].doctrineExplorerFootnote}
           </p>
         </div>
       </div>

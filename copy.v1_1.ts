@@ -61,7 +61,53 @@ export const CT_DOSSIER_COPY_V120 = {
         y: 70,
         label: "VEN",
         sub: "Doctrine + agent orchestration"
-      }
+      },
+
+      // Doctrine-in-motion explorer. Three of N canonical registers,
+      // tabbed interactive panel. Demonstrates the rule-making practice
+      // — palette + thesis + iron rule — without surfacing a named project.
+      // Data source: SEAL/THEATHER (Coldwater, Rustbelt, Anechoic).
+      doctrineExplorerTitle: "DOCTRINE IN MOTION",
+      doctrineExplorerHero: "Click a register. The rules switch.",
+      doctrineExplorerFootnote: "Three of N canonical registers. Different domains, same engineering.",
+      registers: [
+        {
+          code: "CW",
+          name: "Coldwater Pragmatism",
+          domain: "Maritime",
+          palette: [
+            { name: "Haze grey",      hex: "#6F777C", accent: false },
+            { name: "Anechoic black", hex: "#0F1316", accent: false },
+            { name: "Safety orange",  hex: "#FF4F00", accent: true  }
+          ],
+          thesis: "The ocean doesn't care about your DoD rating. Build like it.",
+          ironRule: "One protected accent — safety orange — for alert, survival, flotation. Never decoration."
+        },
+        {
+          code: "RB",
+          name: "Rustbelt Kinetic",
+          domain: "Industrial",
+          palette: [
+            { name: "Bridgeport green", hex: "#3D5C44", accent: false },
+            { name: "Forged iron",      hex: "#2B2B2B", accent: false },
+            { name: "MIG arc-blue",     hex: "#7AB5FF", accent: true  }
+          ],
+          thesis: "The prototype is the brochure. The line is the product.",
+          ironRule: "Cultural lineage required. A palette without 30+ year industrial heritage is a moodboard."
+        },
+        {
+          code: "AN",
+          name: "Anechoic Minimal",
+          domain: "Spectrum",
+          palette: [
+            { name: "True blackout",   hex: "#000000", accent: false },
+            { name: "Mu-metal silver", hex: "#B8B8B0", accent: false },
+            { name: "P31 phosphor",    hex: "#3CFF7A", accent: true  }
+          ],
+          thesis: "Spectrum is terrain. We hold the high ground.",
+          ironRule: "Anti-glint is doctrine. Matte only. The only permitted shine is environmental."
+        }
+      ]
     },
 
     "02": {

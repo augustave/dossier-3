@@ -327,3 +327,34 @@ describe('Faceted audience entry', () => {
     expect(getModuleToggle('module-06')).not.toBeNull();
   });
 });
+
+describe('Doctrine in motion explorer (Module 02)', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = () => {};
+    try {
+      window.history.replaceState(null, '', window.location.pathname);
+    } catch (e) {}
+    // Open Module 02 so its content renders for query.
+    window.location.hash = '#module-02';
+  });
+
+  it('renders the first register by default and swaps when a different tab is clicked', async () => {
+    render(<App />);
+
+    // Coldwater (CW) is first in the registers array — its thesis is the default.
+    await waitFor(() => {
+      expect(screen.getByText(/The ocean doesn't care about your DoD rating/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/Spectrum is terrain/i)).not.toBeInTheDocument();
+
+    // Click the Anechoic tab.
+    const anTab = screen.getByRole('tab', { name: /^AN/ });
+    fireEvent.click(anTab);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Spectrum is terrain/i)).toBeInTheDocument();
+    });
+    // Coldwater's thesis is gone after swap.
+    expect(screen.queryByText(/The ocean doesn't care about your DoD rating/i)).not.toBeInTheDocument();
+  });
+});
