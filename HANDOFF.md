@@ -73,9 +73,18 @@ These are preserved for restoration only — do not surface them without explici
 | 1 | `DOSSIER_REFRAME_PRD.md` | **Shipped** to source; uncommitted/pending push at time of writing. | Dossier-as-presentation restructure. Cut casework. Added WORLD MODEL. Stripped Module 05 to portfolios only. Read this for the full IA change and the locked design decisions (WORLD MODEL naming, picks count, etc.). |
 | 2 | `PRD-FACETED-ENTRY.md` | **Shipped** to source; tests added; pending commit. | Audience-aware top hero with URL state. War-gamed module-to-audience mapping. |
 | 3 | `PRD-FIELD-POSITION.md` | **Shipped** to source; pending commit. | 2-axis SVG chart at the end of Module 02 plotting 14 designers from Doc 2 with a highlighted dot for Ven. War-gamed placement decision favors Module 02 over alternatives (including World Model, top hero, standalone module) because it's visible to the Hiring Manager audience. |
-| 4 | `PRD-DOCTRINE-EXPLORER.md` | **Shipped** to source; tests added; pending commit. | Tabbed 3-register explorer at the end of Module 02 (after the chart). Stateful sub-component in `components/DoctrineExplorer.tsx`. Demonstrates the rule-making practice — palette + thesis + iron rule swappable on click — without surfacing a named project. |
+| 4 | `PRD-DOCTRINE-EXPLORER.md` | **Shipped** to source; tests added; pending commit. v2 placement at end of Module 03 (was Module 02 in v1). | Tabbed 3-register explorer at the end of Module 03 (Operating Method). Stateful sub-component in `components/DoctrineExplorer.tsx`. Demonstrates the rule-making practice — palette + thesis + iron rule swappable on click. After the war-game audit, moved from Module 02 to Module 03 so it's visible to Client + Collaborator + Academic. |
 
 If a fifth PRD is added later, register it here.
+
+### Site-wide war-game restructure (no separate PRD, see commit history)
+
+A site-wide audience-by-audience audit ran on the dossier with field-position chart + doctrine explorer + audience selector all live. Four changes shipped from that pass:
+
+1. **Doctrine explorer moved from Module 02 → Module 03.** Reaches three audiences instead of two. See `PRD-DOCTRINE-EXPLORER.md` §placement-v2.
+2. **Collaborator audience curation changed from `04/03/06` → `02/04/03`.** Drops Role Matrix; adds Module 02 so collaborators see the field-position chart. See `PRD-FACETED-ENTRY.md` revision log.
+3. **Module 05 PORTFOLIOS gains an outcome line** below the three tiles: *"Each site stands alone. None of them tries to say what the practice is — that's this dossier's job."* Thickens the closer for Hiring Manager and Client.
+4. **Module 01 ROLE FIT gains a 3-signal coordinate strip** above the existing lead copy. Three labeled tiles: `SIGNAL · 01 Visual systems` / `SIGNAL · 02 Interactive proto.` / `SIGNAL · 03 Technical narrative`. Mirrors the field-position chart's "coordinate" register at the role-fit scale. Gives Module 01 its first visual anchor.
 
 ---
 

@@ -63,51 +63,6 @@ export const CT_DOSSIER_COPY_V120 = {
         sub: "Doctrine + agent orchestration"
       },
 
-      // Doctrine-in-motion explorer. Three of N canonical registers,
-      // tabbed interactive panel. Demonstrates the rule-making practice
-      // — palette + thesis + iron rule — without surfacing a named project.
-      // Data source: SEAL/THEATHER (Coldwater, Rustbelt, Anechoic).
-      doctrineExplorerTitle: "DOCTRINE IN MOTION",
-      doctrineExplorerHero: "Click a register. The rules switch.",
-      doctrineExplorerFootnote: "Three of N canonical registers. Different domains, same engineering.",
-      registers: [
-        {
-          code: "CW",
-          name: "Coldwater Pragmatism",
-          domain: "Maritime",
-          palette: [
-            { name: "Haze grey",      hex: "#6F777C", accent: false },
-            { name: "Anechoic black", hex: "#0F1316", accent: false },
-            { name: "Safety orange",  hex: "#FF4F00", accent: true  }
-          ],
-          thesis: "The ocean doesn't care about your DoD rating. Build like it.",
-          ironRule: "One protected accent — safety orange — for alert, survival, flotation. Never decoration."
-        },
-        {
-          code: "RB",
-          name: "Rustbelt Kinetic",
-          domain: "Industrial",
-          palette: [
-            { name: "Bridgeport green", hex: "#3D5C44", accent: false },
-            { name: "Forged iron",      hex: "#2B2B2B", accent: false },
-            { name: "MIG arc-blue",     hex: "#7AB5FF", accent: true  }
-          ],
-          thesis: "The prototype is the brochure. The line is the product.",
-          ironRule: "Cultural lineage required. A palette without 30+ year industrial heritage is a moodboard."
-        },
-        {
-          code: "AN",
-          name: "Anechoic Minimal",
-          domain: "Spectrum",
-          palette: [
-            { name: "True blackout",   hex: "#000000", accent: false },
-            { name: "Mu-metal silver", hex: "#B8B8B0", accent: false },
-            { name: "P31 phosphor",    hex: "#3CFF7A", accent: true  }
-          ],
-          thesis: "Spectrum is terrain. We hold the high ground.",
-          ironRule: "Anti-glint is doctrine. Matte only. The only permitted shine is environmental."
-        }
-      ]
     },
 
     "02": {
@@ -160,6 +115,17 @@ export const CT_DOSSIER_COPY_V120 = {
         ].join("\n"),
       oneLine:
         "I bridge system logic, interface behavior, and technical narrative in one practice.",
+
+      // Three-signal coordinate strip — small visual anchor at the
+      // top of Module 01. Mirrors the field-position chart's "this is
+      // a coordinate" pattern at the role-fit scale. Each strip cell
+      // = one of the three hiring signals.
+      signalStripTitle: "THREE SIGNALS",
+      signalStrip: [
+        { code: "01", label: "Visual systems",      sub: "Design language" },
+        { code: "02", label: "Interactive proto.",  sub: "Product proof" },
+        { code: "03", label: "Technical narrative", sub: "Systems translation" }
+      ]
     },
 
     "03": {
@@ -188,12 +154,60 @@ export const CT_DOSSIER_COPY_V120 = {
       },
       close:
         "The short version: I am most useful where design, product sense, and technical articulation need to meet in one person.",
+
+      // Doctrine-in-motion explorer. Moved here from Module 02 per
+      // war-game findings (PRD-DOCTRINE-EXPLORER.md §placement-v2).
+      // Operating Method is the explorer's natural home — it literally
+      // shows the operational output of the method described above.
+      // Visible to Client, Collaborator, and Academic audiences.
+      doctrineExplorerTitle: "DOCTRINE IN MOTION",
+      doctrineExplorerHero: "Click a register. The rules switch.",
+      doctrineExplorerFootnote: "Three of N canonical registers. Different domains, same engineering.",
+      registers: [
+        {
+          code: "CW",
+          name: "Coldwater Pragmatism",
+          domain: "Maritime",
+          palette: [
+            { name: "Haze grey",      hex: "#6F777C", accent: false },
+            { name: "Anechoic black", hex: "#0F1316", accent: false },
+            { name: "Safety orange",  hex: "#FF4F00", accent: true  }
+          ],
+          thesis: "The ocean doesn't care about your DoD rating. Build like it.",
+          ironRule: "One protected accent — safety orange — for alert, survival, flotation. Never decoration."
+        },
+        {
+          code: "RB",
+          name: "Rustbelt Kinetic",
+          domain: "Industrial",
+          palette: [
+            { name: "Bridgeport green", hex: "#3D5C44", accent: false },
+            { name: "Forged iron",      hex: "#2B2B2B", accent: false },
+            { name: "MIG arc-blue",     hex: "#7AB5FF", accent: true  }
+          ],
+          thesis: "The prototype is the brochure. The line is the product.",
+          ironRule: "Cultural lineage required. A palette without 30+ year industrial heritage is a moodboard."
+        },
+        {
+          code: "AN",
+          name: "Anechoic Minimal",
+          domain: "Spectrum",
+          palette: [
+            { name: "True blackout",   hex: "#000000", accent: false },
+            { name: "Mu-metal silver", hex: "#B8B8B0", accent: false },
+            { name: "P31 phosphor",    hex: "#3CFF7A", accent: true  }
+          ],
+          thesis: "Spectrum is terrain. We hold the high ground.",
+          ironRule: "Anti-glint is doctrine. Matte only. The only permitted shine is environmental."
+        }
+      ]
     },
 
     "04": {
       title: "PORTFOLIOS",
       prompt: "WHERE THE WORK LIVES",
       hero: "The built work lives at three dedicated sites — one per register.",
+      outcomeLine: "Each site stands alone. None of them tries to say what the practice is — that's this dossier's job.",
       body: "",
       wedgesTitle: "",
       wedges: [] as string[],

@@ -328,14 +328,15 @@ describe('Faceted audience entry', () => {
   });
 });
 
-describe('Doctrine in motion explorer (Module 02)', () => {
+describe('Doctrine in motion explorer (Module 03)', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
     try {
       window.history.replaceState(null, '', window.location.pathname);
     } catch (e) {}
-    // Open Module 02 so its content renders for query.
-    window.location.hash = '#module-02';
+    // Open Module 03 so its content renders for query.
+    // (Explorer lives in Module 03 per war-game restructure; was Module 02.)
+    window.location.hash = '#module-03';
   });
 
   it('renders the first register by default and swaps when a different tab is clicked', async () => {

@@ -191,21 +191,6 @@ export const CONTENT_MODULES: ModuleData[] = [
             {COPY.modules["01"].fieldPositionBelow}
           </p>
         </div>
-
-        {/* Doctrine in motion — tabbed register explorer.
-            See PRD-DOCTRINE-EXPLORER.md. */}
-        <div className="mt-12 pt-8 border-t border-white/20">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
-            {COPY.modules["01"].doctrineExplorerTitle}
-          </h4>
-          <p className="font-serif text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl">
-            {COPY.modules["01"].doctrineExplorerHero}
-          </p>
-          <DoctrineExplorer registers={COPY.modules["01"].registers} />
-          <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
-            {COPY.modules["01"].doctrineExplorerFootnote}
-          </p>
-        </div>
       </div>
     )
   },
@@ -218,6 +203,26 @@ export const CONTENT_MODULES: ModuleData[] = [
     responseText: COPY.modules["02"].oneLine,
     responseDisplay: (
       <div className="space-y-8">
+        {/* Three-signal coordinate strip — small visual anchor before
+            the lead. Mirrors the field-position chart "this is a coordinate"
+            pattern at the role-fit scale. See war-game restructure. */}
+        <div>
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
+            {COPY.modules["02"].signalStripTitle}
+          </h4>
+          <div className="grid grid-cols-3 gap-2 md:gap-3">
+            {COPY.modules["02"].signalStrip.map((s) => (
+              <div key={s.code} className="border border-current/30 p-3 md:p-4">
+                <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">
+                  SIGNAL · {s.code}
+                </div>
+                <div className="font-mono text-sm uppercase tracking-wider mb-1">{s.label}</div>
+                <div className="font-mono text-micro opacity-muted">{s.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="font-serif text-2xl md:text-4xl leading-relaxed opacity-secondary mb-6">
             {COPY.modules["02"].lead.split('\n').map((line, i) => (
               <span key={i}>{line}{i < 1 && <br/>}</span>
@@ -286,6 +291,22 @@ export const CONTENT_MODULES: ModuleData[] = [
            </div>
         </div>
         <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-white/10 pt-4 mt-4">{COPY.modules["03"].close}</p>
+
+        {/* Doctrine in motion — tabbed register explorer.
+            Moved here from Module 02 per war-game findings.
+            See PRD-DOCTRINE-EXPLORER.md (placement v2). */}
+        <div className="mt-12 pt-8 border-t border-white/20">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
+            {COPY.modules["03"].doctrineExplorerTitle}
+          </h4>
+          <p className="font-serif text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl">
+            {COPY.modules["03"].doctrineExplorerHero}
+          </p>
+          <DoctrineExplorer registers={COPY.modules["03"].registers} />
+          <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
+            {COPY.modules["03"].doctrineExplorerFootnote}
+          </p>
+        </div>
       </div>
     ),
   },
@@ -378,6 +399,12 @@ export const CONTENT_MODULES: ModuleData[] = [
                 </a>
             ))}
         </div>
+
+        {COPY.modules["04"].outcomeLine && (
+          <p className="font-serif italic text-lg md:text-xl opacity-tertiary border-t border-current/20 pt-6 max-w-3xl">
+            {COPY.modules["04"].outcomeLine}
+          </p>
+        )}
 
       </div>
     ),

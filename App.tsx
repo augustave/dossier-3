@@ -23,11 +23,11 @@ const RENDERED_MODULES = CONTENT_MODULES
 /**
  * Faceted entry — audience reads. Each maps to a curated subset of
  * module indices, ordered by "start with" priority for that audience.
- * War-gamed mapping (see PRD §audience-curation):
- *   hiring → 01 Role fit / 02 Creative technologist / 05 Portfolios
- *   client → 01 Role fit / 03 Operating method      / 05 Portfolios
- *   collab → 04 World model / 03 Operating method   / 06 Role matrix
- *   acad   → 04 World model / 02 Creative tech.     / 03 Operating method
+ * War-gamed mapping (see PRD-FACETED-ENTRY.md):
+ *   hiring → 01 Role fit / 02 Creative technologist (chart) / 05 Portfolios
+ *   client → 01 Role fit / 03 Operating method (explorer)   / 05 Portfolios
+ *   collab → 02 Creative technologist (chart) / 04 World model / 03 Operating method (explorer)
+ *   acad   → 04 World model / 02 Creative tech. (chart)      / 03 Operating method (explorer)
  */
 type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
 
@@ -40,7 +40,7 @@ interface Audience {
 const AUDIENCES: Audience[] = [
   { id: 'hiring', label: 'HIRING MANAGER', modules: ['01', '02', '05'] },
   { id: 'client', label: 'CLIENT',         modules: ['01', '03', '05'] },
-  { id: 'collab', label: 'COLLABORATOR',   modules: ['04', '03', '06'] },
+  { id: 'collab', label: 'COLLABORATOR',   modules: ['02', '04', '03'] },
   { id: 'acad',   label: 'ACADEMIC',       modules: ['04', '02', '03'] }
 ];
 const AUDIENCE_IDS = AUDIENCES.map(a => a.id);

@@ -17,28 +17,48 @@ The explorer's specific job: collapse "this person codifies rule-systems" into a
 
 ---
 
-## 2. Placement decision
+## 2. Placement decision (v2 — post war-game)
 
-End of Module 02 (CREATIVE TECHNOLOGIST), immediately after the field position chart block. Module 02 is in the Hiring Manager audience curation; the explorer appears at the closing beat of the module the recruiter actually reads.
+End of Module 03 (OPERATING METHOD), after the existing PRIMARY TENSION / COUNTER-BALANCE grid and the closing italic line. Module 03 is in the Client, Collaborator, and Academic audiences — the explorer now reaches three of four audiences.
 
-The narrative arc of Module 02 now reads:
+The narrative arc of Module 03 now reads:
 
 ```
-hero  →  body (3 paras)  →  field position chart (coordinate)  →  doctrine in motion (operational output)
+hero  →  body  →  default bias (bullets)  →  tension/counter-balance  →  close  →  doctrine in motion (operational output)
 ```
 
 Each element answers a different question:
-- Hero / body: *what's the practice?*
-- Chart: *where does it sit in the field?*
-- Explorer: *what does it actually produce?*
+- Hero / body / bullets: *how do I work?*
+- Tension grid: *what's the failure mode and the corrective?*
+- Close: *one-line summary.*
+- Explorer: *what does the method actually produce?*
 
-Three placements were considered and rejected:
+### Placement v1 (Module 02) — rejected after war-game
+
+Originally lived at the end of Module 02 (Creative Technologist), immediately after the field position chart. v1 narrative was:
+
+```
+hero → body → field position chart → doctrine in motion
+```
+
+Both the chart and the explorer in Module 02 worked great for Hiring Manager and Academic. But the v2 site-wide war-game showed two failures:
+
+1. **Client and Collaborator never saw the explorer** (Module 02 was filtered out of their reads). The explorer is the most direct "preview of what you'd commission" for clients — a high-cost miss.
+2. **Module 02 grew too long** — hero + body + chart + explorer = the longest module on the page. Mobile scroll suffered.
+
+### Why Module 03 is the right home
+
+- **Operating Method is the explorer's true conceptual home** — it literally shows the operational output of the method described in the module body.
+- **Visible to Client, Collaborator, Academic** (three of four audiences). Hiring Manager loses the explorer in exchange — acceptable trade because the chart in Module 02 still arrives at the right moment for their judgment cycle.
+- **Module 02 reverts to a tighter shape** (hero + body + chart), which is easier to scan on mobile.
+
+Other placements considered and rejected:
 
 | Rejected option | Why |
 |---|---|
-| Module 03 OPERATING METHOD | Filtered out for Hiring Manager audience — recruiter never sees it. |
-| Module 05 PORTFOLIOS | Should stay a fast skim (just three site tiles). Explorer adds friction. |
-| Top hero | Reads as "this is a project demo." Wrong before the practice thesis is established. |
+| Module 05 PORTFOLIOS | Should stay a fast skim (just three site tiles). Explorer adds friction at the exit. |
+| Top hero, always visible | Reads as "this is a project demo." Wrong before the practice thesis is established. |
+| Duplicate across Modules 02 and 03 | Same component in two modules creates visual repetition and dilutes each instance. |
 
 ---
 
@@ -89,10 +109,10 @@ The accent badge on each palette swatch makes the "one protected accent per pale
 
 | File | Change |
 |---|---|
-| `Founder/copy.v1_1.ts` | Added six keys to `modules["01"]`: `doctrineExplorerTitle`, `doctrineExplorerHero`, `doctrineExplorerFootnote`, and the `registers[]` array (3 entries). |
-| `Founder/components/DoctrineExplorer.tsx` | **New file.** Exports `DoctrineExplorer`, `DoctrineRegister`, `PaletteSwatch`. |
-| `Founder/constants.tsx` | Imported `DoctrineExplorer`. New render block at end of Module 02 responseDisplay (after the field position chart). |
-| `Founder/App.test.tsx` | New `describe('Doctrine in motion explorer (Module 02)', …)` block with one test verifying default render + tab swap. |
+| `Founder/copy.v1_1.ts` | Six keys live on `modules["03"]`: `doctrineExplorerTitle`, `doctrineExplorerHero`, `doctrineExplorerFootnote`, and the `registers[]` array (3 entries). (Moved from `modules["01"]` in v2 restructure.) |
+| `Founder/components/DoctrineExplorer.tsx` | Stateful component file. Exports `DoctrineExplorer`, `DoctrineRegister`, `PaletteSwatch`. Unchanged from v1. |
+| `Founder/constants.tsx` | Imports `DoctrineExplorer`. Render block at end of Module 03 (MODEL) responseDisplay, after the close italic line. (Removed from Module 02 in v2 restructure.) |
+| `Founder/App.test.tsx` | `describe('Doctrine in motion explorer (Module 03)', …)` block with one test verifying default render + tab swap. Test opens `#module-03` before render. |
 
 No changes to `App.tsx`, `types.ts`, `ManifestOverlay.tsx`.
 
