@@ -240,3 +240,90 @@ describe('Simulator component', () => {
     expect(onInquiry).toHaveBeenCalledWith('Role Matrix: CREATIVE TECHNOLOGIST');
   });
 });
+
+describe('Faceted audience entry', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = () => {};
+    window.location.hash = '';
+    // Reset search params before each test.
+    try {
+      window.history.replaceState(null, '', window.location.pathname);
+    } catch (e) {}
+  });
+
+  it('reads ?read=hiring on mount, activates pill, filters to modules 01/02/05', async () => {
+    window.history.replaceState(null, '', '?read=hiring');
+    render(<App />);
+
+    const pill = await screen.findByRole('button', { name: /^HIRING MANAGER$/i });
+    await waitFor(() => {
+      expect(pill.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    // Hiring audience: 01, 02, 05 present; 03, 04, 06 collapsed out.
+    expect(getModuleToggle('module-01')).not.toBeNull();
+    expect(getModuleToggle('module-02')).not.toBeNull();
+    expect(getModuleToggle('module-05')).not.toBeNull();
+    expect(getModuleToggle('module-03')).toBeNull();
+    expect(getModuleToggle('module-04')).toBeNull();
+    expect(getModuleToggle('module-06')).toBeNull();
+  });
+
+  it('clicking a pill writes ?read= to the URL and filters the module list', async () => {
+    render(<App />);
+
+    const pill = await screen.findByRole('button', { name: /^CLIENT$/i });
+    fireEvent.click(pill);
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('read=client');
+    });
+
+    // Client audience: 01, 03, 05 present; 02, 04, 06 collapsed out.
+    expect(getModuleToggle('module-01')).not.toBeNull();
+    expect(getModuleToggle('module-03')).not.toBeNull();
+    expect(getModuleToggle('module-05')).not.toBeNull();
+    expect(getModuleToggle('module-02')).toBeNull();
+    expect(getModuleToggle('module-04')).toBeNull();
+    expect(getModuleToggle('module-06')).toBeNull();
+  });
+
+  it('clicking the active pill toggles it off and restores all six modules', async () => {
+    window.history.replaceState(null, '', '?read=acad');
+    render(<App />);
+
+    const pill = await screen.findByRole('button', { name: /^ACADEMIC$/i });
+    await waitFor(() => {
+      expect(pill.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    fireEvent.click(pill);
+
+    await waitFor(() => {
+      expect(pill.getAttribute('aria-pressed')).toBe('false');
+    });
+    expect(window.location.search).not.toContain('read=');
+    // All six modules are present after clearing.
+    expect(getModuleToggle('module-01')).not.toBeNull();
+    expect(getModuleToggle('module-02')).not.toBeNull();
+    expect(getModuleToggle('module-03')).not.toBeNull();
+    expect(getModuleToggle('module-04')).not.toBeNull();
+    expect(getModuleToggle('module-05')).not.toBeNull();
+    expect(getModuleToggle('module-06')).not.toBeNull();
+  });
+
+  it('Show all button clears the active audience and restores all six modules', async () => {
+    window.history.replaceState(null, '', '?read=collab');
+    render(<App />);
+
+    const showAll = await screen.findByRole('button', { name: /Show all modules/i });
+    fireEvent.click(showAll);
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('read=');
+    });
+    expect(getModuleToggle('module-01')).not.toBeNull();
+    expect(getModuleToggle('module-04')).not.toBeNull();
+    expect(getModuleToggle('module-06')).not.toBeNull();
+  });
+});

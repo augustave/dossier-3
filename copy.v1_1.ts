@@ -27,6 +27,41 @@ export const CT_DOSSIER_COPY_V120 = {
         "[!] Interface, narrative, and system logic stay connected.",
         "[!] If it cannot be explained clearly, it is not ready.",
       ],
+
+      // Field position chart (Doc 2 axes: Craft↔AI horizontal,
+      // Velocity↔Permanence vertical). Plotted designers and Ven's
+      // position are doctrine-locked; see PRD-FIELD-POSITION.md.
+      fieldPositionTitle: "FIELD POSITION",
+      fieldPositionAbove: "Here is where the practice sits relative to peers.",
+      fieldPositionBelow: "AI-leveraged, permanence-oriented. A sparse quadrant by design.",
+      fieldPositionAxes: {
+        xLeft: "CRAFT",
+        xRight: "AI",
+        yTop: "VELOCITY",
+        yBottom: "PERMANENCE"
+      },
+      fieldPositionDesigners: [
+        { name: "Tarka",          x: 5,  y: 90 },
+        { name: "Van Schneider",  x: 10, y: 85 },
+        { name: "Campdera",       x: 15, y: 80 },
+        { name: "Varley",         x: 30, y: 25 },
+        { name: "Mans",           x: 40, y: 50 },
+        { name: "Akdağ",          x: 50, y: 45 },
+        { name: "Cardona",        x: 55, y: 52 },
+        { name: "Brucker",        x: 65, y: 30 },
+        { name: "Dannaway",       x: 70, y: 55 },
+        { name: "Verma",          x: 72, y: 62 },
+        { name: "Zada",           x: 80, y: 20 },
+        { name: "Meyer",          x: 85, y: 15 },
+        { name: "Flynn",          x: 90, y: 10 },
+        { name: "Haas",           x: 95, y: 14 }
+      ],
+      fieldPositionVen: {
+        x: 62,
+        y: 70,
+        label: "VEN",
+        sub: "Doctrine + agent orchestration"
+      }
     },
 
     "02": {

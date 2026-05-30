@@ -116,6 +116,80 @@ export const CONTENT_MODULES: ModuleData[] = [
             <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
           ))}
         </div>
+
+        {/* Field position chart — Doc 2 axes, war-gamed placement.
+            Sits at the end of Module 02 so a recruiter who filters
+            to the Hiring Manager audience sees the polymath claim
+            as a coordinate, not a sentence. See PRD-FIELD-POSITION.md. */}
+        <div className="mt-8 pt-8 border-t border-white/20">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
+            {COPY.modules["01"].fieldPositionTitle}
+          </h4>
+          <p className="font-serif text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl">
+            {COPY.modules["01"].fieldPositionAbove}
+          </p>
+
+          <div className="bg-black/20 p-4 md:p-6 border border-white/10">
+            <svg
+              viewBox="0 0 680 580"
+              className="w-full h-auto"
+              role="img"
+              aria-label="Field position chart. Fourteen named designers plotted across Craft to AI horizontally and Velocity to Permanence vertically. Ven sits in the AI-Permanence quadrant."
+              style={{ color: 'currentColor' }}
+            >
+              {/* Plot border */}
+              <rect x="80" y="60" width="520" height="440" fill="none" stroke="currentColor" strokeOpacity="0.3" strokeWidth="0.5" strokeDasharray="2 2"/>
+              {/* Axis cross */}
+              <line x1="80" y1="280" x2="600" y2="280" stroke="currentColor" strokeOpacity="0.4" strokeWidth="0.5"/>
+              <line x1="340" y1="60" x2="340" y2="500" stroke="currentColor" strokeOpacity="0.4" strokeWidth="0.5"/>
+
+              {/* Axis labels */}
+              <text x="80" y="46" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionAxes.xLeft}</text>
+              <text x="600" y="46" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionAxes.xRight}</text>
+              <text x="65" y="60" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 60)">{COPY.modules["01"].fieldPositionAxes.yTop}</text>
+              <text x="65" y="500" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 500)">{COPY.modules["01"].fieldPositionAxes.yBottom}</text>
+
+              {/* Designer dots (gray label, 3px dot) */}
+              {COPY.modules["01"].fieldPositionDesigners.map((d, i) => {
+                const cx = 80 + (d.x / 100) * 520;
+                const cy = 60 + (d.y / 100) * 440;
+                return (
+                  <g key={i} opacity="0.7">
+                    <circle cx={cx} cy={cy} r="3" fill="currentColor"/>
+                    <text x={cx + 8} y={cy + 3} fontSize="10" fill="currentColor" fontFamily="ui-monospace, monospace">{d.name}</text>
+                  </g>
+                );
+              })}
+
+              {/* Ven dot (highlighted, lime accent) */}
+              {(() => {
+                const v = COPY.modules["01"].fieldPositionVen;
+                const cx = 80 + (v.x / 100) * 520;
+                const cy = 60 + (v.y / 100) * 440;
+                return (
+                  <g>
+                    <circle cx={cx} cy={cy} r="11" fill="none" stroke="#E5FF00" strokeWidth="0.5" strokeDasharray="2 1.5"/>
+                    <circle cx={cx} cy={cy} r="7" fill="#E5FF00"/>
+                    <text x={cx + 14} y={cy - 2} fontSize="11" fontWeight="500" fill="#E5FF00" fontFamily="ui-monospace, monospace">{v.label}</text>
+                    <text x={cx + 14} y={cy + 11} fontSize="9" letterSpacing="1" fill="#E5FF00" opacity="0.8" fontFamily="ui-monospace, monospace">{v.sub}</text>
+                  </g>
+                );
+              })()}
+
+              {/* Legend strip */}
+              <g transform="translate(80, 545)">
+                <circle cx="5" cy="5" r="3" fill="currentColor" opacity="0.7"/>
+                <text x="14" y="9" fontSize="10" fill="currentColor" opacity="0.7" fontFamily="ui-monospace, monospace">Doc 2 designers</text>
+                <circle cx="165" cy="5" r="5" fill="#E5FF00"/>
+                <text x="176" y="9" fontSize="10" fill="#E5FF00" fontFamily="ui-monospace, monospace">VEN</text>
+              </g>
+            </svg>
+          </div>
+
+          <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
+            {COPY.modules["01"].fieldPositionBelow}
+          </p>
+        </div>
       </div>
     )
   },

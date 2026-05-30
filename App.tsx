@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { CONTENT_MODULES } from './constants';
 import { ModuleStrata } from './components/ModuleStrata';
 import { InquiryPanel } from './components/InquiryPanel';
@@ -20,11 +20,85 @@ const RENDERED_MODULES = CONTENT_MODULES
   .filter(m => m.id !== ModuleType.MANIFEST)
   .sort((a, b) => a.index.localeCompare(b.index));
 
+/**
+ * Faceted entry — audience reads. Each maps to a curated subset of
+ * module indices, ordered by "start with" priority for that audience.
+ * War-gamed mapping (see PRD §audience-curation):
+ *   hiring → 01 Role fit / 02 Creative technologist / 05 Portfolios
+ *   client → 01 Role fit / 03 Operating method      / 05 Portfolios
+ *   collab → 04 World model / 03 Operating method   / 06 Role matrix
+ *   acad   → 04 World model / 02 Creative tech.     / 03 Operating method
+ */
+type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
+
+interface Audience {
+  id: AudienceId;
+  label: string;
+  modules: string[];
+}
+
+const AUDIENCES: Audience[] = [
+  { id: 'hiring', label: 'HIRING MANAGER', modules: ['01', '02', '05'] },
+  { id: 'client', label: 'CLIENT',         modules: ['01', '03', '05'] },
+  { id: 'collab', label: 'COLLABORATOR',   modules: ['04', '03', '06'] },
+  { id: 'acad',   label: 'ACADEMIC',       modules: ['04', '02', '03'] }
+];
+const AUDIENCE_IDS = AUDIENCES.map(a => a.id);
+const isAudienceId = (s: string | null): s is AudienceId =>
+  s !== null && (AUDIENCE_IDS as string[]).includes(s);
+
 const App: React.FC = () => {
   const [openModuleIndex, setOpenModuleIndex] = useState<string | null>(null);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [inquiryContext, setInquiryContext] = useState<string>("");
+  const [selectedAudience, setSelectedAudience] = useState<AudienceId | null>(null);
+
+  // Read ?read= URL param on mount. Shareable views: ct-dossier/?read=hiring etc.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const read = params.get('read');
+      if (isAudienceId(read)) setSelectedAudience(read);
+    } catch (e) {
+      // URLSearchParams unsupported (test env, etc.) — fall through.
+    }
+  }, []);
+
+  // Sync URL when audience changes. Uses replaceState so back-button isn't polluted.
+  const writeAudienceToUrl = (next: AudienceId | null) => {
+    try {
+      const url = new URL(window.location.href);
+      if (next) url.searchParams.set('read', next);
+      else url.searchParams.delete('read');
+      history.replaceState(null, document.title, url.toString());
+    } catch (e) {
+      // jsdom in tests doesn't always support URL — silently no-op.
+    }
+  };
+
+  const handleAudience = (id: AudienceId) => {
+    const next = selectedAudience === id ? null : id;
+    setSelectedAudience(next);
+    writeAudienceToUrl(next);
+  };
+
+  const clearAudience = () => {
+    setSelectedAudience(null);
+    writeAudienceToUrl(null);
+  };
+
+  // Modules currently visible. When an audience is selected, render only that
+  // audience's curated subset, in the audience's preferred order. Otherwise
+  // the full index-sorted list.
+  const visibleModules = useMemo(() => {
+    if (!selectedAudience) return RENDERED_MODULES;
+    const audience = AUDIENCES.find(a => a.id === selectedAudience);
+    if (!audience) return RENDERED_MODULES;
+    return audience.modules
+      .map(idx => RENDERED_MODULES.find(m => m.index === idx))
+      .filter((m): m is (typeof RENDERED_MODULES)[number] => m !== undefined);
+  }, [selectedAudience]);
 
   // Handle initialization (Deep Link > Default Module 01)
   useEffect(() => {
@@ -123,6 +197,42 @@ const App: React.FC = () => {
                 {' '}This is the practice behind them: how I think, how I work, what I recruit for.
               </p>
             </div>
+
+            {/* Faceted entry — audience filter */}
+            <div className="mb-5 md:mb-6 flex items-center gap-3 flex-wrap" role="group" aria-label="Reader audience filter">
+              <span className="font-mono text-xs uppercase tracking-widest opacity-50 whitespace-nowrap">Reading as</span>
+              <div className="flex gap-2 flex-wrap">
+                {AUDIENCES.map((a) => {
+                  const isActive = selectedAudience === a.id;
+                  return (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => handleAudience(a.id)}
+                      aria-pressed={isActive}
+                      className={`font-mono text-xs uppercase tracking-widest border border-black px-3 py-1 transition-colors ${
+                        isActive
+                          ? 'bg-black text-white'
+                          : 'bg-transparent text-black hover:bg-black hover:text-white'
+                      }`}
+                    >
+                      {a.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {selectedAudience && (
+                <button
+                  type="button"
+                  onClick={clearAudience}
+                  className="font-mono text-xs uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity ml-auto"
+                  aria-label="Show all modules"
+                >
+                  Show all ✕
+                </button>
+              )}
+            </div>
+
             <div className="border border-black/15 bg-white/70 backdrop-blur-sm p-5 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
                 <div className="md:w-56 shrink-0">
@@ -146,8 +256,8 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        {/* Render all modules EXCEPT Manifest (Module 00) */}
-        {RENDERED_MODULES.map((module) => (
+        {/* Render visible modules (filtered by selected audience if any). */}
+        {visibleModules.map((module) => (
           <ModuleStrata
             key={module.id}
             module={module}
