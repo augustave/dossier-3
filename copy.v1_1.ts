@@ -6,7 +6,7 @@ export const CT_DOSSIER_COPY_V120 = {
   meta: {
     version: "1.2.0",
     voice: "plainspoken, named stakes, no frameworks-as-nouns",
-    rule: "first-person, say it the way a smart person says it out loud",
+    rule: "no first-person pronoun; personal and warm, the way a sharp person talks; no project name-drops",
   },
 
   modules: {
@@ -14,12 +14,12 @@ export const CT_DOSSIER_COPY_V120 = {
       title: "CREATIVE TECHNOLOGIST",
       prompt: "PRACTICE THESIS",
       hero:
-        "I make complex technical work easy to look at — and easy to trust.",
+        "Complex technical work, made easy to look at — and easy to trust.",
       body:
         [
-          "Most serious technology is real long before anyone can see it clearly. That gap — between what the engineering actually does and what a person believes about it — is where I work.",
-          "I build the look, the working prototype, and the story that says why it matters. Evidence over claims. Things you can click over things you can only watch. Work that holds up when an engineer leans in.",
-          "I won't ship something that survives only because it looks impressive. Strip the styling away, and if it stops making sense, it was never finished."
+          "Most serious technology is real long before anyone can see it clearly. That gap — between what the engineering actually does and what a person believes about it — is the whole job here.",
+          "The look, the working prototype, and the story for why it matters, built together. Evidence over claims. Things you can click over things you can only watch. Work that holds up when an engineer leans in.",
+          "Nothing ships because it looks impressive. Strip the styling away, and if it stops making sense, it was never finished."
         ].join("\n\n"),
       noteTitle: "NOTE",
       noteLines: [
@@ -68,18 +68,18 @@ export const CT_DOSSIER_COPY_V120 = {
     "02": {
       title: "ROLE FIT",
       prompt:
-        "WHAT I DO BEST",
+        "WHERE IT'S STRONGEST",
       lead:
         [
-          "Hire me when the product is real but nobody can see it yet.",
-          "It isn't one medium. It's making the whole thing readable at a glance."
+          "Best brought in when the product is real but nobody can see it yet.",
+          "Not one medium — the whole thing, made readable at a glance."
         ].join("\n"),
       people: [
         {
           name: "Visual Operating Languages",
           body:
             [
-              "I give a product one consistent look, so it reads as built and serious instead of speculative. On DEADLIGHT that meant a single visual language running across screens, decks, and documents. On CYPHER it meant marks generated from one fixed rule, so two people never draw the same thing two different ways.",
+              "One consistent look, so a product reads as built and serious instead of speculative. One fixed set of rules, so two people never draw the same thing two different ways.",
               "Type, hierarchy, diagrams, and the small rules that keep everything feeling like one product."
             ].join("\n\n"),
           tags: ["design systems", "brand systems", "interface grammar"],
@@ -89,8 +89,8 @@ export const CT_DOSSIER_COPY_V120 = {
           name: "Interactive Prototypes",
           body:
             [
-              "When an idea has to move before anyone will believe it, I build it. TAK-G puts 1,500+ things on screen at once and lets you watch them hold together under load. GREY-EARTH is a live map workstation people can actually drive.",
-              "I build in real front-end code so a team can judge how it feels, not just how it looks."
+              "When an idea has to move before anyone will believe it, it gets built — not described. Hundreds of things on screen at once, holding together under load. A live workstation people can actually drive.",
+              "Real front-end code, so a team can judge how it feels, not just how it looks."
             ].join("\n\n"),
           tags: ["rapid prototyping", "front-end", "interaction architecture"],
           prevents: "Concepts that sound strong but cannot survive contact with use."
@@ -99,7 +99,7 @@ export const CT_DOSSIER_COPY_V120 = {
           name: "Technical Storytelling",
           body:
             [
-              "I take dense, mission-heavy work and make it land with three different people in the same room: the operator who needs it clear, the buyer who needs to trust it, the engineer who needs it honest.",
+              "Dense, mission-heavy work, made to land with three different people in the same room: the operator who needs it clear, the buyer who needs to trust it, the engineer who needs it honest.",
               "Not spectacle. A better decision, backed by something real."
             ].join("\n\n"),
           tags: ["visual storytelling", "systems explanation", "product narrative"],
@@ -128,14 +128,14 @@ export const CT_DOSSIER_COPY_V120 = {
 
     "03": {
       title: "OPERATING METHOD",
-      prompt: "HOW I WORK",
-      hero: "I move fast from idea to proof — but the work still has to hold together.",
+      prompt: "HOW THE WORK HAPPENS",
+      hero: "Fast from idea to proof — but the work still has to hold together.",
       body:
         [
-          "I'm best on teams that need one person to set the look, build the prototype, and tighten the reason the product matters.",
-          "I start by finding the spine: what the operator has to know, what the buyer has to believe, what the system has to show. Everything else hangs off that.",
-          "Then I turn the fog into things you can hold — interface studies, motion tests, mockups, diagrams, live prototypes.",
-          "The rule underneath all of it: evidence over claims. Nothing goes out that I can't back with something you can open and check yourself in half an hour."
+          "Best on teams that need one person to set the look, build the prototype, and tighten the reason the product matters.",
+          "It starts with the spine: what the operator has to know, what the buyer has to believe, what the system has to show. Everything else hangs off that.",
+          "Then the fog turns into things you can hold — interface studies, motion tests, mockups, diagrams, live prototypes.",
+          "The rule underneath all of it: evidence over claims. Nothing goes out that can't be backed with something you can open and check yourself in half an hour."
         ].join("\n\n"),
       bulletsTitle: "DEFAULT BIAS",
       bullets: [
@@ -146,12 +146,12 @@ export const CT_DOSSIER_COPY_V120 = {
       ],
       grid: {
         leftTitle: "PRIMARY TENSION",
-        leftBody: "I'll run ahead of the paperwork while an idea is still taking shape.",
+        leftBody: "Runs ahead of the paperwork while an idea is still taking shape.",
         rightTitle: "COUNTER-BALANCE",
-        rightBody: "Once it's proven real, I lock the rules down so the work stays reusable.",
+        rightBody: "Once it's proven real, the rules get locked down so the work stays reusable.",
       },
       close:
-        "Short version: I'm most useful where design, product sense, and plain explanation have to live in one head.",
+        "Short version: most useful where design, product sense, and plain explanation have to live in one head.",
 
       // Doctrine-in-motion explorer. Moved here from Module 02 per
       // war-game findings (PRD-DOCTRINE-EXPLORER.md §placement-v2).
@@ -390,7 +390,7 @@ export const CT_DOSSIER_COPY_V120 = {
     worldModel: {
       title: "WORLD MODEL",
       prompt: "WHAT MY THREE PICKS REVEAL",
-      hero: "I'd recruit three people into a Skunkworks. The picks reveal the practice.",
+      hero: "Three people worth recruiting into a Skunkworks. The picks reveal the practice.",
       intro:
         "Levin, Hughes, Johnson — three people who run invisible systems. Not loud, not busy; they move outcomes by understanding the control layer underneath. Stacked together, they're three layers of one machine.",
       layersTitle: "THREE LAYERS OF ONE MACHINE",
@@ -416,7 +416,7 @@ export const CT_DOSSIER_COPY_V120 = {
       ],
       revealTitle: "WHAT THE PICKS SAY",
       reveal:
-        "Control systems over aesthetics. High-stakes environments over comfort. Paradigm-changers over optimizers. A bias toward synthesis. I am not trying to make a product — I am trying to make an operating system for outcomes.",
+        "Control systems over aesthetics. High-stakes environments over comfort. Paradigm-changers over optimizers. A bias toward synthesis. Not a product — an operating system for outcomes.",
       frameworkTitle: "THE LOOP",
       framework: [
         "Coherence — what must stay true for the system to work; the signals that separate healthy from drifting.",

@@ -70,6 +70,38 @@ The dossier's aim is to present the candidate as **easy on the eye, jargon-free,
 
 ---
 
+---
+
+## Pass 2 — De-"I" + name-drop strip (2026-05-31)
+
+**Why:** First-person "I" and project name-drops were still reading as a résumé / self-pitch. Directive: remove the "I" perspective entirely, keep the personal/warm tone, and pull the named projects out of prose. The work should speak; the person shouldn't have to keep saying "I."
+
+**Voice rule updated:** `meta.rule` → `"no first-person pronoun; personal and warm, the way a sharp person talks; no project name-drops"`.
+
+**How "no I" reads without going corporate:** declarative fragments + "the work / the practice / someone who" framing. Avoid passive mush; keep it punchy.
+
+| Location | Change |
+|---|---|
+| `copy.v1_1.ts` M01 hero | "I make complex technical work easy to look at" → "Complex technical work, made easy to look at — and easy to trust." |
+| M01 body | "where I work" → "the whole job here"; "I build / I won't ship" → impersonal-but-warm declaratives. |
+| M02 prompt | "WHAT I DO BEST" → "WHERE IT'S STRONGEST". |
+| M02 lead | "Hire me when…" → "Best brought in when the product is real but nobody can see it yet." |
+| M02 people bodies | Removed remaining project names (DEADLIGHT/CYPHER/TAK-G/GREY-EARTH) from rendered prose + dropped "I build". Now: "One consistent look…", "it gets built — not described", "Dense, mission-heavy work, made to land…". |
+| M03 prompt | "HOW I WORK" → "HOW THE WORK HAPPENS". |
+| M03 hero/body/grid/close | Stripped every "I/I'm/I'll/I can"; "Runs ahead of the paperwork", "the rules get locked down", "most useful where… live in one head". |
+| `worldModel.hero` | "I'd recruit three people" → "Three people worth recruiting into a Skunkworks." |
+| `worldModel.reveal` | "I am not trying to make a product — I am trying to make…" → "Not a product — an operating system for outcomes." |
+| `constants.tsx` M06 | "WHERE I FIT" → "WHERE THE FIT IS"; "the role I'd actually play well" → "the role that actually fits". |
+| `App.tsx` hero intro (L197) | "how I think, how I work, what I recruit for" → "how the thinking works, how the work gets made, what it recruits for." |
+
+**Deliberately left first-person (correct register, not candidate self-description):**
+- `components/InquiryPanel.tsx` "01. I want to Discuss" / "02. I want to Evaluate" — that's the **visitor's** voice selecting intent.
+- InquiryPanel outbound **email draft** template — candidate-authored message, naturally first-person.
+
+**Not touched (not rendered):** `_archivedCompanies` / `_archivedDoctrineCards` still contain "I"/"Proves I can…" and project names — they are archived, not displayed. If ever un-archived, they need the same two passes.
+
+---
+
 ## Verification
 
-`npm run build` — clean (`✓ built in ~1.1s`, no TS errors) after all edits.
+`npm run build` — clean (`✓ built`, no TS errors) after both passes.

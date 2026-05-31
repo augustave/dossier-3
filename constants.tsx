@@ -413,10 +413,10 @@ export const CONTENT_MODULES: ModuleData[] = [
     id: ModuleType.SIMULATOR,
     index: "06",
     title: "ROLE MATRIX",
-    promptText: "WHERE I FIT",
+    promptText: "WHERE THE FIT IS",
     themeColor: 'blue',
-    responseText: "Match the work and the team to the role I'd actually play well.",
-    responseDisplay: "Match the work and the team to the role I'd actually play well.",
+    responseText: "Match the work and the team to the role that actually fits.",
+    responseDisplay: "Match the work and the team to the role that actually fits.",
   }
 ];
 

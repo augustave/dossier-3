@@ -194,7 +194,7 @@ const App: React.FC = () => {
                 <a href="https://artdirector.rocks" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">artdirector.rocks</a>,{' '}
                 <a href="https://brandproduct.dev" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">brandproduct.dev</a>, and{' '}
                 <a href="https://defense.observer" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">defense.observer</a>.
-                {' '}This is the practice behind them: how I think, how I work, what I recruit for.
+                {' '}This is the practice behind them: how the thinking works, how the work gets made, what it recruits for.
               </p>
             </div>
 
