@@ -56,7 +56,7 @@ jobs:
           git fetch origin gh-pages:gh-pages
           git worktree add /tmp/ct-dossier-gh-pages gh-pages
 
-          rsync -a --delete --exclude=".git" dist/ /tmp/ct-dossier-gh-pages/
+          rsync -a --checksum --delete --exclude=".git" dist/ /tmp/ct-dossier-gh-pages/
 
           cd /tmp/ct-dossier-gh-pages
           git add -A
