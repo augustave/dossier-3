@@ -16,23 +16,23 @@ export const RECRUIT_CARDS = [
   {
     name: "Visual Systems",
     role: "Design Language",
-    capability: "Builds coherence across interface, brand, and documentation.",
-    signal: "Strong design-system thinking for technical products.",
-    desc: "Turns scattered artifacts into one readable operating language. DEADLIGHT codifies trust/proof/consequence framing; CYPHER generates deterministic tactical marks with fabrication-grade governance."
+    capability: "Builds one consistent look across interface, brand, and docs.",
+    signal: "Strong systems thinking for technical products.",
+    desc: "Turns scattered pieces into one product that agrees with itself, instead of a pile of screens that look related."
   },
   {
     name: "Interactive Prototypes",
     role: "Product Proof",
-    capability: "Makes product concepts believable through working behavior.",
-    signal: "Can move from concept frame to functional prototype quickly.",
-    desc: "Uses front-end implementation to test flow and trust before the team commits polish. TAK-G renders 1,500+ tracks with real swarm kinematics. GREY-EARTH is a live terrain workstation with Earth Engine integration."
+    capability: "Makes a concept believable by making it work.",
+    signal: "Goes from idea to working prototype fast.",
+    desc: "Builds in real code so a team can feel the flow and the trust before anyone commits to polish."
   },
   {
     name: "Technical Narratives",
     role: "Systems Translation",
-    capability: "Explains dense systems without flattening their complexity.",
-    signal: "Useful where engineering, product, and recruiting all need the same story.",
-    desc: "Translates autonomy, geospatial, sensing, and mission-software concepts into artifacts people can evaluate. The Tactical Brutalism framework bridges operators, stakeholders, and engineers within a single visual vocabulary."
+    capability: "Explains dense systems without dumbing them down.",
+    signal: "Useful when engineering, product, and hiring all need the same story.",
+    desc: "Turns mission-heavy, hard-to-follow work into something people can actually evaluate and decide on."
   }
 ];
 
@@ -413,10 +413,10 @@ export const CONTENT_MODULES: ModuleData[] = [
     id: ModuleType.SIMULATOR,
     index: "06",
     title: "ROLE MATRIX",
-    promptText: "INTERACTIVE FIT LENS",
+    promptText: "WHERE I FIT",
     themeColor: 'blue',
-    responseText: "Map the kind of work and environment against the role I am most likely to play well.",
-    responseDisplay: "Map the kind of work and environment against the role I am most likely to play well.",
+    responseText: "Match the work and the team to the role I'd actually play well.",
+    responseDisplay: "Match the work and the team to the role I'd actually play well.",
   }
 ];
 

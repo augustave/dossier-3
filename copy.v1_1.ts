@@ -5,8 +5,8 @@
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
     version: "1.2.0",
-    voice: "personal-technical",
-    rule: "first-person, no hype, no mysticism",
+    voice: "plainspoken, named stakes, no frameworks-as-nouns",
+    rule: "first-person, say it the way a smart person says it out loud",
   },
 
   modules: {
@@ -14,18 +14,18 @@ export const CT_DOSSIER_COPY_V120 = {
       title: "CREATIVE TECHNOLOGIST",
       prompt: "PRACTICE THESIS",
       hero:
-        "I design systems that make complex technical work legible.",
+        "I make complex technical work easy to look at — and easy to trust.",
       body:
         [
-          "My work sits between engineering truth and operator confidence. I have done this across C2 theater simulators managing 1,500+ simultaneous tracks, autonomous drone swarm visualizations, and deterministic brand systems for defense-software products.",
-          "I build visual operating languages, interactive prototypes, and technical narratives for products that have to be understood before they can be trusted. The method is consistent: evidence over claims, working artifacts over slide decks, and design that holds up under technical scrutiny.",
-          "The through-line: turn difficult systems into clear interfaces, proof artifacts, and stories that survive contact with engineers, operators, and procurement."
+          "Most serious technology is real long before anyone can see it clearly. That gap — between what the engineering actually does and what a person believes about it — is where I work.",
+          "I build the look, the working prototype, and the story that says why it matters. Evidence over claims. Things you can click over things you can only watch. Work that holds up when an engineer leans in.",
+          "I won't ship something that survives only because it looks impressive. Strip the styling away, and if it stops making sense, it was never finished."
         ].join("\n\n"),
       noteTitle: "NOTE",
       noteLines: [
-        "[!] Multidisciplinary by default.",
-        "[!] Interface, narrative, and system logic stay connected.",
-        "[!] If it cannot be explained clearly, it is not ready.",
+        "[!] One head for the look, the build, and the story.",
+        "[!] Interface, narrative, and logic stay in the same hands.",
+        "[!] If it can't be said plainly, it isn't ready.",
       ],
 
       // Field position chart (Doc 2 axes: Craft↔AI horizontal,
@@ -71,16 +71,16 @@ export const CT_DOSSIER_COPY_V120 = {
         "WHAT I DO BEST",
       lead:
         [
-          "I am strongest in roles that sit between concept, product, and technical communication.",
-          "The value is not one medium. The value is making the whole system readable."
+          "Hire me when the product is real but nobody can see it yet.",
+          "It isn't one medium. It's making the whole thing readable at a glance."
         ].join("\n"),
       people: [
         {
           name: "Visual Operating Languages",
           body:
             [
-              "I build coherent visual systems for products that need to feel credible, disciplined, and operational rather than speculative. DEADLIGHT codifies trust/proof/consequence framing into a reusable grammar. CYPHER generates deterministic tactical marks from cryptographic seeds with fabrication-grade governance.",
-              "That includes interface grammar, typography, hierarchy, diagrams, and documentation patterns that scale across screens, decks, and classified-style artifacts."
+              "I give a product one consistent look, so it reads as built and serious instead of speculative. On DEADLIGHT that meant a single visual language running across screens, decks, and documents. On CYPHER it meant marks generated from one fixed rule, so two people never draw the same thing two different ways.",
+              "Type, hierarchy, diagrams, and the small rules that keep everything feeling like one product."
             ].join("\n\n"),
           tags: ["design systems", "brand systems", "interface grammar"],
           prevents: "Work that looks polished but does not cohere."
@@ -89,8 +89,8 @@ export const CT_DOSSIER_COPY_V120 = {
           name: "Interactive Prototypes",
           body:
             [
-              "I do not stop at static comps when the idea needs behavior to be believed. TAK-G is a theater-level C2 simulator rendering 1,500+ entities with swarm kinematics, EMCON confidence decay, and zero-trust SIGINT ghost tracks. GREY-EARTH is a live tactical terrain workstation with Earth Engine integration.",
-              "I build in React, Vite, Three.js, and vanilla WebGL stacks so teams can evaluate flow, not just appearance."
+              "When an idea has to move before anyone will believe it, I build it. TAK-G puts 1,500+ things on screen at once and lets you watch them hold together under load. GREY-EARTH is a live map workstation people can actually drive.",
+              "I build in real front-end code so a team can judge how it feels, not just how it looks."
             ].join("\n\n"),
           tags: ["rapid prototyping", "front-end", "interaction architecture"],
           prevents: "Concepts that sound strong but cannot survive contact with use."
@@ -99,8 +99,8 @@ export const CT_DOSSIER_COPY_V120 = {
           name: "Technical Storytelling",
           body:
             [
-              "I translate dense engineering, autonomy, geospatial, and mission-oriented ideas into recruiter-ready, stakeholder-ready, and operator-legible artifacts. The Tactical Brutalism framework I developed bridges three audiences simultaneously: operators who need lethality clarity, stakeholders who need compliance confidence, and engineers who need architectural honesty.",
-              "The goal is not spectacle. It is a stronger decision surface backed by evidence."
+              "I take dense, mission-heavy work and make it land with three different people in the same room: the operator who needs it clear, the buyer who needs to trust it, the engineer who needs it honest.",
+              "Not spectacle. A better decision, backed by something real."
             ].join("\n\n"),
           tags: ["visual storytelling", "systems explanation", "product narrative"],
           prevents: "Important work that stays trapped inside engineering context."
@@ -108,13 +108,11 @@ export const CT_DOSSIER_COPY_V120 = {
       ],
       together:
         [
-          "Together these form the core hiring signal:",
-          "1) coherent systems thinking,",
-          "2) working prototypes,",
-          "3) clear communication for technical audiences."
+          "Put together, the signal is simple:",
+          "someone who sees the whole system, builds the proof, and explains it to a room that doesn't share a vocabulary."
         ].join("\n"),
       oneLine:
-        "I bridge system logic, interface behavior, and technical narrative in one practice.",
+        "One person for the look, the build, and the story.",
 
       // Three-signal coordinate strip — small visual anchor at the
       // top of Module 01. Mirrors the field-position chart's "this is
@@ -131,29 +129,29 @@ export const CT_DOSSIER_COPY_V120 = {
     "03": {
       title: "OPERATING METHOD",
       prompt: "HOW I WORK",
-      hero: "I move from concept to proof quickly, but I still need the work to hold together.",
+      hero: "I move fast from idea to proof — but the work still has to hold together.",
       body:
         [
-          "I work well on teams that need someone to define the visual language, prototype the interaction, and tighten the story around why the product matters.",
-          "My default move is to find the governing structure first: what the operator needs to know, what the stakeholder needs to believe, and what the system needs to show.",
-          "From there I turn ambiguity into artifacts: interface studies, motion tests, mockups, diagrams, deck systems, or live prototypes.",
-          "The operating principle that runs through the portfolio is evidence over claims. Each project carries a validated claims sheet, a test plan, and a case study designed to survive a 30-minute technical walkthrough."
+          "I'm best on teams that need one person to set the look, build the prototype, and tighten the reason the product matters.",
+          "I start by finding the spine: what the operator has to know, what the buyer has to believe, what the system has to show. Everything else hangs off that.",
+          "Then I turn the fog into things you can hold — interface studies, motion tests, mockups, diagrams, live prototypes.",
+          "The rule underneath all of it: evidence over claims. Nothing goes out that I can't back with something you can open and check yourself in half an hour."
         ].join("\n\n"),
       bulletsTitle: "DEFAULT BIAS",
       bullets: [
-        "Treat complex products as communication systems, not just feature sets.",
-        "Every external claim maps to test or report evidence. No assertion without artifact.",
-        "Use prototypes to test credibility and flow before polish becomes expensive.",
-        "Codify the grammar into a reusable system: 10 defense-adjacent projects now share a common artifact contract covering architecture, threat model, validation, and case study.",
+        "Treat a product as something to be understood, not just a stack of features.",
+        "Every claim points at proof. No assertion without something you can open.",
+        "Prototype early to find out if people believe it — before polish gets expensive.",
+        "Write the rules down once, so the next project inherits them instead of rebuilding from scratch.",
       ],
       grid: {
         leftTitle: "PRIMARY TENSION",
-        leftBody: "I can sprint ahead of formalization when the concept is still unfolding.",
+        leftBody: "I'll run ahead of the paperwork while an idea is still taking shape.",
         rightTitle: "COUNTER-BALANCE",
-        rightBody: "Codify the grammar once the signal is real so the system stays reusable.",
+        rightBody: "Once it's proven real, I lock the rules down so the work stays reusable.",
       },
       close:
-        "The short version: I am most useful where design, product sense, and technical articulation need to meet in one person.",
+        "Short version: I'm most useful where design, product sense, and plain explanation have to live in one head.",
 
       // Doctrine-in-motion explorer. Moved here from Module 02 per
       // war-game findings (PRD-DOCTRINE-EXPLORER.md §placement-v2).
@@ -394,7 +392,7 @@ export const CT_DOSSIER_COPY_V120 = {
       prompt: "WHAT MY THREE PICKS REVEAL",
       hero: "I'd recruit three people into a Skunkworks. The picks reveal the practice.",
       intro:
-        "Levin, Hughes, Johnson — three operators of invisible systems. Not doers, not talkers; people who steer reality by understanding the control layer underneath it. Read as a stack, they are three layers of one machine.",
+        "Levin, Hughes, Johnson — three people who run invisible systems. Not loud, not busy; they move outcomes by understanding the control layer underneath. Stacked together, they're three layers of one machine.",
       layersTitle: "THREE LAYERS OF ONE MACHINE",
       layers: [
         {
