@@ -4,7 +4,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "1.2.0",
+    version: "1.3.0",
     voice: "plainspoken, named stakes, no frameworks-as-nouns",
     rule: "no first-person pronoun; personal and warm, the way a sharp person talks; no project name-drops",
   },
@@ -15,6 +15,9 @@ export const CT_DOSSIER_COPY_V120 = {
       prompt: "PRACTICE THESIS",
       hero:
         "Complex technical work, made easy to look at — and easy to trust.",
+      // Thesis kicker — IAA integration 4.2, placement (A), owner-approved
+      // 2026-06-07. Used once on the surface; nowhere else.
+      heroKicker: "Taste with a load rating.",
       body:
         [
           "Most serious technology is real long before anyone can see it clearly. That gap — between what the engineering actually does and what a person believes about it — is the whole job here.",
@@ -28,18 +31,27 @@ export const CT_DOSSIER_COPY_V120 = {
         "[!] If it can't be said plainly, it isn't ready.",
       ],
 
-      // Field position chart (Doc 2 axes: Craft↔AI horizontal,
-      // Velocity↔Permanence vertical). Plotted designers and Ven's
-      // position are doctrine-locked; see PRD-FIELD-POSITION.md.
+      // Field position chart (Doc 2 axes, pole labels amended v1.1:
+      // method Craft-native↔AI-native horizontal, output Ephemeral↔Durable
+      // vertical). Plotted designers and Ven's position are doctrine-locked;
+      // see PRD-FIELD-POSITION.md §9 changelog for the 2026-06-07 amendment.
       fieldPositionTitle: "FIELD POSITION",
       fieldPositionAbove: "Here is where the practice sits relative to peers.",
-      fieldPositionBelow: "AI-leveraged, permanence-oriented. A sparse quadrant by design.",
+      fieldPositionBelow: "AI-native, built to last — a sparse quadrant by design.",
       fieldPositionAxes: {
-        xLeft: "CRAFT",
-        xRight: "AI",
-        yTop: "VELOCITY",
-        yBottom: "PERMANENCE"
+        xLeft: "CRAFT-NATIVE",
+        xRight: "AI-NATIVE",
+        yTop: "EPHEMERAL",
+        yBottom: "DURABLE"
       },
+      // Quadrant labels name work-modes, not the plotted people.
+      fieldPositionQuadrants: {
+        tl: "TREND CRAFT",
+        tr: "FAST & DISPOSABLE",
+        bl: "LEGACY CRAFT",
+        br: "DOCTRINE-LED AI"
+      },
+      fieldPositionLegendPeers: "peer designers",
       fieldPositionDesigners: [
         { name: "Tarka",          x: 5,  y: 90 },
         { name: "Van Schneider",  x: 10, y: 85 },
@@ -57,8 +69,10 @@ export const CT_DOSSIER_COPY_V120 = {
         { name: "Haas",           x: 95, y: 14 }
       ],
       fieldPositionVen: {
-        x: 62,
-        y: 70,
+        // v1.1: repositioned from x62/y70 — doctrine-lock amendment,
+        // owner-signed 2026-06-07. Lock re-applies at this coordinate.
+        x: 72,
+        y: 78,
         label: "VEN",
         sub: "Doctrine + agent orchestration"
       },
@@ -143,6 +157,7 @@ export const CT_DOSSIER_COPY_V120 = {
         "Every claim points at proof. No assertion without something you can open.",
         "Prototype early to find out if people believe it — before polish gets expensive.",
         "Write the rules down once, so the next project inherits them instead of rebuilding from scratch.",
+        "Calm under load is a designed property, not a temperament. The worse the situation, the more deliberate the work.",
       ],
       grid: {
         leftTitle: "PRIMARY TENSION",

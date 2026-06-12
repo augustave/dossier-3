@@ -112,6 +112,12 @@ export const CONTENT_MODULES: ModuleData[] = [
         <div className="font-serif text-2xl md:text-4xl leading-relaxed">
           {COPY.modules["01"].hero}
         </div>
+        {/* Thesis kicker — IAA integration 4.2 (A), owner-approved + war-gamed
+            2026-06-07. Claim sits directly above the chart that supplies its
+            coordinate. Used once on the surface. See PRD-IAA-INTEGRATION.md. */}
+        <div className="font-mono text-sm uppercase tracking-widest opacity-secondary -mt-4">
+          {COPY.modules["01"].heroKicker}
+        </div>
         <div className="font-sans text-lg md:text-xl max-w-2xl opacity-secondary leading-relaxed">
           {COPY.modules["01"].body.split('\n\n').map((para, i) => (
             <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
@@ -135,14 +141,29 @@ export const CONTENT_MODULES: ModuleData[] = [
               viewBox="0 0 680 580"
               className="w-full h-auto"
               role="img"
-              aria-label="Field position chart. Fourteen named designers plotted across Craft to AI horizontally and Velocity to Permanence vertically. Ven sits in the AI-Permanence quadrant."
+              aria-label="Field position chart. Fourteen peer designers plotted across craft-native to AI-native horizontally and ephemeral to durable vertically. Ven sits alone in the durable AI-native quadrant, labeled doctrine-led AI."
               style={{ color: 'currentColor' }}
             >
+              {/* Owned-zone wash — PRD-FIELD-POSITION v1.1 (tightened per
+                  visual QA 2026-06-07). Scoped to VEN's pocket in the deep
+                  durable/AI-native corner, BELOW the locked Cardona/Dannaway/
+                  Verma band — so the shaded "owned" zone holds only VEN and
+                  the footer's "sparse" claim is literally true. Peer dots are
+                  doctrine-locked and cannot be moved, so the wash moves. */}
+              <rect x="420" y="360" width="180" height="140" fill="#E5FF00" opacity="0.07"/>
+              <rect x="420" y="360" width="180" height="140" fill="none" stroke="#E5FF00" strokeOpacity="0.4" strokeWidth="0.5" strokeDasharray="2 3"/>
               {/* Plot border */}
               <rect x="80" y="60" width="520" height="440" fill="none" stroke="currentColor" strokeOpacity="0.3" strokeWidth="0.5" strokeDasharray="2 2"/>
               {/* Axis cross */}
               <line x1="80" y1="280" x2="600" y2="280" stroke="currentColor" strokeOpacity="0.4" strokeWidth="0.5"/>
               <line x1="340" y1="60" x2="340" y2="500" stroke="currentColor" strokeOpacity="0.4" strokeWidth="0.5"/>
+
+              {/* Quadrant labels (v1.1) — name work-modes, not the plotted
+                  people. Low-opacity mono; owned quadrant in chartreuse. */}
+              <text x="92" y="80" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionQuadrants.tl}</text>
+              <text x="588" y="80" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionQuadrants.tr}</text>
+              <text x="92" y="490" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionQuadrants.bl}</text>
+              <text x="588" y="490" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="#E5FF00" opacity="0.85" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionQuadrants.br}</text>
 
               {/* Axis labels */}
               <text x="80" y="46" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionAxes.xLeft}</text>
@@ -180,7 +201,7 @@ export const CONTENT_MODULES: ModuleData[] = [
               {/* Legend strip */}
               <g transform="translate(80, 545)">
                 <circle cx="5" cy="5" r="3" fill="currentColor" opacity="0.7"/>
-                <text x="14" y="9" fontSize="10" fill="currentColor" opacity="0.7" fontFamily="ui-monospace, monospace">Doc 2 designers</text>
+                <text x="14" y="9" fontSize="10" fill="currentColor" opacity="0.7" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionLegendPeers}</text>
                 <circle cx="165" cy="5" r="5" fill="#E5FF00"/>
                 <text x="176" y="9" fontSize="10" fill="#E5FF00" fontFamily="ui-monospace, monospace">VEN</text>
               </g>

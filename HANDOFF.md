@@ -30,6 +30,7 @@ If you find yourself wanting to add project cards, project galleries, or any kin
   - `PRD-FACETED-ENTRY.md` — Phase 2 PRD: audience-aware top hero.
   - `PRD-FIELD-POSITION.md` — Phase 3 PRD: 2-axis positioning chart inside Module 02.
   - `PRD-DOCTRINE-EXPLORER.md` — Phase 4 PRD: tabbed register explorer inside Module 02, after the chart.
+  - `PRD-IAA-INTEGRATION.md` — Phase 5 PRD: brand-architecture substance translated into the dossier voice (M02 thesis kicker, M03 pressure bullet, field-chart v1.1 revision; The Fold plate cut by war-game). Owner-approved + implemented 2026-06-07.
   - `README.md` — original project README (predates the restructure).
 - **Doc tree (parent `../`, not in this git repo):**
   - `CT_DOSSIER_EVALUATION_REPORT.md` — ship-readiness baseline from an earlier review pass. Local-only reference.
@@ -74,8 +75,11 @@ These are preserved for restoration only — do not surface them without explici
 | 2 | `PRD-FACETED-ENTRY.md` | **Shipped** to source; tests added; pending commit. | Audience-aware top hero with URL state. War-gamed module-to-audience mapping. |
 | 3 | `PRD-FIELD-POSITION.md` | **Shipped** to source; pending commit. | 2-axis SVG chart at the end of Module 02 plotting 14 designers from Doc 2 with a highlighted dot for Ven. War-gamed placement decision favors Module 02 over alternatives (including World Model, top hero, standalone module) because it's visible to the Hiring Manager audience. |
 | 4 | `PRD-DOCTRINE-EXPLORER.md` | **Shipped** to source; tests added; pending commit. v2 placement at end of Module 03 (was Module 02 in v1). | Tabbed 3-register explorer at the end of Module 03 (Operating Method). Stateful sub-component in `components/DoctrineExplorer.tsx`. Demonstrates the rule-making practice — palette + thesis + iron rule swappable on click. After the war-game audit, moved from Module 02 to Module 03 so it's visible to Client + Collaborator + Academic. |
+| 5 | `PRD-IAA-INTEGRATION.md` | **Implemented** to source 2026-06-07; **uncommitted/unpushed**. Owner-approved + war-gamed. | IAA brand-architecture substance translated into the dossier voice. Shipped: M02 thesis kicker "Taste with a load rating."; M03 DEFAULT BIAS pressure bullet; Field Position chart v1.1 (new poles, named quadrants, VEN→x72/y78, tightened owned-zone wash, "peer designers" legend, new footer). Cut by war-game: The Fold cusp plate (stays off-dossier). `copy.v1_1.ts` meta → 1.3.0. tsc clean; 20/20 vitest; voice-lint clean. |
 
-If a fifth PRD is added later, register it here.
+**Field Position chart is now at v1.1** — see `PRD-FIELD-POSITION.md` §9 changelog. Pole labels, quadrant names, VEN coordinate, and the owned-zone wash all changed; the old `CRAFT/AI × VELOCITY/PERMANENCE` description elsewhere is superseded.
+
+If a sixth PRD is added later, register it here.
 
 ### Site-wide war-game restructure (no separate PRD, see commit history)
 
@@ -90,6 +94,9 @@ A site-wide audience-by-audience audit ran on the dossier with field-position ch
 
 ## 5. Open follow-ups (not blocking, but track them)
 
+> **Correction (2026-06-12):** Items 1–4 below are stale. Local main == origin/main — prior commits ARE pushed. Deploy is live via GitHub Pages auto-deploy (workflow added 2026-05-31, stale-HTML sync fixed same day, favicon pushed 2026-06-11); Vercel is no longer the plan and the stale-`dist/` concern is handled by CI. Item 0 remains open, and a second uncommitted batch now exists: the contact-path fix of 2026-06-10 (`contact.ts` new, `App.tsx`, `components/InquiryPanel.tsx`) — commit it separately from the IAA batch. See `TASKS.md` at repo root.
+
+0. **Commit + push the IAA integration (2026-06-07).** Five files changed and uncommitted: `copy.v1_1.ts`, `constants.tsx`, `PRD-FIELD-POSITION.md`, `HANDOFF.md`, and new `PRD-IAA-INTEGRATION.md`. Stage exactly those (NOT the untracked `ProjectxP-Map-DO_a1.md`). A ready commit message was drafted in the 2026-06-07 session. Then `npm run build` locally (sandbox couldn't empty `dist/`) and push.
 1. **Push to origin.** Latest commits are in the local working tree only; `git push origin main` from the owner's Mac (sandbox has no network access). See per-PRD acceptance sections for which files to stage.
 2. **Deploy.** No host is connected. Vercel is the recommended path — `vercel.com → New Project → import augustave/CT-DOSSIER → set root to Founder/`. Two adjacent sites under the same owner (`grey-earth.vercel.app`, `tak-h.vercel.app`) already deploy on Vercel.
 3. **Stale `dist/`.** The committed `dist/` is from April 16, predating all restructure work. `npm run build` will regenerate; do not deploy the old artifact.
