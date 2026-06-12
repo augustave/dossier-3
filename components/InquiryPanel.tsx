@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { INQUIRY_OPTIONS, INQUIRY_QUESTIONS } from '../constants';
 import { InquiryState } from '../types';
 import { useClipboard } from '../hooks/useClipboard';
+import { CONTACT, hasLinkedIn } from '../contact';
 import { XIcon, CopyIcon, MailIcon, DownloadIcon, CheckIcon, AlertCircleIcon, AlertTriangleIcon } from './icons';
 
 interface InquiryPanelProps {
@@ -22,9 +23,12 @@ const getInitialState = (context?: string): InquiryState => ({
 
 export const InquiryPanel: React.FC<InquiryPanelProps> = ({ isOpen, onClose, context, contactEmail = '' }) => {
   const [state, setState] = useState<InquiryState>(() => getInitialState(context));
-  const normalizedContactEmail = contactEmail.trim();
+  // Resolve to the passed-in email, else the hardcoded CONTACT constant, so the
+  // email path is always live regardless of build configuration.
+  const resolvedEmail = (contactEmail.trim() || CONTACT.email);
+  const normalizedContactEmail = resolvedEmail;
   const hasContactEmail = normalizedContactEmail.length > 0;
-  const mailtoDisabledReason = 'Set VITE_CONTACT_EMAIL to enable email drafts.';
+  const mailtoDisabledReason = 'No contact email configured.';
   const [downloadStatus, setDownloadStatus] = useState<'idle' | 'done' | 'error'>('idle');
   const downloadResetTimerRef = useRef<number | null>(null);
   const downloadStatusId = 'inquiry-download-status';
@@ -234,7 +238,37 @@ If helpful, I would be open to a short conversation.
 
           {/* Scrollable Content */}
           <div className="p-8 space-y-12 flex-grow overflow-y-auto">
-            
+
+            {/* Direct contact — always available, no composing required.
+                Added 2026-06-10 so the panel never dead-ends: a visitor who just
+                wants to reach out has a one-click path before the composer. */}
+            <div className="border border-black bg-strata-cream p-5">
+              <h3 className="font-mono text-xs uppercase tracking-widest font-bold mb-3">
+                00. Reach Out Directly
+              </h3>
+              <div className="flex flex-col gap-2">
+                <a
+                  href={`mailto:${resolvedEmail}`}
+                  className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
+                >
+                  {resolvedEmail}
+                </a>
+                {hasLinkedIn && (
+                  <a
+                    href={CONTACT.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
+                  >
+                    LinkedIn -&gt;
+                  </a>
+                )}
+              </div>
+              <p className="font-mono text-micro uppercase tracking-wider opacity-muted mt-3">
+                Prefer to be specific? Use the composer below — it drafts a message you can send.
+              </p>
+            </div>
+
             {/* Section 1: Assess */}
             <div>
                <h3 className="font-mono text-xs uppercase tracking-widest font-bold mb-4 border-b border-black pb-2">

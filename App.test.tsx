@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import App from './App';
+import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
 import { InquiryPanel } from './components/InquiryPanel';
 import { Simulator } from './components/Simulator';
 
@@ -48,7 +49,10 @@ describe('CT Dossier: recruiter-facing layout and IA', () => {
   it('shows Footer with correct text', () => {
     render(<App />);
     expect(screen.getAllByText(/CT DOSSIER/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/v1\.2\.0 \+ NO API/i)).toBeInTheDocument();
+    // Version label is wired to COPY.meta.version (QA fix 2026-06-12) — assert
+    // against the source of truth, not a literal, so this never goes stale.
+    const expected = new RegExp(`v${COPY.meta.version.replace(/\./g, '\\.')} \\+ NO API`, 'i');
+    expect(screen.getByText(expected)).toBeInTheDocument();
   });
 
   it('shows a target roles block near the top of the page', () => {
@@ -111,12 +115,14 @@ describe('Inquiry dialog (via App)', () => {
 
     const dialog = await screen.findByRole('dialog', { name: /Inquiry/i });
     const closeButton = within(dialog).getByRole('button', { name: /Close inquiry panel/i });
-    const emailButton = within(dialog).getByRole('button', { name: /EMAIL DISABLED/i });
+    // Contact-path fix (2026-06-10): email falls back to the hardcoded CONTACT
+    // constant when no env override is set, so the button is always live.
+    const emailButton = within(dialog).getByRole('button', { name: /EMAIL DRAFT/i });
 
     await waitFor(() => {
       expect(closeButton).toHaveFocus();
     });
-    expect(emailButton).toBeDisabled();
+    expect(emailButton).toBeEnabled();
 
     fireEvent.keyDown(dialog, { key: 'Escape' });
 

@@ -4,8 +4,18 @@ import { ModuleStrata } from './components/ModuleStrata';
 import { InquiryPanel } from './components/InquiryPanel';
 import { ManifestOverlay } from './components/ManifestOverlay';
 import { ModuleType } from './types';
+import { CONTACT, hasLinkedIn } from './contact';
+import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
 
-const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL?.trim() ?? '';
+// Site version label, wired to the copy meta so the chrome can never go stale
+// against the content again (it sat at a hardcoded V1.2.0 while meta moved to
+// 1.3.0 — caught in visual QA 2026-06-12).
+const SITE_VERSION = `v${COPY.meta.version}`;
+
+// Always-live contact email. Prefer a build-time override if one is set, else
+// fall back to the hardcoded CONTACT constant so the email path is NEVER disabled
+// (the old env-only path silently broke when the variable wasn't configured).
+const CONTACT_EMAIL = (import.meta.env.VITE_CONTACT_EMAIL?.trim() || CONTACT.email);
 const TARGET_ROLES = [
   'Creative Technologist',
   'Visual Designer, Defense',
@@ -180,7 +190,7 @@ const App: React.FC = () => {
                </button>
              </div>
              <div className="hidden md:block font-mono text-micro text-right text-black">
-               V1.2.0 <br/> NO API
+               {SITE_VERSION.toUpperCase()} <br/> NO API
              </div>
          </div>
       </div>
@@ -268,16 +278,42 @@ const App: React.FC = () => {
         ))}
 
 
-        {/* Footer Restored per PRD v1.0.2 */}
+        {/* Footer Restored per PRD v1.0.2.
+            Direct-contact block added 2026-06-10: the dossier's job is to convert
+            a warm visitor into a reply, so the bottom of the page now carries a
+            real, always-live destination (plain email + LinkedIn) — not only the
+            composer. See contact.ts for the single source of truth. */}
         <footer className="w-full py-12 md:py-24 bg-white text-black border-t border-black/10 mt-12">
-           <div className="container mx-auto px-4 md:px-8 max-w-6xl flex flex-col md:flex-row justify-between items-baseline gap-8">
+           <div className="container mx-auto px-4 md:px-8 max-w-6xl flex flex-col md:flex-row justify-between items-start gap-10">
               <div>
                 <h3 className="font-sans font-bold tracking-tightest text-xl mb-2">CT DOSSIER</h3>
-                <p className="font-mono text-xs opacity-50">v1.2.0 + NO API</p>
+                <p className="font-mono text-xs opacity-50">{SITE_VERSION} + NO API</p>
               </div>
+
+              {/* Direct contact — always visible, no composer required. */}
+              <div className="flex flex-col gap-3">
+                <span className="font-mono text-xs uppercase tracking-widest opacity-50">Direct</span>
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
+                >
+                  {CONTACT_EMAIL}
+                </a>
+                {hasLinkedIn && (
+                  <a
+                    href={CONTACT.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
+                  >
+                    LinkedIn -&gt;
+                  </a>
+                )}
+              </div>
+
               <div className="flex gap-8 font-mono text-xs uppercase tracking-widest">
                  <button onClick={() => setIsIndexOpen(true)} className="hover:underline">Index</button>
-                 <button onClick={() => handleInquiryRequest("Footer Contact")} className="hover:underline">Request Conversation</button>
+                 <button onClick={() => handleInquiryRequest("Footer Contact")} className="hover:underline">Compose Inquiry</button>
               </div>
            </div>
         </footer>
