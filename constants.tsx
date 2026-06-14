@@ -10,48 +10,6 @@ export const COLORS = {
   clay: 'bg-strata-clay text-white border-white/20 theme-brown',
 };
 
-// Public-evidence rail shown in the PORTFOLIOS module sidebar. The dossier
-// surface no longer doubles as casework, but a few live/source links keep the
-// "you can inspect it" promise concrete without reintroducing project cards.
-const PUBLIC_EVIDENCE = [
-  {
-    title: "GREY-EARTH / Live Deployment",
-    description: "Deployed tactical terrain workstation showing real product execution, not just concept framing.",
-    link: "https://grey-earth.vercel.app",
-    linkLabel: "Open Live System"
-  },
-  {
-    title: "GREY-EARTH / Source",
-    description: "Next.js terrain workstation repo with manifest-first rendering, 2D/3D map logic, and Earth Engine integration.",
-    link: "https://github.com/augustave/GREY-EARTH",
-    linkLabel: "Open GitHub Repo"
-  },
-  {
-    title: "DEADLIGHT / Source",
-    description: "Public brand-system repo representing the visual governance layer behind the portfolio.",
-    link: "https://github.com/augustave/deadlight",
-    linkLabel: "Open GitHub Repo"
-  },
-  {
-    title: "TACTICAL CANVAS / Source",
-    description: "Mission-thread interface prototype focused on tactical workflow clarity and systems UI.",
-    link: "https://github.com/augustave/TACTICAL-CANVAS",
-    linkLabel: "Open GitHub Repo"
-  },
-  {
-    title: "MINI-D / Source",
-    description: "Autonomy-lab proof artifact oriented around evaluation, limits, and inspectable behavior.",
-    link: "https://github.com/augustave/MINI-D",
-    linkLabel: "Open GitHub Repo"
-  },
-  {
-    title: "TAK-G / Source",
-    description: "Theater-level C2 simulator with 1,500+ track rendering, swarm kinematics, EMCON decay, and zero-trust SIGINT ghost tracks.",
-    link: "https://github.com/augustave/TAK-FLOW",
-    linkLabel: "Open GitHub Repo"
-  }
-];
-
 /**
  * Content modules for the CT Dossier — V3 taste-led spine.
  * Display index === narrative order (no more index/key mismatch).
@@ -198,6 +156,9 @@ export const CONTENT_MODULES: ModuleData[] = [
           <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">{COPY.modules.direction.principleTitle}</h4>
           <p className="font-serif text-lg md:text-xl italic opacity-tertiary leading-relaxed max-w-2xl">
             {COPY.modules.direction.principle}
+          </p>
+          <p className="font-sans text-sm md:text-base opacity-muted leading-relaxed max-w-2xl mt-4">
+            {COPY.modules.direction.registersNote}
           </p>
         </div>
       </div>
@@ -360,11 +321,13 @@ export const CONTENT_MODULES: ModuleData[] = [
     promptText: COPY.modules.portfolios.prompt,
     themeColor: 'clay',
     responseText: COPY.modules.portfolios.hero,
-    evidence: PUBLIC_EVIDENCE,
     responseDisplay: (
       <div className="space-y-8">
         <p className="font-serif text-2xl md:text-4xl leading-relaxed">
           {COPY.modules.portfolios.hero}
+        </p>
+        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
+          {COPY.modules.portfolios.intro}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

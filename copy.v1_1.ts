@@ -17,7 +17,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.0.0",
+    version: "3.1.0",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -93,8 +93,10 @@ export const CT_DOSSIER_COPY_V120 = {
         "Coherence. Adoption. Survival. Most ambitious work fails because one of the three breaks first.",
     },
 
-    // 03 — DIRECTION. The explicit home for art direction. Holds the
-    // register explorer (palette + thesis + iron rule, swappable on click).
+    // 03 — DIRECTION. The explicit home for art direction. Holds the register
+    // explorer. V3.1: registers are now CIVILIZATIONAL, not domain-based — each
+    // names a source of authority (Monastery / Forge / Oracle), so the register
+    // system reads as a theory of taste rather than a palette selector.
     direction: {
       title: "DIRECTION",
       prompt: "HOW TASTE BECOMES FORM",
@@ -105,56 +107,97 @@ export const CT_DOSSIER_COPY_V120 = {
       ].join("\n\n"),
       volTitle: "VISUAL OPERATING LANGUAGES",
       vol:
-        "A product shouldn't need a logo to feel recognizable. The type, the spacing, the diagrams, the hierarchy, the behavior — those already signal who it is. Visual language is what's left when you strip the branding away.",
+        "A visual language should not need a logo to be recognized. The type, spacing, symbols, diagrams, hierarchy, and behavior should already carry identity. Branding is what gets added. Visual language is what remains when the branding is removed.",
 
       registersTitle: "REGISTERS",
-      registersHero: "Click a register. The rules switch.",
-      registersFootnote: "Three of N. Different domains, same discipline.",
+      registersHero: "Click a register. The source of authority changes.",
+      registersFootnote: "Three registers. Different sources of authority, same discipline.",
       registers: [
         {
-          code: "CW",
-          name: "Coldwater Pragmatism",
-          domain: "Maritime",
+          code: "MN",
+          name: "MONASTERY",
+          domain: "Monastery",
+          function: "Memory / Preservation / Restraint",
+          mainLine: "Authority through restraint.",
+          question: "What deserves to survive?",
+          description:
+            "Built from archives, rare books, field notes, religious architecture, illuminated margins, old libraries, and systems of preservation. Not nostalgic — concerned with what earns the right to remain. It uses silence, spacing, hierarchy, and material restraint to create authority. Preserved, not precious. Calm, not soft. Old enough to have memory; clear enough to be used now.",
           palette: [
-            { name: "Haze grey",      hex: "#6F777C", accent: false },
-            { name: "Anechoic black", hex: "#0F1316", accent: false },
-            { name: "Safety orange",  hex: "#FF4F00", accent: true  },
+            { name: "Parchment Bone", hex: "#E8E0D0", accent: false },
+            { name: "Carbon Ink",     hex: "#111111", accent: false },
+            { name: "Oxidized Blue",  hex: "#204C8D", accent: true  },
+            { name: "Archive Grey",   hex: "#8A8A82", accent: false },
           ],
-          thesis: "The ocean does not care about your intentions.",
-          ironRule:
-            "One protected accent — safety orange — reserved for alert and survival. Never decoration.",
+          protectedAccent: "Oxidized Blue",
+          quote: "Not everything old is worth keeping. But anything that survives deserves inspection.",
+          ironRule: "Nothing decorative unless it carries memory.",
+          traits: [
+            "Large margins", "Editorial hierarchy", "Serif emphasis",
+            "Low saturation", "Document logic", "Quiet authority",
+          ],
+          avoid: [
+            "Nostalgia cosplay", "Fake parchment", "Medieval cliché", "Museum stiffness",
+          ],
         },
         {
-          code: "RB",
-          name: "Rustbelt Kinetic",
-          domain: "Industrial",
+          code: "FG",
+          name: "FORGE",
+          domain: "Forge",
+          function: "Pressure / Endurance / Material Force",
+          mainLine: "Authority through stress.",
+          question: "What survives pressure?",
+          description:
+            "Built from foundries, shipyards, armor, tools, infrastructure, and objects designed to work before they were designed to sell. The closest register to Mass Over Swagger. It values weight, force, durability, and consequence — beauty that comes from usefulness under pressure. It should feel already tested. Clean not because it's fragile, but because anything unnecessary has been burned away.",
           palette: [
-            { name: "Bridgeport green", hex: "#3D5C44", accent: false },
-            { name: "Forged iron",      hex: "#2B2B2B", accent: false },
-            { name: "MIG arc-blue",     hex: "#7AB5FF", accent: true  },
+            { name: "Iron Black",    hex: "#0D0D0D", accent: false },
+            { name: "Heat Rust",     hex: "#8A3A22", accent: false },
+            { name: "Hammer Grey",   hex: "#5F6363", accent: false },
+            { name: "Safety Orange", hex: "#FF4F00", accent: true  },
           ],
-          thesis: "Built to work before it was built to sell.",
-          ironRule:
-            "Cultural lineage required. A palette without thirty years of industrial heritage is a moodboard.",
+          protectedAccent: "Safety Orange",
+          quote: "Effectiveness is a form of beauty.",
+          ironRule: "If it cannot survive pressure, it does not belong.",
+          traits: [
+            "Dense blocks", "Strong rules", "Industrial spacing",
+            "Material contrast", "Weighty type", "Utility-first composition",
+          ],
+          avoid: [
+            "Tactical cosplay", "Fake military texture", "Overuse of orange", "Cyberpunk noise",
+          ],
         },
         {
-          code: "AN",
-          name: "Anechoic Minimal",
-          domain: "Spectrum",
+          code: "OR",
+          name: "ORACLE",
+          domain: "Oracle",
+          function: "Signal / Perception / Invisible Systems",
+          mainLine: "Authority through perception.",
+          question: "What remains unseen?",
+          description:
+            "Built from radar, astronomy, bioelectric fields, intelligence diagrams, machine perception, and the attempt to make invisible systems legible. Not mystical decoration — perception design. For systems that can't be seen directly but still shape behavior: signals, fields, networks, patterns, latent structures. It should feel like the moment a hidden order becomes visible.",
           palette: [
-            { name: "True blackout",   hex: "#000000", accent: false },
-            { name: "Mu-metal silver", hex: "#B8B8B0", accent: false },
-            { name: "P31 phosphor",    hex: "#3CFF7A", accent: true  },
+            { name: "Anechoic Black", hex: "#0F1316", accent: false },
+            { name: "Signal Green",   hex: "#42FC04", accent: true  },
+            { name: "Spectral Blue",  hex: "#315CFF", accent: false },
+            { name: "Ghost White",    hex: "#EDEDED", accent: false },
           ],
-          thesis: "Invisible systems, made visible.",
-          ironRule:
-            "Anti-glint is the rule. Matte only. The only shine allowed is environmental.",
+          protectedAccent: "Signal Green",
+          quote: "The unseen still has structure.",
+          ironRule: "Every signal must reveal something.",
+          traits: [
+            "Layered information", "Thin lines", "Signal traces",
+            "Dark fields", "Diagram logic", "Emergent patterns",
+          ],
+          avoid: [
+            "Generic AI neon", "Random particles", "Mystical fog", "Sci-fi interface cliché",
+          ],
         },
       ],
 
       principleTitle: "WORKING PRINCIPLE",
       principle:
-        "A strong visual language should survive translation — across products, across teams, across years, across technologies.",
+        "A strong visual language should survive translation — across products, teams, years, technologies, and contexts.",
+      registersNote:
+        "The register is not a theme. It is a rule system. It determines what the work is allowed to emphasize, what it must refuse, and where its authority comes from.",
     },
 
     // 04 — THE NEIGHBORHOOD. Orientation, not ranking. Holds the old FIELD
@@ -253,29 +296,31 @@ export const CT_DOSSIER_COPY_V120 = {
       title: "PORTFOLIOS",
       prompt: "WHERE THE WORK LIVES",
       hero:
-        "The dossier describes the practice. The work lives elsewhere — one site per register.",
+        "The dossier describes the practice. The work lives elsewhere — one site per expression of the practice.",
+      intro:
+        "Each site stands alone. None of them needs to explain the whole system. That's this page's job.",
       portfolioSites: [
         {
           domain: "artdirector.rocks",
           register: "Art direction",
           frame:
-            "Editorial systems, identity, typography, visual language. Where the page itself becomes the product.",
+            "Editorial systems, identity, typography, atmosphere, and visual language. Where the page itself becomes the product.",
         },
         {
           domain: "brandproduct.dev",
           register: "Brand × product",
           frame:
-            "Design systems, interfaces, shipped product surfaces. Where visual language meets interaction.",
+            "Design systems, interfaces, product surfaces, and interaction patterns. Where visual language becomes usable structure.",
         },
         {
           domain: "defense.observer",
           register: "Defense",
           frame:
-            "Doctrine-driven visual systems for autonomy, sensing, and command. The same practice under harder constraints.",
+            "Doctrine-driven visual systems for autonomy, sensing, command, and technical communication. The same practice under harder constraints.",
         },
       ],
       outcomeLine:
-        "Each site stands alone. None of them tries to say what the practice is — that's this page's job.",
+        "The proof is distributed across the sites. This page explains why the work keeps returning to the same questions.",
 
       // --- Preserved for restoration only (see HANDOFF.md §3). Not rendered. ---
       _archivedWedges: [

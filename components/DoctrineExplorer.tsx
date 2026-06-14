@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 
 /**
- * Doctrine-in-motion explorer.
+ * Register explorer.
  *
- * A small stateful panel that demonstrates the practice's rule-making
- * pattern: palette + thesis + iron rule, swappable by clicking a tab.
+ * A stateful panel that demonstrates the practice's rule-making system: each
+ * register is a SOURCE OF AUTHORITY (Monastery / Forge / Oracle) with its own
+ * palette, quote, iron rule, and design traits — swappable by clicking a tab.
+ * V3.1 (CT-PRD-MARY-01.1) replaced the old domain registers (Maritime /
+ * Industrial / Spectrum) with civilizational ones so the section reads as a
+ * theory of taste, not a palette selector.
  *
- * Lives in the DIRECTION module (03) of the V3 taste-led spine. Shows
- * taste codified into rules: each register is a palette + thesis + iron
- * rule that produces consistent artifacts across a domain.
- *
- * Data lives in `copy.v1_1.ts` under modules.direction.registers.
+ * Lives in the DIRECTION module (03). Data lives in
+ * `copy.v1_1.ts` under modules.direction.registers.
  */
 
 export interface PaletteSwatch {
@@ -23,9 +24,16 @@ export interface DoctrineRegister {
   code: string;
   name: string;
   domain: string;
+  function: string;
+  mainLine: string;
+  question: string;
+  description: string;
   palette: PaletteSwatch[];
-  thesis: string;
+  protectedAccent: string;
+  quote: string;
   ironRule: string;
+  traits: string[];
+  avoid: string[];
 }
 
 interface DoctrineExplorerProps {
@@ -44,7 +52,7 @@ export const DoctrineExplorer: React.FC<DoctrineExplorerProps> = ({ registers })
       <div
         className="flex border-b border-white/10"
         role="tablist"
-        aria-label="Doctrine register selector"
+        aria-label="Register selector"
       >
         {registers.map(r => {
           const isActive = r.code === activeCode;
@@ -76,12 +84,25 @@ export const DoctrineExplorer: React.FC<DoctrineExplorerProps> = ({ registers })
         role="tabpanel"
         data-testid={`doctrine-panel-${active.code}`}
       >
-        <div className="font-mono text-xs uppercase tracking-widest opacity-tertiary mb-4">
-          {active.name}
+        {/* Header: name + function + main line + core question */}
+        <div className="flex items-baseline justify-between gap-3 mb-1">
+          <h5 className="font-serif text-2xl md:text-3xl">{active.name}</h5>
+          <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary text-right">
+            {active.function}
+          </span>
         </div>
+        <p className="font-serif italic text-lg md:text-xl mb-1">{active.mainLine}</p>
+        <p className="font-mono text-xs uppercase tracking-wide opacity-muted mb-5">
+          {active.question}
+        </p>
+
+        {/* Description */}
+        <p className="font-sans text-sm md:text-base opacity-secondary leading-relaxed mb-6">
+          {active.description}
+        </p>
 
         {/* Palette swatches */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
           {active.palette.map((s) => (
             <div key={s.hex}>
               <div
@@ -103,20 +124,51 @@ export const DoctrineExplorer: React.FC<DoctrineExplorerProps> = ({ registers })
             </div>
           ))}
         </div>
+        <p className="font-mono text-micro uppercase tracking-widest opacity-muted mb-6">
+          Protected accent · {active.protectedAccent}
+        </p>
 
-        {/* Thesis */}
+        {/* Quote */}
         <p className="font-serif italic text-lg md:text-xl leading-relaxed mb-5">
-          &ldquo;{active.thesis}&rdquo;
+          &ldquo;{active.quote}&rdquo;
         </p>
 
         {/* Iron rule */}
-        <div className="border-l-2 border-white/30 pl-3">
+        <div className="border-l-2 border-white/30 pl-3 mb-6">
           <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-1">
             Iron Rule
           </div>
           <p className="font-sans text-sm opacity-secondary leading-relaxed">
             {active.ironRule}
           </p>
+        </div>
+
+        {/* Traits + avoid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/10">
+          <div>
+            <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">
+              Leans into
+            </div>
+            <ul className="flex flex-wrap gap-1.5">
+              {active.traits.map((t) => (
+                <li key={t} className="font-mono text-micro uppercase tracking-wide border border-white/20 px-2 py-1 opacity-secondary">
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">
+              Refuses
+            </div>
+            <ul className="flex flex-wrap gap-1.5">
+              {active.avoid.map((t) => (
+                <li key={t} className="font-mono text-micro uppercase tracking-wide border border-white/10 px-2 py-1 opacity-muted line-through decoration-white/30">
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

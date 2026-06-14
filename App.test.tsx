@@ -312,20 +312,20 @@ describe('Register explorer (DIRECTION, module 03)', () => {
   it('renders the first register by default and swaps when a different tab is clicked', async () => {
     render(<App />);
 
-    // Coldwater (CW) is first in the registers array — its thesis is the default.
+    // Monastery (MN) is first in the registers array — its quote is the default.
     await waitFor(() => {
-      expect(screen.getByText(/The ocean does not care about your intentions/i)).toBeInTheDocument();
+      expect(screen.getByText(/anything that survives deserves inspection/i)).toBeInTheDocument();
     });
-    expect(screen.queryByText(/Invisible systems, made visible/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/The unseen still has structure/i)).not.toBeInTheDocument();
 
-    // Click the Anechoic tab.
-    const anTab = screen.getByRole('tab', { name: /^AN/ });
-    fireEvent.click(anTab);
+    // Click the Oracle tab.
+    const orTab = screen.getByRole('tab', { name: /^OR/ });
+    fireEvent.click(orTab);
 
     await waitFor(() => {
-      expect(screen.getByText(/Invisible systems, made visible/i)).toBeInTheDocument();
+      expect(screen.getByText(/The unseen still has structure/i)).toBeInTheDocument();
     });
-    // Coldwater's thesis is gone after swap.
-    expect(screen.queryByText(/The ocean does not care about your intentions/i)).not.toBeInTheDocument();
+    // Monastery's quote is gone after swap.
+    expect(screen.queryByText(/anything that survives deserves inspection/i)).not.toBeInTheDocument();
   });
 });
