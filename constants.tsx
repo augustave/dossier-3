@@ -266,6 +266,10 @@ export const CONTENT_MODULES: ModuleData[] = [
             <span key={i}>{line}{i < COPY.modules["02"].together.split('\n').length - 1 && <br/>}</span>
           ))}
         </p>
+        {/* Culture-fit line — VOICE v2 (taste by refusal: names the wrong/right room). */}
+        <p className="font-serif text-lg md:text-xl mt-6 leading-relaxed">
+          {COPY.modules["02"].cultureFit}
+        </p>
       </div>
     ),
   },

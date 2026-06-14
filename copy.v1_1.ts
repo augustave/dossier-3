@@ -4,9 +4,9 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "1.3.0",
-    voice: "plainspoken, named stakes, no frameworks-as-nouns",
-    rule: "no first-person pronoun; personal and warm, the way a sharp person talks; no project name-drops",
+    version: "2.0.0",
+    voice: "first-person Meservey: plain English, declarative, named stakes, taste by refusal, quotable; no framework-speak (PRD-VOICE-V2)",
+    rule: "first person; say it the way a sharp person says it to a friend; name the stakes; show taste by refusal; enemies are categories not people; mass over swagger; evidence over claims; no project name-drops",
   },
 
   modules: {
@@ -14,15 +14,15 @@ export const CT_DOSSIER_COPY_V120 = {
       title: "CREATIVE TECHNOLOGIST",
       prompt: "PRACTICE THESIS",
       hero:
-        "Complex technical work, made easy to look at — and easy to trust.",
+        "I make hard things easy to look at — and easy to trust.",
       // Thesis kicker — IAA integration 4.2, placement (A), owner-approved
       // 2026-06-07. Used once on the surface; nowhere else.
       heroKicker: "Taste with a load rating.",
       body:
         [
-          "Most serious technology is real long before anyone can see it clearly. That gap — between what the engineering actually does and what a person believes about it — is the whole job here.",
-          "The look, the working prototype, and the story for why it matters, built together. Evidence over claims. Things you can click over things you can only watch. Work that holds up when an engineer leans in.",
-          "Nothing ships because it looks impressive. Strip the styling away, and if it stops making sense, it was never finished."
+          "Most serious technology is real long before anyone can see it clearly. That gap — between what the engineering actually does and what people believe about it — is the job I take.",
+          "I build the look, the working prototype, and the story for why it matters, together. Evidence over claims. Things you can click over things you can only watch. Work that holds up when an engineer leans in.",
+          "I don't ship things because they look impressive. Strip the styling away, and if it stops making sense, it was never finished."
         ].join("\n\n"),
       noteTitle: "NOTE",
       noteLines: [
@@ -36,7 +36,7 @@ export const CT_DOSSIER_COPY_V120 = {
       // vertical). Plotted designers and Ven's position are doctrine-locked;
       // see PRD-FIELD-POSITION.md §9 changelog for the 2026-06-07 amendment.
       fieldPositionTitle: "FIELD POSITION",
-      fieldPositionAbove: "Here is where the practice sits relative to peers.",
+      fieldPositionAbove: "Here's where I sit relative to peers.",
       fieldPositionBelow: "AI-native, built to last — a sparse quadrant by design.",
       fieldPositionAxes: {
         xLeft: "CRAFT-NATIVE",
@@ -79,54 +79,59 @@ export const CT_DOSSIER_COPY_V120 = {
 
     },
 
+    // VOICE v2 PILOT (PRD-VOICE-V2, war-gamed 2026-06-12): this module is
+    // first-person "Meservey" — the rest of the site is still impersonal v1.3.0
+    // until full migration (§6). Do not third-person this module back.
     "02": {
       title: "ROLE FIT",
       prompt:
-        "WHERE IT'S STRONGEST",
+        "WHAT TO HIRE THIS FOR",
       lead:
         [
-          "Best brought in when the product is real but nobody can see it yet.",
-          "Not one medium — the whole thing, made readable at a glance."
+          "Hire me when the product is real but no one can see it yet.",
+          "The gap between what a thing does and what people believe it does is where good technology goes to die. Closing it is the whole job."
         ].join("\n"),
       people: [
         {
-          name: "Visual Operating Languages",
+          name: "A look the whole product agrees on.",
           body:
             [
-              "One consistent look, so a product reads as built and serious instead of speculative. One fixed set of rules, so two people never draw the same thing two different ways.",
-              "Type, hierarchy, diagrams, and the small rules that keep everything feeling like one product."
+              "One look, one set of rules, so the product reads as built — not as a pitch. Two designers hit the same problem and draw the same answer.",
+              "I won't ship work that's prettier than the thing it's selling."
             ].join("\n\n"),
-          tags: ["design systems", "brand systems", "interface grammar"],
-          prevents: "Work that looks polished but does not cohere."
+          tags: ["design systems", "brand systems", "one product, one language"],
+          prevents: "Polish that doesn't cohere."
         },
         {
-          name: "Interactive Prototypes",
+          name: "Something you can actually click.",
           body:
             [
-              "When an idea has to move before anyone will believe it, it gets built — not described. Hundreds of things on screen at once, holding together under load. A live workstation people can actually drive.",
-              "Real front-end code, so a team can judge how it feels, not just how it looks."
+              "When nobody will believe an idea until it moves, I build it for real, in code — so the team can judge how it feels, not just how it looks. A live thing you can drive, holding together under load.",
+              "No hero demos that die the moment someone touches them."
             ].join("\n\n"),
-          tags: ["rapid prototyping", "front-end", "interaction architecture"],
-          prevents: "Concepts that sound strong but cannot survive contact with use."
+          tags: ["rapid prototyping", "front-end", "real interaction"],
+          prevents: "Demos that can't survive contact with use."
         },
         {
-          name: "Technical Storytelling",
+          name: "Make the room get it.",
           body:
             [
-              "Dense, mission-heavy work, made to land with three different people in the same room: the operator who needs it clear, the buyer who needs to trust it, the engineer who needs it honest.",
-              "Not spectacle. A better decision, backed by something real."
+              "Hard, mission-heavy work made to land with three people at once: the operator who needs it clear, the buyer who needs to trust it, the engineer who needs it honest.",
+              "Not spectacle — a better decision, backed by something real. If it can't be said plainly, it isn't ready."
             ].join("\n\n"),
-          tags: ["visual storytelling", "systems explanation", "product narrative"],
-          prevents: "Important work that stays trapped inside engineering context."
+          tags: ["visual storytelling", "systems explanation", "plain-English why"],
+          prevents: "Good work trapped inside engineering context."
         },
       ],
       together:
         [
-          "Put together, the signal is simple:",
-          "someone who sees the whole system, builds the proof, and explains it to a room that doesn't share a vocabulary."
+          "Most teams split these three jobs across three people and a standing meeting. I'd rather do them in one head.",
+          "One person who sees the whole system, builds the proof, and makes the room get it — and gets calmer, not louder, when it's on fire."
         ].join("\n"),
+      cultureFit:
+        "Wrong room: three contractors and a status update. Right room: a small team that needs one person to own the whole picture and move.",
       oneLine:
-        "One person for the look, the build, and the story.",
+        "One person for the look, the build, and the reason it matters — and it holds when things break.",
 
       // Three-signal coordinate strip — small visual anchor at the
       // top of Module 01. Mirrors the field-position chart's "this is
@@ -134,19 +139,19 @@ export const CT_DOSSIER_COPY_V120 = {
       // = one of the three hiring signals.
       signalStripTitle: "THREE SIGNALS",
       signalStrip: [
-        { code: "01", label: "Visual systems",      sub: "Design language" },
-        { code: "02", label: "Interactive proto.",  sub: "Product proof" },
-        { code: "03", label: "Technical narrative", sub: "Systems translation" }
+        { code: "01", label: "The look",  sub: "One product, one language" },
+        { code: "02", label: "The proof", sub: "Something you can click" },
+        { code: "03", label: "The why",   sub: "Make the room get it" }
       ]
     },
 
     "03": {
       title: "OPERATING METHOD",
       prompt: "HOW THE WORK HAPPENS",
-      hero: "Fast from idea to proof — but the work still has to hold together.",
+      hero: "I move fast from idea to proof — and the work still has to hold together.",
       body:
         [
-          "Best on teams that need one person to set the look, build the prototype, and tighten the reason the product matters.",
+          "I'm best on teams that need one person to set the look, build the prototype, and tighten the reason the product matters.",
           "It starts with the spine: what the operator has to know, what the buyer has to believe, what the system has to show. Everything else hangs off that.",
           "Then the fog turns into things you can hold — interface studies, motion tests, mockups, diagrams, live prototypes.",
           "The rule underneath all of it: evidence over claims. Nothing goes out that can't be backed with something you can open and check yourself in half an hour."
@@ -161,12 +166,15 @@ export const CT_DOSSIER_COPY_V120 = {
       ],
       grid: {
         leftTitle: "PRIMARY TENSION",
-        leftBody: "Runs ahead of the paperwork while an idea is still taking shape.",
+        leftBody: "I run ahead of the paperwork while an idea is still taking shape.",
         rightTitle: "COUNTER-BALANCE",
-        rightBody: "Once it's proven real, the rules get locked down so the work stays reusable.",
+        rightBody: "Once it's proven real, I lock the rules down so the work stays reusable.",
       },
+      // close: deliberately NOT "I'd rather do them in one head" — that line
+      // belongs to ROLE FIT (modules["02"].together); the Client facet sees
+      // both 01 and 03, so this close stays method-flavored to avoid repeat.
       close:
-        "Short version: most useful where design, product sense, and plain explanation have to live in one head.",
+        "Short version: I get to proof fast, I stay calm when it breaks, and I ship nothing that can't be opened and checked.",
 
       // Doctrine-in-motion explorer. Moved here from Module 02 per
       // war-game findings (PRD-DOCTRINE-EXPLORER.md §placement-v2).
@@ -219,8 +227,8 @@ export const CT_DOSSIER_COPY_V120 = {
     "04": {
       title: "PORTFOLIOS",
       prompt: "WHERE THE WORK LIVES",
-      hero: "The built work lives at three dedicated sites — one per register.",
-      outcomeLine: "Each site stands alone. None of them tries to say what the practice is — that's this dossier's job.",
+      hero: "My built work lives at three sites — one per register.",
+      outcomeLine: "Each site stands alone. None of them tries to say what I do — that's this page's job.",
       body: "",
       wedgesTitle: "",
       wedges: [] as string[],
@@ -405,7 +413,7 @@ export const CT_DOSSIER_COPY_V120 = {
     worldModel: {
       title: "WORLD MODEL",
       prompt: "WHAT MY THREE PICKS REVEAL",
-      hero: "Three people worth recruiting into a Skunkworks. The picks reveal the practice.",
+      hero: "Three people I'd recruit into a Skunkworks. The picks reveal how I work.",
       intro:
         "Levin, Hughes, Johnson — three people who run invisible systems. Not loud, not busy; they move outcomes by understanding the control layer underneath. Stacked together, they're three layers of one machine.",
       layersTitle: "THREE LAYERS OF ONE MACHINE",
