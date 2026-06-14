@@ -9,6 +9,11 @@ export const CT_DOSSIER_COPY_V120 = {
     rule: "first person; say it the way a sharp person says it to a friend; name the stakes; show taste by refusal; enemies are categories not people; mass over swagger; evidence over claims; no project name-drops",
   },
 
+  // INDEX overlay epigraph — VOICE v2 personhood touch (2026-06-12). One
+  // declarative line under the INDEX wordmark; sets tone the moment the
+  // index opens. Source: the Manifesto's "I build work that's built to survive."
+  indexEpigraph: "I build work that's built to survive.",
+
   modules: {
     "01": {
       title: "CREATIVE TECHNOLOGIST",
@@ -20,9 +25,10 @@ export const CT_DOSSIER_COPY_V120 = {
       heroKicker: "Taste with a load rating.",
       body:
         [
-          "Most serious technology is real long before anyone can see it clearly. That gap — between what the engineering actually does and what people believe about it — is the job I take.",
-          "I build the look, the working prototype, and the story for why it matters, together. Evidence over claims. Things you can click over things you can only watch. Work that holds up when an engineer leans in.",
-          "I don't ship things because they look impressive. Strip the styling away, and if it stops making sense, it was never finished."
+          "Most serious technology is real long before anyone can see it clearly. When that gap stays open, the best work in the building stays invisible — and a worse, louder product wins the room. Closing it is the job I take.",
+          "I'm calm under pressure because I was trained to be, not because nothing's gone wrong — my father taught me young to walk straight at the worst case and ask what holds. It's why I read paintings about death, the encirclement of armies, and the alien logic of machine intelligence as the same document: each one is a record of a system under maximum load, showing which decisions held and which ones were fatal.",
+          "I build the look, the working prototype, and the story for why it matters in one pass. Evidence over claims. Things you can click over things you can only watch. Work that holds up when an engineer leans in.",
+          "I don't ship things because they look impressive. Strip the styling away — if it stops making sense, it was never finished. I'd rather make a true thing legible than make a thin thing look good."
         ].join("\n\n"),
       noteTitle: "NOTE",
       noteLines: [

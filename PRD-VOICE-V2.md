@@ -104,12 +104,14 @@ Still binding from before: **mass over swagger** (declarative ≠ loud; confiden
 
 Re-voice these for consistency; first person can't live in one module only.
 
-- **M01 hero** — ✅ DONE → "I make hard things easy to look at — and easy to trust." (kicker "Taste with a load rating." kept; M01 body lightly first-person'd so the hero isn't stranded.)
+- **M01 hero** — ✅ DONE → "I make hard things easy to look at — and easy to trust." (kicker "Taste with a load rating." kept.)
+- **M01 CREATIVE TECHNOLOGIST — full deep redraft** ✅ DONE 2026-06-12: body now carries a named stake + enemy ("the best work in the building stays invisible — and a worse, louder product wins the room") and a quotable taste-closer ("I'd rather make a true thing legible than make a thin thing look good"). Deliberately avoids ROLE FIT's "goes to die" (Hiring Manager sees both). Brings the thesis tab to ROLE FIT depth.
 - **M03 close** — ✅ DONE, but **NOT** the originally-suggested "I'd rather do them in one head" — that collides with ROLE FIT's `together` (the Client facet sees both 01 and 03). Method-flavored instead: "Short version: I get to proof fast, I stay calm when it breaks, and I ship nothing that can't be opened and checked." M03 hero/body/grid also first-person'd.
 - **M03 DEFAULT BIAS pressure bullet** — kept; redundancy with ROLE FIT's "calmer, not louder" judged acceptable (different module job, no facet sees both phrasings back-to-back except Client, where they're a screen apart and differently framed).
 - **Module 02 body / field-chart caption** — ✅ DONE. Body was already first-person'd in the fast-follow; field-chart caption → "Here's where I sit relative to peers." (footer slogan "AI-native, built to last…" kept as a slogan). Also swept the last "the practice" tells: M05 PORTFOLIOS hero + outcome line, and the WORLD MODEL *hero* ("…reveal how I work"). No impersonal prose remains on the surface.
 - **WORLD MODEL reveal** — KEPT as-is (already the register; the template). Only its hero phrase "the practice" → "how I work" was touched.
 - **Intentionally NOT first-person (by design):** terminal `[!]` note lines, the DEFAULT BIAS manifesto bullets (imperative), the chart footer slogan.
+- **Personhood touches (2026-06-12):** thesis origin paragraph (earned calm + father + "same document" line, B-cut — cemetery scene stays in the Manifesto); INDEX overlay epigraph "I build work that's built to survive." (`copy.indexEpigraph` + `ManifestOverlay.tsx`). Still held back / available: range-outsider "byproduct of globalization" note.
 - **`meta`** — ✅ DONE: `version`→2.0.0; `rule`→ first person / named stakes / taste by refusal / enemies-as-categories / mass over swagger / evidence over claims; `voice` updated.
 
 ---
@@ -134,6 +136,10 @@ Key realization that de-risks the stage: **the rest of the site is *impersonal* 
 | Client (01→03→05) | Yes, first thing | PASS — "wrong room / right room" reads as clarity, not picky |
 | Collaborator (02→04→03) | Yes (03-adjacent) | PASS with watch — "I'd rather do them in one head" is the strut-risk line; mitigated by following it with the calm-under-fire clause (earns it). Hold to mass-over-swagger. |
 | Academic (04→02→03) | Yes | PASS — plainness doesn't undercut rigor; rigor lives in WORLD MODEL + the chart |
+
+### War-game RUN 2026-06-12 — origin beat, B vs C (personhood injection)
+
+The site asserted "calm under load" but never earned it. Decision: add a personal origin beat to the thesis (M01). **B (named, no scene)** vs **C (the cemetery scene).** C scores higher on raw resonance (the Brand Architecture stress test calls cemetery→calm the "gut-punch," 9/10) but loses on this surface for two reasons: (1) Hiring Manager skims in 7 min and is most likely to read a childhood-cemetery scene as a tonal swerve; (2) **mass-over-swagger** — a staged trauma scene is emotional swagger; stating the formation plainly is restraint. **Verdict: B on the dossier; C stays the Manifesto's opening (right beat, right surface).** Module 02 reaches Hiring Manager / Collaborator / Academic (not Client), so the beat lands with the audiences who weigh the person. Shipped: one personal paragraph in the thesis (earned calm + father + the "same document" how-I-think line). tsc clean, 20/20 tests.
 
 **Outcome:** SHIP ROLE FIT in first person now. Defaults applied for the two unresolved §8 questions: tags lightly de-jargoned (kept as scan keywords, not removed); `cultureFit` rendered as its own short line after `together`. `meta` stays 1.3.0 — ROLE FIT is the v2 **pilot**; flip to 2.0.0 only at full-site migration. Fast-follow M01 hero + M03 close so the first-person warmth isn't stranded in one module.
 

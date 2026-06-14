@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CONTENT_MODULES } from '../constants';
+import { CT_DOSSIER_COPY_V120 as COPY } from '../copy.v1_1';
 import { ModuleType } from '../types';
 import { ArrowRightIcon, XIcon } from './icons';
 
@@ -51,6 +52,8 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
 
         <div className="mb-12">
           <h2 className="font-sans text-9xl font-bold tracking-tighter opacity-ghost select-none">INDEX</h2>
+          {/* Personhood epigraph — VOICE v2 (PRD-VOICE-V2). Sets tone on open. */}
+          <p className="font-serif text-2xl md:text-3xl opacity-secondary mt-2">{COPY.indexEpigraph}</p>
         </div>
 
         {/* Module List - Current custom order: 02, 01, 03, 04, 05, 06 */}
@@ -81,7 +84,7 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
         </div>
 
         <div className="mt-12 font-mono text-xs opacity-subtle max-w-md">
-            CT DOSSIER v1.2.0<br/>
+            CT DOSSIER v{COPY.meta.version}<br/>
             NO API. STATIC GENERATION.<br/>
             ROLE MATRIX: LAZY MOUNTED.
         </div>
