@@ -2,14 +2,13 @@ import { ReactNode } from 'react';
 
 export enum ModuleType {
   MANIFEST = 'MANIFEST',
-  THESIS = 'THESIS',
-  RECRUITS = 'RECRUITS',
-  MODEL = 'MODEL',
-  WORLD_MODEL = 'WORLD_MODEL',
-  COMPANIES = 'COMPANIES',
-  SIMULATOR = 'SIMULATOR',
-  ARTIFACTS = 'ARTIFACTS',
-  INQUIRY = 'INQUIRY'
+  TASTE = 'TASTE',
+  SEEING = 'SEEING',
+  DIRECTION = 'DIRECTION',
+  NEIGHBORHOOD = 'NEIGHBORHOOD',
+  PRACTICE = 'PRACTICE',
+  PORTFOLIOS = 'PORTFOLIOS',
+  ENGAGEMENT = 'ENGAGEMENT'
 }
 
 /** Evidence link item for module sidebar. Reserved for future use. */
@@ -79,20 +78,10 @@ export interface ModuleData {
   implications?: SubSection;
   evidence?: EvidenceItem[];
   stressTest?: SubSection;
-  customComponent?: ReactNode; // For specialized layouts like the Recruits cards
 }
 
 export interface InquiryState {
   assess: string[];
   challenge: string[];
   note: string;
-}
-
-export type Optimization = 'SPEED' | 'CORRECTNESS' | 'SCALE';
-export type Environment = 'CHAOS' | 'ENTERPRISE' | 'REGULATED';
-
-export interface SimulatorResult {
-  risk: string;
-  mitigation: string;
-  description: string;
 }

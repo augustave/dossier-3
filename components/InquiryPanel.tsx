@@ -103,7 +103,7 @@ export const InquiryPanel: React.FC<InquiryPanelProps> = ({ isOpen, onClose, con
     const contextStr = context || 'CT DOSSIER';
 
     return `
-RECRUITER INQUIRY — ${assessList} / ${challengeList}
+CONVERSATION REQUEST — ${assessList} / ${challengeList}
 
 Hi Ebenz — I reviewed your ${contextStr}.
 
@@ -116,7 +116,6 @@ ${questions.length > 0 ? questions.map((q, i) => `${i + 1}. ${q}`).join('\n') : 
 ${state.note ? `\nContext/Notes:\n${state.note}` : ''}
 
 If helpful, I would be open to a short conversation.
-— {NAME}
     `.trim();
   };
 
@@ -128,7 +127,7 @@ If helpful, I would be open to a short conversation.
     if (!hasContactEmail) return;
     const assessList = state.assess.length > 0 ? state.assess.join(', ') : 'None';
     const challengeList = state.challenge.length > 0 ? state.challenge.join(', ') : 'None';
-    const subject = encodeURIComponent(`RECRUITER INQUIRY — ${assessList} / ${challengeList}`);
+    const subject = encodeURIComponent(`CONVERSATION REQUEST — ${assessList} / ${challengeList}`);
     const body = encodeURIComponent(generateMessage());
     window.location.href = `mailto:${normalizedContactEmail}?subject=${subject}&body=${body}`;
   };

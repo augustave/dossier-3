@@ -1,13 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { ModuleData, ModuleType } from '../types';
-import { COLORS, RECRUIT_CARDS } from '../constants';
+import { COLORS } from '../constants';
 import { CollapsibleDrawer } from './CollapsibleDrawer';
-import { AnimatedGrid } from './AnimatedGrid';
-import { ErrorBoundary } from './ErrorBoundary';
 import { useClipboard } from '../hooks/useClipboard';
-import { ChevronDownIcon, ShieldAlertIcon, FingerprintIcon, LinkIcon, CheckIcon } from './icons';
-
-const Simulator = React.lazy(() => import('./Simulator').then(module => ({ default: module.Simulator })));
+import { ChevronDownIcon, FingerprintIcon, LinkIcon, CheckIcon } from './icons';
 
 interface ModuleStrataProps {
   module: ModuleData;
@@ -202,42 +198,9 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
 
 
 
-                {/* 1. Role-fit cards (Module 01 specific) */}
-                {module.id === ModuleType.RECRUITS && (
-                   <CollapsibleDrawer title="UNFOLD FIT SIGNALS" defaultOpen={true}>
-                      <AnimatedGrid>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                            {RECRUIT_CARDS.map((card, idx) => (
-                              <div key={idx} className={`p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity`}>
-                                <div className="font-mono text-xs uppercase tracking-widest mb-2 opacity-tertiary">{card.role}</div>
-                                <h4 className="font-serif text-xl md:text-2xl mb-4 italic">{card.name}</h4>
-                                <p className="font-sans text-sm md:text-base font-bold mb-2">{card.capability}</p>
-                                <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4">{card.desc}</p>
-                                <div className="pt-4 border-t border-current/20 flex items-center gap-2">
-                                  <ShieldAlertIcon className="w-4 h-4" />
-                                  <span className="font-mono text-micro uppercase opacity-tertiary">Signals: {card.signal}</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                      </AnimatedGrid>
-                   </CollapsibleDrawer>
-                )}
-
-                {/* 2. Simulator (Module 05) */}
-                {module.id === ModuleType.SIMULATOR && (
-                  <div className="mt-4 mb-2" onClick={(e) => e.stopPropagation()}>
-                    <ErrorBoundary fallbackMessage="Simulator failed to load">
-                      <React.Suspense fallback={<div className="font-mono text-xs animate-pulse">LOADING SIMULATOR...</div>}>
-                        <Simulator onInquiryRequest={onInquiryRequest} />
-                      </React.Suspense>
-                    </ErrorBoundary>
-                  </div>
-                )}
-
-                 {/* 3. Artifacts Removed */}
-
-                {/* 4. Implications (Generic) */}
+                {/* Generic implications drawer (unused by current modules,
+                    kept as a generic affordance). Role-fit cards and the
+                    Role Matrix simulator were removed in the V3 reposition. */}
                 {module.implications && (
                    <CollapsibleDrawer title={`${module.implications.title}`} icon={<FingerprintIcon className="w-4 h-4"/>}>
                        <ul className="space-y-4 mt-4">

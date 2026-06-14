@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import App from './App';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
 import { InquiryPanel } from './components/InquiryPanel';
-import { Simulator } from './components/Simulator';
 
 /** Helper: find the accessible toggle button inside a module section. */
 const getModuleToggle = (sectionId: string) => {
@@ -55,16 +54,16 @@ describe('CT Dossier: recruiter-facing layout and IA', () => {
     expect(screen.getByText(expected)).toBeInTheDocument();
   });
 
-  it('shows a target roles block near the top of the page', () => {
+  it('leads with the taste thesis and the art-director role line', () => {
     render(<App />);
-    const rolesHeading = screen.getByText(/Target Roles/i);
-    const rolesSection = rolesHeading.closest('section') as HTMLElement;
-    expect(rolesSection).not.toBeNull();
-    expect(within(rolesSection).getByText(/^Creative Technologist$/i)).toBeInTheDocument();
-    expect(within(rolesSection).getByText(/^Visual Designer, Defense$/i)).toBeInTheDocument();
+    // V3 reposition: taste is the subject; the recruiter "Target Roles" block is gone.
+    // (The phrase also appears in the Taste beliefs list, so scope to the hero heading.)
+    expect(screen.getByRole('heading', { name: /sourcing discipline/i })).toBeInTheDocument();
+    expect(screen.getByText(/Art Director · Design Engineer/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Target Roles/i)).not.toBeInTheDocument();
   });
 
-  it('does NOT show Module 06 / Evidence Locker', () => {
+  it('does NOT show an Evidence Locker', () => {
     render(<App />);
     const evidenceLink = screen.queryByText(/EVIDENCE LOCKER/i);
     expect(evidenceLink).not.toBeInTheDocument();
@@ -77,13 +76,13 @@ describe('Manifest overlay', () => {
     window.location.hash = '';
   });
 
-  it('opens from the INDEX button and renders the expected module order (02, 01, 03, 04, 05, 06)', async () => {
+  it('opens from the INDEX button and renders the V3 module order (01–07)', async () => {
     render(<App />);
     fireEvent.click(screen.getByText(/INDEX \(00\)/i));
 
     const items = await screen.findAllByTestId('manifest-item');
     const order = items.map(el => el.getAttribute('data-index'));
-    expect(order).toEqual(['02', '01', '03', '04', '05', '06']);
+    expect(order).toEqual(['01', '02', '03', '04', '05', '06', '07']);
   });
 
   it('closes when the Close Index button is clicked', async () => {
@@ -210,43 +209,6 @@ describe('Inquiry dialog (component, contactEmail branches)', () => {
   });
 });
 
-describe('Simulator component', () => {
-  it('renders with default selections (SYSTEMS + PRODUCT) showing CREATIVE TECHNOLOGIST', () => {
-    const onInquiry = vi.fn();
-    render(<Simulator onInquiryRequest={onInquiry} />);
-
-    expect(screen.getByText('CREATIVE TECHNOLOGIST')).toBeInTheDocument();
-    expect(screen.getByText('Analysis Complete')).toBeInTheDocument();
-
-    // Verify input controls rendered
-    expect(screen.getByText('NARRATIVE')).toBeInTheDocument();
-    expect(screen.getByText('SYSTEMS')).toBeInTheDocument();
-    expect(screen.getByText('EXECUTION')).toBeInTheDocument();
-    expect(screen.getByText('CONCEPT')).toBeInTheDocument();
-    expect(screen.getByText('PRODUCT')).toBeInTheDocument();
-    expect(screen.getByText('MISSION')).toBeInTheDocument();
-  });
-
-  it('updates archetype when selections change', () => {
-    const onInquiry = vi.fn();
-    render(<Simulator onInquiryRequest={onInquiry} />);
-
-    // Switch to NARRATIVE + MISSION → OPERATIONAL STORYTELLER
-    fireEvent.click(screen.getByText('NARRATIVE'));
-    fireEvent.click(screen.getByText('MISSION'));
-
-    expect(screen.getByText('OPERATIONAL STORYTELLER')).toBeInTheDocument();
-  });
-
-  it('fires onInquiryRequest when Discuss this fit is clicked', () => {
-    const onInquiry = vi.fn();
-    render(<Simulator onInquiryRequest={onInquiry} />);
-
-    fireEvent.click(screen.getByText(/Discuss this fit/i));
-    expect(onInquiry).toHaveBeenCalledWith('Role Matrix: CREATIVE TECHNOLOGIST');
-  });
-});
-
 describe('Faceted audience entry', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
@@ -257,7 +219,7 @@ describe('Faceted audience entry', () => {
     } catch (e) {}
   });
 
-  it('reads ?read=hiring on mount, activates pill, filters to modules 01/02/05', async () => {
+  it('reads ?read=hiring on mount, activates pill, filters to modules 01/04/06', async () => {
     window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
@@ -266,13 +228,14 @@ describe('Faceted audience entry', () => {
       expect(pill.getAttribute('aria-pressed')).toBe('true');
     });
 
-    // Hiring audience: 01, 02, 05 present; 03, 04, 06 collapsed out.
+    // Hiring audience: 01, 04, 06 present; 02, 03, 05, 07 collapsed out.
     expect(getModuleToggle('module-01')).not.toBeNull();
-    expect(getModuleToggle('module-02')).not.toBeNull();
-    expect(getModuleToggle('module-05')).not.toBeNull();
+    expect(getModuleToggle('module-04')).not.toBeNull();
+    expect(getModuleToggle('module-06')).not.toBeNull();
+    expect(getModuleToggle('module-02')).toBeNull();
     expect(getModuleToggle('module-03')).toBeNull();
-    expect(getModuleToggle('module-04')).toBeNull();
-    expect(getModuleToggle('module-06')).toBeNull();
+    expect(getModuleToggle('module-05')).toBeNull();
+    expect(getModuleToggle('module-07')).toBeNull();
   });
 
   it('clicking a pill writes ?read= to the URL and filters the module list', async () => {
@@ -285,16 +248,17 @@ describe('Faceted audience entry', () => {
       expect(window.location.search).toContain('read=client');
     });
 
-    // Client audience: 01, 03, 05 present; 02, 04, 06 collapsed out.
+    // Client audience: 01, 03, 07 present; 02, 04, 05, 06 collapsed out.
     expect(getModuleToggle('module-01')).not.toBeNull();
     expect(getModuleToggle('module-03')).not.toBeNull();
-    expect(getModuleToggle('module-05')).not.toBeNull();
+    expect(getModuleToggle('module-07')).not.toBeNull();
     expect(getModuleToggle('module-02')).toBeNull();
     expect(getModuleToggle('module-04')).toBeNull();
+    expect(getModuleToggle('module-05')).toBeNull();
     expect(getModuleToggle('module-06')).toBeNull();
   });
 
-  it('clicking the active pill toggles it off and restores all six modules', async () => {
+  it('clicking the active pill toggles it off and restores all seven modules', async () => {
     window.history.replaceState(null, '', '?read=acad');
     render(<App />);
 
@@ -309,16 +273,17 @@ describe('Faceted audience entry', () => {
       expect(pill.getAttribute('aria-pressed')).toBe('false');
     });
     expect(window.location.search).not.toContain('read=');
-    // All six modules are present after clearing.
+    // All seven modules are present after clearing.
     expect(getModuleToggle('module-01')).not.toBeNull();
     expect(getModuleToggle('module-02')).not.toBeNull();
     expect(getModuleToggle('module-03')).not.toBeNull();
     expect(getModuleToggle('module-04')).not.toBeNull();
     expect(getModuleToggle('module-05')).not.toBeNull();
     expect(getModuleToggle('module-06')).not.toBeNull();
+    expect(getModuleToggle('module-07')).not.toBeNull();
   });
 
-  it('Show all button clears the active audience and restores all six modules', async () => {
+  it('Show all button clears the active audience and restores all seven modules', async () => {
     window.history.replaceState(null, '', '?read=collab');
     render(<App />);
 
@@ -334,14 +299,13 @@ describe('Faceted audience entry', () => {
   });
 });
 
-describe('Doctrine in motion explorer (Module 03)', () => {
+describe('Register explorer (DIRECTION, module 03)', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
     try {
       window.history.replaceState(null, '', window.location.pathname);
     } catch (e) {}
-    // Open Module 03 so its content renders for query.
-    // (Explorer lives in Module 03 per war-game restructure; was Module 02.)
+    // Open Module 03 (DIRECTION) so its register explorer renders for query.
     window.location.hash = '#module-03';
   });
 
@@ -350,18 +314,18 @@ describe('Doctrine in motion explorer (Module 03)', () => {
 
     // Coldwater (CW) is first in the registers array — its thesis is the default.
     await waitFor(() => {
-      expect(screen.getByText(/The ocean doesn't care about your DoD rating/i)).toBeInTheDocument();
+      expect(screen.getByText(/The ocean does not care about your intentions/i)).toBeInTheDocument();
     });
-    expect(screen.queryByText(/Spectrum is terrain/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Invisible systems, made visible/i)).not.toBeInTheDocument();
 
     // Click the Anechoic tab.
     const anTab = screen.getByRole('tab', { name: /^AN/ });
     fireEvent.click(anTab);
 
     await waitFor(() => {
-      expect(screen.getByText(/Spectrum is terrain/i)).toBeInTheDocument();
+      expect(screen.getByText(/Invisible systems, made visible/i)).toBeInTheDocument();
     });
     // Coldwater's thesis is gone after swap.
-    expect(screen.queryByText(/The ocean doesn't care about your DoD rating/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/The ocean does not care about your intentions/i)).not.toBeInTheDocument();
   });
 });

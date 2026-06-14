@@ -56,14 +56,11 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
           <p className="font-serif text-2xl md:text-3xl opacity-secondary mt-2">{COPY.indexEpigraph}</p>
         </div>
 
-        {/* Module List - Current custom order: 02, 01, 03, 04, 05, 06 */}
+        {/* Module list — V3 narrative order, ascending 01–07. */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
           {CONTENT_MODULES
             .filter(m => m.id !== ModuleType.MANIFEST)
-            .sort((a, b) => {
-                const order = ["02", "01", "03", "04", "05", "06"];
-                return order.indexOf(a.index) - order.indexOf(b.index);
-            })
+            .sort((a, b) => a.index.localeCompare(b.index))
             .map((m) => (
              <div
                key={m.index}
@@ -86,7 +83,7 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
         <div className="mt-12 font-mono text-xs opacity-subtle max-w-md">
             CT DOSSIER v{COPY.meta.version}<br/>
             NO API. STATIC GENERATION.<br/>
-            ROLE MATRIX: LAZY MOUNTED.
+            TASTE-LED. SEVEN STRATA.
         </div>
 
       </div>

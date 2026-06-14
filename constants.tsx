@@ -1,8 +1,6 @@
 import React from 'react';
 import { ModuleData, ModuleType } from './types';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
-import { CollapsibleDrawer } from './components/CollapsibleDrawer';
-import { AnimatedGrid } from './components/AnimatedGrid';
 import { DoctrineExplorer } from './components/DoctrineExplorer';
 
 export const COLORS = {
@@ -12,31 +10,10 @@ export const COLORS = {
   clay: 'bg-strata-clay text-white border-white/20 theme-brown',
 };
 
-export const RECRUIT_CARDS = [
-  {
-    name: "Visual Systems",
-    role: "Design Language",
-    capability: "Builds one consistent look across interface, brand, and docs.",
-    signal: "Strong systems thinking for technical products.",
-    desc: "Turns scattered pieces into one product that agrees with itself, instead of a pile of screens that look related."
-  },
-  {
-    name: "Interactive Prototypes",
-    role: "Product Proof",
-    capability: "Makes a concept believable by making it work.",
-    signal: "Goes from idea to working prototype fast.",
-    desc: "Builds in real code so a team can feel the flow and the trust before anyone commits to polish."
-  },
-  {
-    name: "Technical Narratives",
-    role: "Systems Translation",
-    capability: "Explains dense systems without dumbing them down.",
-    signal: "Useful when engineering, product, and hiring all need the same story.",
-    desc: "Turns mission-heavy, hard-to-follow work into something people can actually evaluate and decide on."
-  }
-];
-
-const SELECTED_SYSTEMS_EVIDENCE = [
+// Public-evidence rail shown in the PORTFOLIOS module sidebar. The dossier
+// surface no longer doubles as casework, but a few live/source links keep the
+// "you can inspect it" promise concrete without reintroducing project cards.
+const PUBLIC_EVIDENCE = [
   {
     title: "GREY-EARTH / Live Deployment",
     description: "Deployed tactical terrain workstation showing real product execution, not just concept framing.",
@@ -68,12 +45,6 @@ const SELECTED_SYSTEMS_EVIDENCE = [
     linkLabel: "Open GitHub Repo"
   },
   {
-    title: "CCRT / Source",
-    description: "Human-factors and high-assurance interface direction for warfighter-centered command environments.",
-    link: "https://github.com/augustave/CCRT",
-    linkLabel: "Open GitHub Repo"
-  },
-  {
     title: "TAK-G / Source",
     description: "Theater-level C2 simulator with 1,500+ track rendering, swarm kinematics, EMCON decay, and zero-trust SIGINT ghost tracks.",
     link: "https://github.com/augustave/TAK-FLOW",
@@ -82,8 +53,10 @@ const SELECTED_SYSTEMS_EVIDENCE = [
 ];
 
 /**
- * Content modules for the CT Dossier.
- * Display indices intentionally differ from copy keys to preserve the current shell.
+ * Content modules for the CT Dossier — V3 taste-led spine.
+ * Display index === narrative order (no more index/key mismatch).
+ *   00 MANIFEST (overlay)  01 TASTE  02 SEEING  03 DIRECTION
+ *   04 NEIGHBORHOOD  05 PRACTICE  06 PORTFOLIOS  07 ENGAGEMENT
  */
 export const CONTENT_MODULES: ModuleData[] = [
   {
@@ -95,61 +68,176 @@ export const CONTENT_MODULES: ModuleData[] = [
     responseText: "Select a stratum to jump to its coordinates.",
     responseDisplay: "Select a stratum to jump to its coordinates.",
   },
+
+  // 01 — TASTE. Aesthetic authority first. Editorial, museum-catalogue energy.
   {
-    id: ModuleType.THESIS,
-    index: "02",
-    title: COPY.modules["01"].title,
-    promptText: COPY.modules["01"].prompt,
-    themeColor: 'blue',
-    responseText: COPY.modules["01"].hero,
+    id: ModuleType.TASTE,
+    index: "01",
+    title: COPY.modules.taste.title,
+    promptText: COPY.modules.taste.prompt,
+    themeColor: 'cream',
+    responseText: COPY.modules.taste.hero,
     responseDisplay: (
       <div className="space-y-8">
-        <div className="font-mono text-sm leading-relaxed opacity-tertiary border-l-2 border-white/30 pl-4">
-          FILE: {COPY.meta.version}<br/>
-          MODE: {COPY.modules["01"].noteLines[0]} / {COPY.modules["01"].noteLines[1]}<br/>
-          NO API. NO PORTFOLIO THEATER.
-        </div>
-        <div className="font-serif text-2xl md:text-4xl leading-relaxed">
-          {COPY.modules["01"].hero}
-        </div>
-        {/* Thesis kicker — IAA integration 4.2 (A), owner-approved + war-gamed
-            2026-06-07. Claim sits directly above the chart that supplies its
-            coordinate. Used once on the surface. See PRD-IAA-INTEGRATION.md. */}
-        <div className="font-mono text-sm uppercase tracking-widest opacity-secondary -mt-4">
-          {COPY.modules["01"].heroKicker}
+        <div className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.taste.hero}
         </div>
         <div className="font-sans text-lg md:text-xl max-w-2xl opacity-secondary leading-relaxed">
-          {COPY.modules["01"].body.split('\n\n').map((para, i) => (
+          {COPY.modules.taste.body.split('\n\n').map((para, i) => (
             <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
           ))}
         </div>
 
-        {/* Field position chart — Doc 2 axes, war-gamed placement.
-            Sits at the end of Module 02 so a recruiter who filters
-            to the Hiring Manager audience sees the polymath claim
-            as a coordinate, not a sentence. See PRD-FIELD-POSITION.md. */}
-        <div className="mt-8 pt-8 border-t border-white/20">
+        <div className="space-y-3 border-t border-current/20 pt-6">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted">{COPY.modules.taste.beliefsTitle}</h4>
+          <ul className="space-y-2">
+            {COPY.modules.taste.beliefs.map((b, i) => (
+              <li key={i} className="flex gap-3 items-start">
+                <span className="font-mono text-xs opacity-muted pt-1">&bull;</span>
+                <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{b}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="border-t border-current/20 pt-6">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">{COPY.modules.taste.fieldNoteTitle}</h4>
+          <p className="font-serif text-xl md:text-2xl italic opacity-tertiary leading-relaxed max-w-2xl">
+            {COPY.modules.taste.fieldNote}
+          </p>
+        </div>
+      </div>
+    ),
+  },
+
+  // 02 — SEEING. The cognitive lenses (was WORLD MODEL). Reflective.
+  {
+    id: ModuleType.SEEING,
+    index: "02",
+    title: COPY.modules.seeing.title,
+    promptText: COPY.modules.seeing.prompt,
+    themeColor: 'clay',
+    responseText: COPY.modules.seeing.hero,
+    responseDisplay: (
+      <div className="space-y-8">
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.seeing.hero}
+        </p>
+        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
+          {COPY.modules.seeing.intro}
+        </p>
+
+        <div>
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.seeing.lensesTitle}</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {COPY.modules.seeing.lenses.map((l, idx) => (
+              <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
+                <div className="flex items-baseline justify-between mb-3 gap-3">
+                  <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">LENS {l.code}</span>
+                  <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{l.title}</span>
+                </div>
+                <h4 className="font-serif text-xl md:text-2xl italic mb-2">{l.person}</h4>
+                <p className="font-mono text-xs uppercase tracking-wide opacity-muted mb-3">{l.question}</p>
+                <p className="font-sans text-sm opacity-secondary leading-relaxed">{l.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-current/20 pt-6">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">{COPY.modules.seeing.shortTitle}</h4>
+          <p className="font-serif text-xl md:text-2xl leading-relaxed">{COPY.modules.seeing.short}</p>
+        </div>
+      </div>
+    ),
+  },
+
+  // 03 — DIRECTION. The explicit home for art direction. Holds the register
+  // explorer (palette + thesis + iron rule, swappable on click).
+  {
+    id: ModuleType.DIRECTION,
+    index: "03",
+    title: COPY.modules.direction.title,
+    promptText: COPY.modules.direction.prompt,
+    themeColor: 'black',
+    responseText: COPY.modules.direction.hero,
+    responseDisplay: (
+      <div className="space-y-8">
+        <div className="font-serif text-2xl md:text-4xl leading-relaxed">
+          {COPY.modules.direction.hero}
+        </div>
+        <div className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-2xl">
+          {COPY.modules.direction.body.split('\n\n').map((para, i) => (
+            <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
+          ))}
+        </div>
+
+        <div className="border-t border-white/20 pt-6">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">{COPY.modules.direction.volTitle}</h4>
+          <p className="font-sans text-base md:text-lg opacity-secondary leading-relaxed max-w-2xl">
+            {COPY.modules.direction.vol}
+          </p>
+        </div>
+
+        {/* Register explorer — moved here from the old Operating Method module.
+            Direction is its natural home: it shows taste codified into rules. */}
+        <div className="mt-4 pt-8 border-t border-white/20">
           <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
-            {COPY.modules["01"].fieldPositionTitle}
+            {COPY.modules.direction.registersTitle}
           </h4>
           <p className="font-serif text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl">
-            {COPY.modules["01"].fieldPositionAbove}
+            {COPY.modules.direction.registersHero}
           </p>
+          <DoctrineExplorer registers={COPY.modules.direction.registers} />
+          <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
+            {COPY.modules.direction.registersFootnote}
+          </p>
+        </div>
+
+        <div className="border-t border-white/20 pt-6">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">{COPY.modules.direction.principleTitle}</h4>
+          <p className="font-serif text-lg md:text-xl italic opacity-tertiary leading-relaxed max-w-2xl">
+            {COPY.modules.direction.principle}
+          </p>
+        </div>
+      </div>
+    ),
+  },
+
+  // 04 — THE NEIGHBORHOOD. Adjacent practices. Holds the old field-position
+  // chart unchanged (visualization locked; only the framing softened from
+  // "where I sit vs peers" to "a map of neighboring practices").
+  {
+    id: ModuleType.NEIGHBORHOOD,
+    index: "04",
+    title: COPY.modules.neighborhood.title,
+    promptText: COPY.modules.neighborhood.prompt,
+    themeColor: 'blue',
+    responseText: COPY.modules.neighborhood.hero,
+    responseDisplay: (
+      <div className="space-y-8">
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed">
+          {COPY.modules.neighborhood.hero}
+        </p>
+        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
+          {COPY.modules.neighborhood.intro}
+        </p>
+
+        <div className="mt-4 pt-8 border-t border-white/20">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
+            {COPY.modules.neighborhood.chartTitle}
+          </h4>
 
           <div className="bg-black/20 p-4 md:p-6 border border-white/10">
             <svg
               viewBox="0 0 680 580"
               className="w-full h-auto"
               role="img"
-              aria-label="Field position chart. Fourteen peer designers plotted across craft-native to AI-native horizontally and ephemeral to durable vertically. Ven sits alone in the durable AI-native quadrant, labeled doctrine-led AI."
+              aria-label="A map of neighboring practices. Fourteen adjacent practices plotted across craft-native to AI-native horizontally and ephemeral to durable vertically. Ven sits alone in the durable, AI-native corner, labeled doctrine-led AI."
               style={{ color: 'currentColor' }}
             >
-              {/* Owned-zone wash — PRD-FIELD-POSITION v1.1 (tightened per
-                  visual QA 2026-06-07). Scoped to VEN's pocket in the deep
-                  durable/AI-native corner, BELOW the locked Cardona/Dannaway/
-                  Verma band — so the shaded "owned" zone holds only VEN and
-                  the footer's "sparse" claim is literally true. Peer dots are
-                  doctrine-locked and cannot be moved, so the wash moves. */}
+              {/* Owned-zone wash — scoped to VEN's pocket in the deep
+                  durable/AI-native corner. Locked visualization. */}
               <rect x="420" y="360" width="180" height="140" fill="#E5FF00" opacity="0.07"/>
               <rect x="420" y="360" width="180" height="140" fill="none" stroke="#E5FF00" strokeOpacity="0.4" strokeWidth="0.5" strokeDasharray="2 3"/>
               {/* Plot border */}
@@ -158,21 +246,20 @@ export const CONTENT_MODULES: ModuleData[] = [
               <line x1="80" y1="280" x2="600" y2="280" stroke="currentColor" strokeOpacity="0.4" strokeWidth="0.5"/>
               <line x1="340" y1="60" x2="340" y2="500" stroke="currentColor" strokeOpacity="0.4" strokeWidth="0.5"/>
 
-              {/* Quadrant labels (v1.1) — name work-modes, not the plotted
-                  people. Low-opacity mono; owned quadrant in chartreuse. */}
-              <text x="92" y="80" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionQuadrants.tl}</text>
-              <text x="588" y="80" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionQuadrants.tr}</text>
-              <text x="92" y="490" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionQuadrants.bl}</text>
-              <text x="588" y="490" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="#E5FF00" opacity="0.85" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionQuadrants.br}</text>
+              {/* Quadrant labels — name work-modes, not the plotted practices. */}
+              <text x="92" y="80" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionQuadrants.tl}</text>
+              <text x="588" y="80" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionQuadrants.tr}</text>
+              <text x="92" y="490" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionQuadrants.bl}</text>
+              <text x="588" y="490" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="#E5FF00" opacity="0.85" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionQuadrants.br}</text>
 
               {/* Axis labels */}
-              <text x="80" y="46" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionAxes.xLeft}</text>
-              <text x="600" y="46" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionAxes.xRight}</text>
-              <text x="65" y="60" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 60)">{COPY.modules["01"].fieldPositionAxes.yTop}</text>
-              <text x="65" y="500" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 500)">{COPY.modules["01"].fieldPositionAxes.yBottom}</text>
+              <text x="80" y="46" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionAxes.xLeft}</text>
+              <text x="600" y="46" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionAxes.xRight}</text>
+              <text x="65" y="60" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 60)">{COPY.modules.neighborhood.fieldPositionAxes.yTop}</text>
+              <text x="65" y="500" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 500)">{COPY.modules.neighborhood.fieldPositionAxes.yBottom}</text>
 
-              {/* Designer dots (gray label, 3px dot) */}
-              {COPY.modules["01"].fieldPositionDesigners.map((d, i) => {
+              {/* Adjacent-practice dots */}
+              {COPY.modules.neighborhood.fieldPositionDesigners.map((d, i) => {
                 const cx = 80 + (d.x / 100) * 520;
                 const cy = 60 + (d.y / 100) * 440;
                 return (
@@ -185,7 +272,7 @@ export const CONTENT_MODULES: ModuleData[] = [
 
               {/* Ven dot (highlighted, lime accent) */}
               {(() => {
-                const v = COPY.modules["01"].fieldPositionVen;
+                const v = COPY.modules.neighborhood.fieldPositionVen;
                 const cx = 80 + (v.x / 100) * 520;
                 const cy = 60 + (v.y / 100) * 440;
                 return (
@@ -201,7 +288,7 @@ export const CONTENT_MODULES: ModuleData[] = [
               {/* Legend strip */}
               <g transform="translate(80, 545)">
                 <circle cx="5" cy="5" r="3" fill="currentColor" opacity="0.7"/>
-                <text x="14" y="9" fontSize="10" fill="currentColor" opacity="0.7" fontFamily="ui-monospace, monospace">{COPY.modules["01"].fieldPositionLegendPeers}</text>
+                <text x="14" y="9" fontSize="10" fill="currentColor" opacity="0.7" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionLegendPeers}</text>
                 <circle cx="165" cy="5" r="5" fill="#E5FF00"/>
                 <text x="176" y="9" fontSize="10" fill="#E5FF00" fontFamily="ui-monospace, monospace">VEN</text>
               </g>
@@ -209,265 +296,160 @@ export const CONTENT_MODULES: ModuleData[] = [
           </div>
 
           <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
-            {COPY.modules["01"].fieldPositionBelow}
+            {COPY.modules.neighborhood.chartCaption}
           </p>
         </div>
       </div>
-    )
+    ),
   },
+
+  // 05 — PRACTICE. How the work happens (merges the old Creative Technologist
+  // + Operating Method). Direction → Proof → Trust.
   {
-    id: ModuleType.RECRUITS,
-    index: "01",
-    title: COPY.modules["02"].title,
-    promptText: COPY.modules["02"].prompt,
+    id: ModuleType.PRACTICE,
+    index: "05",
+    title: COPY.modules.practice.title,
+    promptText: COPY.modules.practice.prompt,
     themeColor: 'cream',
-    responseText: COPY.modules["02"].oneLine,
+    responseText: COPY.modules.practice.hero,
     responseDisplay: (
       <div className="space-y-8">
-        {/* Three-signal coordinate strip — small visual anchor before
-            the lead. Mirrors the field-position chart "this is a coordinate"
-            pattern at the role-fit scale. See war-game restructure. */}
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.practice.hero}
+        </p>
+
         <div>
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
-            {COPY.modules["02"].signalStripTitle}
-          </h4>
-          <div className="grid grid-cols-3 gap-2 md:gap-3">
-            {COPY.modules["02"].signalStrip.map((s) => (
-              <div key={s.code} className="border border-current/30 p-3 md:p-4">
-                <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">
-                  SIGNAL · {s.code}
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.practice.layersTitle}</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {COPY.modules.practice.layers.map((l, idx) => (
+              <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
+                <div className="flex items-baseline justify-between mb-3 gap-3">
+                  <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{l.code}</span>
+                  <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{l.title}</span>
                 </div>
-                <div className="font-mono text-sm uppercase tracking-wider mb-1">{s.label}</div>
-                <div className="font-mono text-micro opacity-muted">{s.sub}</div>
+                <p className="font-sans text-sm md:text-base opacity-secondary leading-relaxed">{l.body}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="font-serif text-2xl md:text-4xl leading-relaxed opacity-secondary mb-6">
-            {COPY.modules["02"].lead.split('\n').map((line, i) => (
-              <span key={i}>{line}{i < 1 && <br/>}</span>
+        <div className="space-y-3 border-t border-current/20 pt-6">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted">{COPY.modules.practice.rulesTitle}</h4>
+          <ul className="space-y-2">
+            {COPY.modules.practice.rules.map((b, i) => (
+              <li key={i} className="flex gap-3 items-start">
+                <span className="font-mono text-xs opacity-muted pt-1">&bull;</span>
+                <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{b}</span>
+              </li>
             ))}
+          </ul>
         </div>
-        <ul className="space-y-6">
-          {COPY.modules["02"].people.map((p, i) => (
-             <li key={i}>
-                <strong className="font-serif text-xl md:text-2xl block mb-2">{p.name}</strong>
-                <div className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">
-                  {p.body.split('\n\n').map((para, j) => (
-                    <p key={j} className={j > 0 ? 'mt-3' : ''}>{para}</p>
-                  ))}
-                </div>
-             </li>
-          ))}
-        </ul>
-        <p className="font-mono text-sm opacity-muted mt-4 border-t border-black/10 pt-4 leading-relaxed">
-          {COPY.modules["02"].together.split('\n').map((line, i) => (
-            <span key={i}>{line}{i < COPY.modules["02"].together.split('\n').length - 1 && <br/>}</span>
-          ))}
-        </p>
-        {/* Culture-fit line — VOICE v2 (taste by refusal: names the wrong/right room). */}
-        <p className="font-serif text-lg md:text-xl mt-6 leading-relaxed">
-          {COPY.modules["02"].cultureFit}
+
+        <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-current/10 pt-4">
+          {COPY.modules.practice.short}
         </p>
       </div>
     ),
   },
+
+  // 06 — PORTFOLIOS. Where the built work lives. Taste-first order.
   {
-    id: ModuleType.MODEL,
-    index: "03",
-    title: COPY.modules["03"].title,
-    promptText: COPY.modules["03"].prompt,
-    themeColor: 'black',
-    responseText: COPY.modules["03"].hero,
-    responseDisplay: (
-      <div className="space-y-8">
-        <div>
-           <div className="font-serif text-2xl md:text-4xl leading-relaxed mb-4">
-             {COPY.modules["03"].hero}
-           </div>
-           <div className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed">
-             {COPY.modules["03"].body.split('\n\n').map((para, i) => (
-               <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
-             ))}
-           </div>
-        </div>
-
-        <div className="space-y-3">
-           <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted">{COPY.modules["03"].bulletsTitle}</h4>
-           <ul className="space-y-2">
-             {COPY.modules["03"].bullets.map((b, i) => (
-               <li key={i} className="flex gap-3 items-start">
-                 <span className="font-mono text-xs opacity-muted pt-1">&bull;</span>
-                 <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{b}</span>
-               </li>
-             ))}
-           </ul>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/20">
-           <div>
-              <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">{COPY.modules["03"].grid.leftTitle}:</h4>
-              <p className="font-sans text-base md:text-lg font-bold">{COPY.modules["03"].grid.leftBody}</p>
-           </div>
-           <div>
-              <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">{COPY.modules["03"].grid.rightTitle}:</h4>
-              <p className="font-sans text-base md:text-lg font-bold">{COPY.modules["03"].grid.rightBody}</p>
-           </div>
-        </div>
-        <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-white/10 pt-4 mt-4">{COPY.modules["03"].close}</p>
-
-        {/* Doctrine in motion — tabbed register explorer.
-            Moved here from Module 02 per war-game findings.
-            See PRD-DOCTRINE-EXPLORER.md (placement v2). */}
-        <div className="mt-12 pt-8 border-t border-white/20">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
-            {COPY.modules["03"].doctrineExplorerTitle}
-          </h4>
-          <p className="font-serif text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl">
-            {COPY.modules["03"].doctrineExplorerHero}
-          </p>
-          <DoctrineExplorer registers={COPY.modules["03"].registers} />
-          <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
-            {COPY.modules["03"].doctrineExplorerFootnote}
-          </p>
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: ModuleType.WORLD_MODEL,
-    index: "04",
-    title: COPY.modules.worldModel.title,
-    promptText: COPY.modules.worldModel.prompt,
-    themeColor: 'black',
-    responseText: COPY.modules.worldModel.hero,
-    responseDisplay: (
-      <div className="space-y-8">
-        <p className="font-serif text-2xl md:text-4xl leading-relaxed">
-          {COPY.modules.worldModel.hero}
-        </p>
-        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
-          {COPY.modules.worldModel.intro}
-        </p>
-
-        <div>
-            <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.worldModel.layersTitle}</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {COPY.modules.worldModel.layers.map((l, idx) => (
-                    <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
-                        <div className="flex items-baseline justify-between mb-3 gap-3">
-                            <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{l.layer}</span>
-                            <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">0{idx + 1}</span>
-                        </div>
-                        <div className="font-mono text-xs uppercase tracking-wide opacity-muted mb-1">{l.sub}</div>
-                        <h4 className="font-serif text-xl md:text-2xl italic mb-3">{l.person}</h4>
-                        <p className="font-sans text-sm opacity-secondary leading-relaxed">{l.body}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
-
-        <div className="border-t border-white/20 pt-6">
-            <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">{COPY.modules.worldModel.revealTitle}</h4>
-            <p className="font-serif text-xl md:text-2xl leading-relaxed">{COPY.modules.worldModel.reveal}</p>
-        </div>
-
-        <div className="border-t border-white/20 pt-6">
-            <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.worldModel.frameworkTitle}</h4>
-            <ul className="space-y-3">
-                {COPY.modules.worldModel.framework.map((f, idx) => {
-                    const dashIndex = f.indexOf('—');
-                    const label = dashIndex > -1 ? f.substring(0, dashIndex).trim() : f;
-                    const content = dashIndex > -1 ? f.substring(dashIndex + 1).trim() : '';
-                    return (
-                        <li key={idx} className="flex gap-4 items-start">
-                            <span className="font-mono text-xs uppercase tracking-wider opacity-muted whitespace-nowrap pt-1 min-w-[5rem]">{label}</span>
-                            <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{content}</span>
-                        </li>
-                    );
-                })}
-            </ul>
-        </div>
-
-        <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-white/10 pt-4">{COPY.modules.worldModel.close}</p>
-      </div>
-    ),
-  },
-  {
-    id: ModuleType.COMPANIES,
-    index: "05",
-    title: COPY.modules["04"].title,
-    promptText: COPY.modules["04"].prompt,
+    id: ModuleType.PORTFOLIOS,
+    index: "06",
+    title: COPY.modules.portfolios.title,
+    promptText: COPY.modules.portfolios.prompt,
     themeColor: 'clay',
-    responseText: COPY.modules["04"].hero,
-    evidence: SELECTED_SYSTEMS_EVIDENCE,
+    responseText: COPY.modules.portfolios.hero,
+    evidence: PUBLIC_EVIDENCE,
     responseDisplay: (
       <div className="space-y-8">
         <p className="font-serif text-2xl md:text-4xl leading-relaxed">
-          {COPY.modules["04"].hero}
+          {COPY.modules.portfolios.hero}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {COPY.modules["04"].portfolioSites.map((site, idx) => (
-                <a
-                    key={idx}
-                    href={`https://${site.domain}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/site"
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{site.register}</div>
-                    <div className="font-mono text-lg md:text-xl tracking-tight mb-3 group-hover/site:underline">{site.domain}</div>
-                    <p className="font-sans text-sm opacity-secondary leading-relaxed">{site.frame}</p>
-                </a>
-            ))}
+          {COPY.modules.portfolios.portfolioSites.map((site, idx) => (
+            <a
+              key={idx}
+              href={`https://${site.domain}`}
+              target="_blank"
+              rel="noreferrer"
+              className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/site"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{site.register}</div>
+              <div className="font-mono text-lg md:text-xl tracking-tight mb-3 group-hover/site:underline">{site.domain}</div>
+              <p className="font-sans text-sm opacity-secondary leading-relaxed">{site.frame}</p>
+            </a>
+          ))}
         </div>
 
-        {COPY.modules["04"].outcomeLine && (
+        {COPY.modules.portfolios.outcomeLine && (
           <p className="font-serif italic text-lg md:text-xl opacity-tertiary border-t border-current/20 pt-6 max-w-3xl">
-            {COPY.modules["04"].outcomeLine}
+            {COPY.modules.portfolios.outcomeLine}
           </p>
         )}
-
       </div>
     ),
   },
+
+  // 07 — ENGAGEMENT MODELS. When people call (replaced the Role Matrix).
   {
-    id: ModuleType.SIMULATOR,
-    index: "06",
-    title: "ROLE MATRIX",
-    promptText: "WHERE THE FIT IS",
-    themeColor: 'blue',
-    responseText: "Match the work and the team to the role that actually fits.",
-    responseDisplay: "Match the work and the team to the role that actually fits.",
-  }
+    id: ModuleType.ENGAGEMENT,
+    index: "07",
+    title: COPY.modules.engagement.title,
+    promptText: COPY.modules.engagement.prompt,
+    themeColor: 'black',
+    responseText: COPY.modules.engagement.hero,
+    responseDisplay: (
+      <div className="space-y-8">
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.engagement.hero}
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {COPY.modules.engagement.models.map((m, idx) => (
+            <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
+              <div className="flex items-baseline gap-3 mb-3">
+                <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{m.code}</span>
+                <span className="font-mono text-sm uppercase tracking-wider">{m.title}</span>
+              </div>
+              <p className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{m.body}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-white/10 pt-4">
+          {COPY.modules.engagement.short}
+        </p>
+      </div>
+    ),
+  },
 ];
 
 export const INQUIRY_OPTIONS = {
   assess: [
-    "Role Fit",
+    "Taste & Direction",
     "Systems Thinking",
     "Prototype Process",
-    "Visual Design Range",
+    "Visual Language Range",
     "Mission / Domain Context"
   ],
   challenge: [
     "Project Scope",
     "Technical Fluency",
     "Collaboration Style",
-    "Hiring Need",
+    "Engagement Fit",
     "Portfolio Walkthrough"
   ]
 };
 
 export const INQUIRY_QUESTIONS: Record<string, string[]> = {
-  "Role Fit": [
-    "What kinds of roles are you targeting most directly right now?",
-    "Where do you create the most leverage: product concepting, interface systems, or technical storytelling?",
-    "What sort of team would use your range best instead of flattening it into one lane?",
-    "What is the strongest signal recruiters should take from this dossier?"
+  "Taste & Direction": [
+    "Where does your visual direction come from, and how do you keep it from drifting into trend?",
+    "How do you decide which historical or cultural references actually earn their place in the work?",
+    "What makes a system feel coherent to you rather than just consistent?",
+    "How do you keep a strong point of view without making every project look the same?"
   ],
   "Systems Thinking": [
     "How do you move from a complex system to a legible interface without oversimplifying it?",
@@ -481,7 +463,7 @@ export const INQUIRY_QUESTIONS: Record<string, string[]> = {
     "How do you use front-end implementation to de-risk product ideas?",
     "What makes a prototype successful for you?"
   ],
-  "Visual Design Range": [
+  "Visual Language Range": [
     "How do you keep a strong point of view without making every project look the same?",
     "What parts of the visual system are fixed and what parts shift per domain?",
     "How do brand, interface, and motion stay coherent in your work?",
@@ -502,22 +484,22 @@ export const INQUIRY_QUESTIONS: Record<string, string[]> = {
     "How deep into implementation do you usually go when building prototypes?",
     "What tools or stacks are central to the way you work today?",
     "How do you collaborate with engineering without losing the quality of the concept?",
-    "What does your defense-readiness artifact contract look like, and how did you arrive at that structure?"
+    "How do you keep a design's intent intact once it meets real engineering constraints?"
   ],
   "Collaboration Style": [
     "How do you work with product, engineering, and marketing when the brief is still ambiguous?",
     "What kind of feedback helps you sharpen the work fastest?",
     "What conditions produce your best work on a team?",
-    "How do you bridge the rhetoric gap between what operators need to hear and what compliance reviewers need to see?"
+    "How do you keep what operators need to hear and what reviewers need to see in the same artifact?"
   ],
-  "Hiring Need": [
-    "What kind of team problem are you best suited to solve in the first 90 days?",
+  "Engagement Fit": [
+    "Which of the four engagement situations best matches where we are right now?",
     "Where can you accelerate a team immediately without a long onboarding runway?",
-    "What signals tell you a role is actually designed for someone with your range?"
+    "What does a strong first month of work look like for you?"
   ],
   "Portfolio Walkthrough": [
     "Which two projects should someone review first to understand the full range?",
     "How do the projects connect instead of reading like separate experiments?",
-    "If you had 10 minutes with a recruiter, which artifacts would you walk them through and why?"
+    "If you had 10 minutes, which artifacts would you walk through and why?"
   ]
 };

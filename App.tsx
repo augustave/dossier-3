@@ -16,13 +16,6 @@ const SITE_VERSION = `v${COPY.meta.version}`;
 // fall back to the hardcoded CONTACT constant so the email path is NEVER disabled
 // (the old env-only path silently broke when the variable wasn't configured).
 const CONTACT_EMAIL = (import.meta.env.VITE_CONTACT_EMAIL?.trim() || CONTACT.email);
-const TARGET_ROLES = [
-  'Creative Technologist',
-  'Visual Designer, Defense',
-  'Design Technologist',
-  'Product Designer, Mission Systems',
-  'Brand Designer, Technical Products'
-];
 
 // Modules rendered on the main page (Manifest is handled via the overlay),
 // sorted once at module-load time since CONTENT_MODULES is static.
@@ -31,13 +24,15 @@ const RENDERED_MODULES = CONTENT_MODULES
   .sort((a, b) => a.index.localeCompare(b.index));
 
 /**
- * Faceted entry — audience reads. Each maps to a curated subset of
- * module indices, ordered by "start with" priority for that audience.
- * War-gamed mapping (see PRD-FACETED-ENTRY.md):
- *   hiring → 01 Role fit / 02 Creative technologist (chart) / 05 Portfolios
- *   client → 01 Role fit / 03 Operating method (explorer)   / 05 Portfolios
- *   collab → 02 Creative technologist (chart) / 04 World model / 03 Operating method (explorer)
- *   acad   → 04 World model / 02 Creative tech. (chart)      / 03 Operating method (explorer)
+ * Faceted entry — audience reads. Each maps to a curated subset of the V3
+ * taste-led spine, ordered by "start with" priority for that audience.
+ * Every read still opens on TASTE or SEEING so the eye/point-of-view lands
+ * before execution — the core of the CT-PRD-MARY-01 repositioning.
+ *   hiring → 01 Taste / 04 Neighborhood / 06 Portfolios
+ *   client → 01 Taste / 03 Direction    / 07 Engagement
+ *   collab → 02 Seeing / 03 Direction   / 05 Practice
+ *   acad   → 02 Seeing / 01 Taste       / 04 Neighborhood
+ * NOTE: mapping is a sensible default pending an owner war-game; adjust here.
  */
 type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
 
@@ -48,10 +43,10 @@ interface Audience {
 }
 
 const AUDIENCES: Audience[] = [
-  { id: 'hiring', label: 'HIRING MANAGER', modules: ['01', '02', '05'] },
-  { id: 'client', label: 'CLIENT',         modules: ['01', '03', '05'] },
-  { id: 'collab', label: 'COLLABORATOR',   modules: ['02', '04', '03'] },
-  { id: 'acad',   label: 'ACADEMIC',       modules: ['04', '02', '03'] }
+  { id: 'hiring', label: 'HIRING MANAGER', modules: ['01', '04', '06'] },
+  { id: 'client', label: 'CLIENT',         modules: ['01', '03', '07'] },
+  { id: 'collab', label: 'COLLABORATOR',   modules: ['02', '03', '05'] },
+  { id: 'acad',   label: 'ACADEMIC',       modules: ['02', '01', '04'] }
 ];
 const AUDIENCE_IDS = AUDIENCES.map(a => a.id);
 const isAudienceId = (s: string | null): s is AudienceId =>
@@ -198,13 +193,24 @@ const App: React.FC = () => {
       <main className="w-full">
         <section className="pt-28 md:pt-36 pb-6 md:pb-10 bg-strata-cream text-strata-black border-b border-black/10">
           <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+            {/* Hero statement — the repositioning thesis, stated large.
+                Taste is the subject; the role line names the practice. */}
+            <div className="mb-6 md:mb-8 max-w-3xl">
+              <h1 className="font-serif text-3xl md:text-5xl leading-tight">
+                Taste is not preference.<br/>Taste is a sourcing discipline.
+              </h1>
+              <p className="font-mono text-xs uppercase tracking-widest opacity-50 mt-4">
+                Ebenz Augustave · Art Director · Design Engineer
+              </p>
+            </div>
+
             <div className="mb-5 md:mb-6 max-w-3xl">
               <p className="font-sans text-base md:text-lg leading-relaxed">
                 <span className="font-bold">This is not a portfolio.</span> The built work lives at three dedicated sites —{' '}
                 <a href="https://artdirector.rocks" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">artdirector.rocks</a>,{' '}
                 <a href="https://brandproduct.dev" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">brandproduct.dev</a>, and{' '}
                 <a href="https://defense.observer" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">defense.observer</a>.
-                {' '}This is the practice behind them: how I think, how I build, and what I want to be hired to do.
+                {' '}This dossier documents the practice behind them: where the references come from, how the systems are built, and why certain forms keep surviving long after fashion has moved on.
               </p>
             </div>
 
@@ -243,26 +249,6 @@ const App: React.FC = () => {
               )}
             </div>
 
-            <div className="border border-black/15 bg-white/70 backdrop-blur-sm p-5 md:p-6">
-              <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
-                <div className="md:w-56 shrink-0">
-                  <div className="font-mono text-xs uppercase tracking-widest opacity-50 mb-2">Target Roles</div>
-                  <p className="font-sans text-sm md:text-base leading-relaxed">
-                    I'm built for roles that span interface, narrative, prototyping, and technical communication — not the ones that pick one and drop the rest.
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-2 md:gap-3">
-                  {TARGET_ROLES.map((role) => (
-                    <span
-                      key={role}
-                      className="font-mono text-xs uppercase tracking-widest border border-black px-3 py-2 bg-strata-cream"
-                    >
-                      {role}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 

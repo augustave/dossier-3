@@ -6,14 +6,11 @@ import React, { useState } from 'react';
  * A small stateful panel that demonstrates the practice's rule-making
  * pattern: palette + thesis + iron rule, swappable by clicking a tab.
  *
- * Lives at the end of Module 02 (Creative Technologist), after the
- * field position chart. Frames the polymath claim from the chart
- * ("AI-leveraged, permanence-oriented") with its operational output —
- * codified register systems that produce consistent artifacts across
- * domains.
+ * Lives in the DIRECTION module (03) of the V3 taste-led spine. Shows
+ * taste codified into rules: each register is a palette + thesis + iron
+ * rule that produces consistent artifacts across a domain.
  *
- * Data lives in `copy.v1_1.ts` under modules["01"].registers.
- * See PRD-DOCTRINE-EXPLORER.md.
+ * Data lives in `copy.v1_1.ts` under modules.direction.registers.
  */
 
 export interface PaletteSwatch {
