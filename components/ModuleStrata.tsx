@@ -173,8 +173,8 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 pt-8 border-t border-current/20">
             
-            {/* Column A: Prompt & Response */}
-            <div className="md:col-span-12 lg:col-span-8">
+            {/* Content column — full width (the evidence sidebar was removed in V3.1). */}
+            <div className="md:col-span-12">
               
               {/* Prompt Block */}
               <div className="mb-6">
@@ -215,59 +215,6 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
                 )}
 
               </div>
-
-
-            {/* Column B: Evidence & Actions (Visible when Details Open OR Manifest Hidden) */}
-            {module.id !== ModuleType.MANIFEST && (
-              <div className={`md:col-span-12 lg:col-span-4 flex flex-col gap-12 transition-all duration-700 delay-100 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                
-                {/* Stress Test */}
-                {module.stressTest && (
-                   <div className="p-6 border border-current/20 bg-black/5">
-                    <h3 className="font-mono text-xs uppercase tracking-widest mb-4 font-bold text-red-500/80">
-                      {module.stressTest.title}
-                    </h3>
-                     <ul className="space-y-3">
-                        {module.stressTest.content.map((item, i) => (
-                          <li key={i} className="text-sm font-mono opacity-secondary leading-tight">
-                            [!] {item}
-                          </li>
-                        ))}
-                     </ul>
-                  </div>
-                )}
-
-                {module.evidence && module.evidence.length > 0 && (
-                  <div className="p-6 border border-current/20 bg-black/5">
-                    <h3 className="font-mono text-xs uppercase tracking-widest mb-4 font-bold">
-                      PUBLIC EVIDENCE
-                    </h3>
-                    <ul className="space-y-4">
-                      {module.evidence.map((item) => (
-                        <li key={item.title} className="border-t border-current/10 pt-4 first:border-t-0 first:pt-0">
-                          <div className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">
-                            {item.title}
-                          </div>
-                          <p className="text-sm font-sans opacity-secondary leading-relaxed mb-3">
-                            {item.description}
-                          </p>
-                          <a
-                            href={item.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(event) => event.stopPropagation()}
-                            className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest hover:underline"
-                          >
-                            <LinkIcon className="w-3 h-3" />
-                            {item.linkLabel ?? 'Open Artifact'}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
         </div>
