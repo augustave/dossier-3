@@ -204,7 +204,7 @@ const App: React.FC = () => {
                 <a href="https://artdirector.rocks" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">artdirector.rocks</a>,{' '}
                 <a href="https://brandproduct.dev" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">brandproduct.dev</a>, and{' '}
                 <a href="https://defense.observer" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">defense.observer</a>.
-                {' '}This is the practice behind them: how the thinking works, how the work gets made, what it recruits for.
+                {' '}This is the practice behind them: how I think, how I build, and what I want to be hired to do.
               </p>
             </div>
 
@@ -248,7 +248,7 @@ const App: React.FC = () => {
                 <div className="md:w-56 shrink-0">
                   <div className="font-mono text-xs uppercase tracking-widest opacity-50 mb-2">Target Roles</div>
                   <p className="font-sans text-sm md:text-base leading-relaxed">
-                    Best fit for multidisciplinary roles spanning interface, narrative, prototyping, and technical communication.
+                    I'm built for roles that span interface, narrative, prototyping, and technical communication — not the ones that pick one and drop the rest.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 md:gap-3">
