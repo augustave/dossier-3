@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RUBRIC · Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ——— GROUNDS ——— */
+    --void:           #050505;  /* the dark behind the record */
+    --sable:          #0E0E0E;  /* primary dark ground */
+    --sable-2:        #1A1816;  /* raised dark surface */
+    --vellum:         #E8E1CF;  /* primary light ground */
+    --vellum-2:       #DDD4BC;  /* secondary light ground */
+    --hospital-white: #F4F2EC;  /* tertiary light ground */
+
+    /* ——— METALS (scarce by rule) ——— */
+    --brass:          #8C6B2A;  /* working accent — rules, labels, formulae */
+    --bull-gold:      #A8842B;  /* ceremonial accent — covers, callouts only */
+
+    /* ——— DEPTH & ALARM ——— */
+    --iron-oxide:     #5C2A1A;  /* aged depth — italic + classical-language text */
+    --cross-red:      #B91C1C;  /* the rationed accent — ONE use per page */
+
+    /* ——— INK ——— */
+    --ink:            #1A1612;  /* body text on light ground */
+    --ink-soft:       #463F33;  /* labels, captions, secondary text */
+
+    /* ——— STATUS ——— */
+    --pass:           #5C7A2A;  /* affirm / complete (olive) */
+    --stress:         #A8842B;  /* caution / drift (gold) */
+    --fail:           #B91C1C;  /* reject / error (red) */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--void);
+    font-family: 'EB Garamond', Garamond, 'Times New Roman', serif;
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .doc { max-width: 880px; margin: 0 auto; }
+
+  .page {
+    min-height: 100vh;
+    padding: 96px 88px;
+    position: relative;
+    page-break-after: always;
+    border-bottom: 1px solid var(--void);
+  }
+
+  .page.vellum {
+    background: var(--vellum);
+    color: var(--ink);
+    background-image:
+      radial-gradient(ellipse at 15% 12%, rgba(120, 100, 60, 0.08), transparent 45%),
+      radial-gradient(ellipse at 88% 78%, rgba(80, 60, 30, 0.07), transparent 50%),
+      radial-gradient(ellipse at 70% 30%, rgba(140, 110, 70, 0.05), transparent 40%);
+  }
+
+  .page.sable {
+    background: var(--sable);
+    color: var(--vellum);
+    background-image:
+      radial-gradient(ellipse at 80% 10%, rgba(168, 132, 43, 0.05), transparent 50%),
+      radial-gradient(ellipse at 12% 88%, rgba(92, 42, 26, 0.06), transparent 55%);
+  }
+
+  /* ============ COVER ============ */
+  .cover {
+    background: var(--sable); color: var(--vellum);
+    display: flex; flex-direction: column;
+    justify-content: space-between; align-items: center;
+    padding: 80px 80px 64px; min-height: 100vh;
+  }
+  .cover-header {
+    width: 100%; display: flex; justify-content: space-between;
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.35em;
+    color: #6E6962; text-transform: uppercase;
+  }
+  .cover-mark { margin-top: 48px; width: 168px; height: 168px; }
+  .cover-title-block { text-align: center; margin-top: 40px; }
+  .cover-doc-code {
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.55em;
+    color: var(--bull-gold); text-transform: uppercase; margin-bottom: 28px;
+  }
+  .cover-title {
+    font-family: 'Cinzel', serif; font-weight: 700; font-size: 62px;
+    letter-spacing: 0.30em; color: var(--vellum); text-transform: uppercase;
+    line-height: 1; margin-bottom: 18px; padding-left: 0.30em;
+  }
+  .cover-subtitle {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 20px;
+    color: #B8B0A0; letter-spacing: 0.03em; max-width: 560px; margin: 0 auto; line-height: 1.5;
+  }
+  .cover-rule { width: 80px; height: 1px; background: var(--bull-gold); margin: 36px auto; opacity: 0.7; }
+  .cover-meta {
+    text-align: center; font-family: 'Cinzel', serif; font-size: 11px;
+    letter-spacing: 0.35em; color: #8A847B; text-transform: uppercase; line-height: 2.2;
+  }
+  .cover-thesis {
+    margin-top: auto; padding-top: 56px; text-align: center;
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px;
+    color: #C8C0B0; letter-spacing: 0.04em; max-width: 520px; line-height: 1.6;
+  }
+  .cover-thesis::before {
+    content: "✚"; display: block; color: var(--bull-gold); font-size: 14px;
+    margin-bottom: 14px; opacity: 0.6;
+  }
+
+  /* ============ HEADER + SECTION ============ */
+  .page-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.35em;
+    color: var(--ink-soft); text-transform: uppercase;
+    padding-bottom: 32px; border-bottom: 1px solid rgba(70, 50, 20, 0.25); margin-bottom: 48px;
+  }
+  .sable .page-header { color: #6E6962; border-bottom-color: rgba(168, 132, 43, 0.25); }
+
+  .section-eyebrow {
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.55em;
+    color: var(--ink-soft); text-transform: uppercase; text-align: center; margin-bottom: 14px;
+  }
+  .sable .section-eyebrow { color: #8A847B; }
+
+  .section-title {
+    font-family: 'Cinzel', serif; font-size: 32px; letter-spacing: 0.1em; font-weight: 600;
+    text-transform: uppercase; text-align: center; margin-bottom: 14px; line-height: 1.2;
+  }
+
+  .section-thesis {
+    text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 19px; color: var(--iron-oxide); margin-bottom: 48px; letter-spacing: 0.02em;
+    max-width: 620px; margin-left: auto; margin-right: auto; line-height: 1.55;
+  }
+  .sable .section-thesis { color: #C8C0B0; }
+
+  .body p { margin-bottom: 16px; font-size: 17px; line-height: 1.7; text-align: justify; hyphens: auto; }
+  .body em { font-style: italic; color: var(--iron-oxide); }
+  .sable .body em { color: var(--bull-gold); }
+  .body strong { font-weight: 600; letter-spacing: 0.01em; }
+  .latin { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--iron-oxide); }
+  .sable .latin { color: var(--bull-gold); }
+  code.mono {
+    font-family: 'Cinzel', serif; font-size: 0.86em; letter-spacing: 0.04em;
+    color: var(--iron-oxide); background: rgba(140,107,42,0.08); padding: 1px 6px;
+  }
+  .sable code.mono { color: var(--bull-gold); background: rgba(168,132,43,0.12); }
+
+  .sub-eyebrow {
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.3em;
+    color: var(--bull-gold); text-transform: uppercase; margin: 44px 0 16px;
+    padding-bottom: 8px; border-bottom: 1px solid rgba(140, 107, 42, 0.3);
+  }
+
+  /* ============ LAW LIST ============ */
+  .law-list { list-style: none; }
+  .law-row {
+    padding: 22px 0; border-bottom: 1px solid rgba(70, 50, 20, 0.2);
+    display: grid; grid-template-columns: 80px 1fr; gap: 24px; align-items: start;
+  }
+  .law-row:last-child { border-bottom: none; }
+  .law-numeral { font-family: 'Cinzel', serif; font-weight: 700; font-size: 38px; color: var(--brass); line-height: 0.9; }
+  .law-content .name {
+    font-family: 'Cinzel', serif; font-weight: 600; font-size: 17px; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 8px; line-height: 1.25;
+  }
+  .law-content .note { font-size: 15px; line-height: 1.55; color: var(--ink); }
+  .sable .law-content .note { color: #D8D0C0; }
+  .sable .law-row { border-bottom-color: rgba(168,132,43,0.18); }
+
+  /* ============ CALLOUT ============ */
+  .callout {
+    margin-top: 36px; padding: 22px 32px; background: rgba(168, 132, 43, 0.08);
+    border-left: 3px solid var(--bull-gold); font-size: 16px; line-height: 1.7;
+  }
+  .sable .callout { background: rgba(168, 132, 43, 0.10); }
+  .callout .tag { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; }
+
+  /* ============ TOKEN TABLE ============ */
+  .token-table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; }
+  .token-table th {
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--brass); text-align: left; padding: 0 0 12px; border-bottom: 1px solid rgba(140, 107, 42, 0.35);
+  }
+  .token-table td { padding: 14px 0; border-bottom: 1px solid rgba(70, 50, 20, 0.18); vertical-align: middle; font-size: 14px; }
+  .token-table tr:last-child td { border-bottom: none; }
+  .tok-swatch { width: 34px; height: 34px; border: 1px solid rgba(70, 50, 20, 0.35); display: inline-block; vertical-align: middle; }
+  .tok-name { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+  .tok-var { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.05em; color: var(--ink-soft); }
+  .tok-hex { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-soft); }
+  .tok-role { font-style: italic; font-size: 13px; color: var(--iron-oxide); }
+  .col-w { width: 52px; } .col-r { width: 132px; }
+
+  /* ============ TYPE SPECIMENS ============ */
+  .type-spec {
+    display: grid; grid-template-columns: 1fr 230px; gap: 28px; padding: 22px 0;
+    border-bottom: 1px solid rgba(70, 50, 20, 0.18); align-items: center;
+  }
+  .type-spec:last-child { border-bottom: none; }
+  .type-meta { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); line-height: 1.9; }
+  .type-meta b { color: var(--brass); font-weight: 600; }
+  .spec-display { font-family: 'Cinzel', serif; font-weight: 700; text-transform: uppercase; color: var(--ink); }
+
+  .ladder-row {
+    display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0;
+    border-bottom: 1px solid rgba(70, 50, 20, 0.15); font-family: 'Cinzel', serif; text-transform: uppercase; color: var(--ink);
+  }
+  .ladder-row:last-child { border-bottom: none; }
+  .ladder-val { font-size: 10px; letter-spacing: 0.05em; color: var(--brass); }
+
+  /* ============ DEMO FRAME ============ */
+  .demo {
+    border: 1px solid rgba(70, 50, 20, 0.22); background: rgba(244, 242, 236, 0.5);
+    padding: 28px 30px; margin: 4px 0 14px; position: relative;
+  }
+  .demo-tag {
+    position: absolute; top: -9px; left: 18px; background: var(--vellum);
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--brass); padding: 0 8px;
+  }
+  .rule-note {
+    font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 30px;
+    padding-left: 16px; border-left: 2px solid rgba(140, 107, 42, 0.4);
+  }
+  .sable .rule-note { color: #C8C0B0; }
+  .rule-note b { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); display: inline; }
+
+  .audit-grade {
+    display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px; border-radius: 0;
+    border: 1px solid; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.25em;
+    font-weight: 600; text-transform: uppercase; background: transparent; white-space: nowrap; margin-right: 10px;
+  }
+  .audit-grade::before { content: ""; width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .audit-grade.pass { color: var(--pass); border-color: var(--pass); } .audit-grade.pass::before { background: var(--pass); }
+  .audit-grade.stress { color: var(--stress); border-color: var(--stress); } .audit-grade.stress::before { background: var(--stress); }
+  .audit-grade.fail { color: var(--fail); border-color: var(--fail); } .audit-grade.fail::before { background: var(--fail); }
+
+  .findings-list { list-style: none; }
+  .findings-item { padding: 16px 0 16px 48px; border-bottom: 1px solid rgba(70, 50, 20, 0.18); position: relative; font-size: 16px; line-height: 1.7; }
+  .findings-item:last-child { border-bottom: none; }
+  .findings-item.holds::before { content: "✚"; position: absolute; left: 12px; top: 18px; color: var(--pass); font-size: 16px; }
+  .findings-item.stress::before { content: "▲"; position: absolute; left: 14px; top: 19px; color: var(--stress); font-size: 11px; }
+  .findings-item .lead { font-family: 'Cinzel', serif; font-weight: 600; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); display: block; margin-bottom: 3px; }
+
+  .swatch-row { display: flex; align-items: center; gap: 14px; padding: 8px 0; font-size: 14px; }
+  .swatch { width: 28px; height: 28px; flex-shrink: 0; border: 1px solid rgba(70, 50, 20, 0.3); }
+  .swatch-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+  .swatch-note { font-family: 'EB Garamond', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-left: auto; }
+
+  .stack-pair { padding: 18px 0; border-bottom: 1px solid rgba(70, 50, 20, 0.18); font-size: 16px; line-height: 1.65; }
+  .stack-pair:last-child { border-bottom: none; }
+  .stack-formula { font-family: 'Cinzel', serif; font-weight: 600; font-size: 14px; letter-spacing: 0.12em; color: var(--brass); text-transform: uppercase; margin-bottom: 6px; }
+
+  /* layout diagram */
+  .grid-diagram {
+    border: 1px solid rgba(70,50,20,0.25); background: rgba(232,225,207,0.4);
+    position: relative; height: 220px; margin: 8px 0 14px;
+    display: flex; align-items: stretch;
+  }
+  .grid-margin { width: 18%; background: repeating-linear-gradient(45deg, rgba(140,107,42,0.06), rgba(140,107,42,0.06) 6px, transparent 6px, transparent 12px); }
+  .grid-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; border-left: 1px dashed rgba(140,107,42,0.4); border-right: 1px dashed rgba(140,107,42,0.4); }
+  .grid-line { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.25em; color: var(--ink-soft); text-transform: uppercase; }
+  .grid-dim { position: absolute; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.15em; color: var(--brass); text-transform: uppercase; }
+
+  /* rejection list */
+  .reject-item { padding: 14px 0 14px 44px; position: relative; border-bottom: 1px solid rgba(168, 132, 43, 0.15); font-size: 16px; line-height: 1.65; color: #D8D0C0; }
+  .reject-item:last-child { border-bottom: none; }
+  .reject-item::before { content: "✕"; position: absolute; left: 14px; top: 15px; color: var(--cross-red); font-size: 13px; font-weight: 700; }
+  .reject-item .lead { font-family: 'Cinzel', serif; font-weight: 600; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--vellum); display: block; margin-bottom: 3px; }
+
+  /* ============ CLOSING ============ */
+  .closing { background: var(--sable); color: var(--vellum); display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 96px 88px 80px; min-height: 100vh; }
+  .closing-header { width: 100%; display: flex; justify-content: space-between; font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.35em; color: #6E6962; text-transform: uppercase; }
+  .closing-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 64px 0; }
+  .closing-mark { width: 84px; height: 84px; margin-bottom: 48px; opacity: 0.85; }
+  .closing-thesis { text-align: center; font-family: 'Cinzel', serif; font-weight: 500; font-size: 21px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--vellum); line-height: 1.9; max-width: 580px; }
+  .closing-thesis-extended { margin-top: 24px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: #B8B0A0; letter-spacing: 0.04em; text-transform: none; line-height: 1.7; max-width: 480px; }
+  .closing-rule { width: 60px; height: 1px; background: var(--bull-gold); margin: 48px auto; opacity: 0.7; }
+  .closing-signature { text-align: center; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.4em; color: #8A847B; text-transform: uppercase; line-height: 2.4; }
+  .closing-signature .name { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: var(--vellum); letter-spacing: 0.06em; text-transform: none; display: block; margin-bottom: 8px; }
+  .closing-final { margin-top: auto; text-align: center; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.5em; color: #5A5550; text-transform: uppercase; }
+
+  @media print {
+    body { background: white; }
+    .doc { max-width: none; }
+    .page { min-height: auto; padding: 50px 50px; page-break-after: always; }
+    .cover, .closing, .sable { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<article class="doc">
+
+  <!-- ============ COVER ============ -->
+  <section class="page cover">
+    <header class="cover-header">
+      <span>DESIGN SYSTEM</span>
+      <span>REVERSE-ENGINEERED · V·I</span>
+    </header>
+
+    <svg class="cover-mark" viewBox="-110 -110 220 220" xmlns="http://www.w3.org/2000/svg" aria-label="RUBRIC mark">
+      <defs>
+        <linearGradient id="starA" x1="20%" y1="0%" x2="80%" y2="100%">
+          <stop offset="0%" stop-color="#DCD8CE"/><stop offset="20%" stop-color="#C2BEB5"/>
+          <stop offset="45%" stop-color="#8E8B82"/><stop offset="55%" stop-color="#7A7770"/>
+          <stop offset="75%" stop-color="#A6A299"/><stop offset="100%" stop-color="#6E6B64"/>
+        </linearGradient>
+        <linearGradient id="starB" x1="80%" y1="0%" x2="20%" y2="100%">
+          <stop offset="0%" stop-color="#C8C5BC"/><stop offset="30%" stop-color="#A8A59C"/>
+          <stop offset="55%" stop-color="#7E7B73"/><stop offset="80%" stop-color="#92908A"/>
+          <stop offset="100%" stop-color="#5E5C56"/>
+        </linearGradient>
+        <filter id="patina" x="-4%" y="-4%" width="108%" height="108%">
+          <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="3" seed="11" result="noise"/>
+          <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.14 0" result="darkNoise"/>
+          <feComposite in="darkNoise" in2="SourceGraphic" operator="in" result="patinaMasked"/>
+          <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="patinaMasked"/></feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#patina)" stroke="#3A3833" stroke-width="0.6" stroke-linejoin="miter">
+        <!-- LEFT facets, gradient A -->
+        <path d="M 0,0 L -7.7,-18.5 L 0.0,-94.0 Z" fill="url(#starA)"/>
+        <path d="M 0,0 L 7.7,-18.5 L 66.5,-66.5 Z" fill="url(#starA)"/>
+        <path d="M 0,0 L 18.5,-7.7 L 94.0,0.0 Z" fill="url(#starA)"/>
+        <path d="M 0,0 L 18.5,7.7 L 66.5,66.5 Z" fill="url(#starA)"/>
+        <path d="M 0,0 L 7.7,18.5 L 0.0,94.0 Z" fill="url(#starA)"/>
+        <path d="M 0,0 L -7.7,18.5 L -66.5,66.5 Z" fill="url(#starA)"/>
+        <path d="M 0,0 L -18.5,7.7 L -94.0,0.0 Z" fill="url(#starA)"/>
+        <path d="M 0,0 L -18.5,-7.7 L -66.5,-66.5 Z" fill="url(#starA)"/>
+        <!-- RIGHT facets, gradient B -->
+        <path d="M 0,0 L 0.0,-94.0 L 7.7,-18.5 Z" fill="url(#starB)"/>
+        <path d="M 0,0 L 66.5,-66.5 L 18.5,-7.7 Z" fill="url(#starB)"/>
+        <path d="M 0,0 L 94.0,0.0 L 18.5,7.7 Z" fill="url(#starB)"/>
+        <path d="M 0,0 L 66.5,66.5 L 7.7,18.5 Z" fill="url(#starB)"/>
+        <path d="M 0,0 L 0.0,94.0 L -7.7,18.5 Z" fill="url(#starB)"/>
+        <path d="M 0,0 L -66.5,66.5 L -18.5,7.7 Z" fill="url(#starB)"/>
+        <path d="M 0,0 L -94.0,0.0 L -18.5,-7.7 Z" fill="url(#starB)"/>
+        <path d="M 0,0 L -66.5,-66.5 L -7.7,-18.5 Z" fill="url(#starB)"/>
+      </g>
+      <circle cx="0" cy="0" r="5" fill="#6A6862" opacity="0.4"/>
+      <circle cx="0" cy="0" r="3" fill="#3A3833" opacity="0.6"/>
+      <circle cx="0" cy="0" r="1.2" fill="#0E0E0E" opacity="0.9"/>
+      <circle cx="-0.8" cy="-0.8" r="0.5" fill="#D0CDC4" opacity="0.7"/>
+    </svg>
+
+    <div class="cover-title-block">
+      <div class="cover-doc-code">RBC—00 &nbsp;·&nbsp; System</div>
+      <h1 class="cover-title">Rubric</h1>
+      <div class="cover-subtitle">
+        An illuminated-brief design language — <br>vellum and sable, three faces, square corners, print-first.
+      </div>
+      <div class="cover-rule"></div>
+      <div class="cover-meta">
+        Laws · Colour · Type · Layout · Mark · Components · Media<br>
+        Version I &nbsp;·&nbsp; XXVI · V · MMXXVI
+      </div>
+    </div>
+
+    <div class="cover-thesis">
+      The document is the interface. Treat the screen like a page that has survived, not a screen that was rendered.
+    </div>
+  </section>
+
+  <!-- ============ I · THE SYSTEM ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Overview · i</span>
+    </header>
+
+    <div class="section-eyebrow">Principium</div>
+    <h2 class="section-title">The System</h2>
+    <div class="section-thesis">An aesthetic recovered from a single document and abstracted into a kit. Illuminated manuscript meets technical brief.</div>
+
+    <div class="body">
+      <p>RUBRIC is a visual design language for documents that need to feel <em>weighed and lasting</em> — doctrine, briefs, manifestos, charters, reports, any artifact meant to be read once with full attention and kept. It descends from the illuminated manuscript and the typeset technical brief: parchment grounds, a chiselled Roman display face, monastic margins, untranslated marginalia, and a forged metal mark too dark to read unless you already know what you are looking at.</p>
+
+      <p>The name is taken from the practice of <em>rubrication</em> — the red headings and instructions that medieval scribes added to a black-ink page. A rubric is both a piece of red text and a rule. The system is exactly that: a set of rules, marked in a single rationed red.</p>
+
+      <p>Its character is restraint. Two grounds, three typefaces, square corners, one accent colour per page, and the discipline of stillness over motion. Everything ceremonial is set in capitals and given room to breathe; everything structural is a hairline. The whitespace is the silence the document speaks into.</p>
+
+      <p>This specification is itself built in RUBRIC — every page, token, and component on the following sheets is a live demonstration of the system it documents. To see the language, read the spec.</p>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Use it for:</span> long-form reading documents, design or brand doctrine, reports and white papers, editorial covers, certificate and charter layouts, and any interface that benefits from gravity and literacy over speed and friendliness. <span class="latin">Do not</span> use it for high-frequency dashboards, consumer onboarding, or anything that must feel light and fast.
+    </div>
+  </section>
+
+  <!-- ============ II · THE LAWS ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Laws · ii</span>
+    </header>
+
+    <div class="section-eyebrow">Regula</div>
+    <h2 class="section-title">The Eight Laws</h2>
+    <div class="section-thesis">The rules that separate RUBRIC from a moodboard. Break one and the document stops being in-system.</div>
+
+    <ol class="law-list">
+      <li class="law-row"><div class="law-numeral">I</div><div class="law-content"><div class="name">Two grounds only</div><div class="note">A page is either vellum (warm parchment, ink text) or sable (near-black, vellum text). There is no third surface and no pure white. Light pages carry faint radial stains; dark pages carry faint gold and oxide. The ground is never flat.</div></div></li>
+      <li class="law-row"><div class="law-numeral">II</div><div class="law-content"><div class="name">Three faces, no more</div><div class="note">Cinzel for everything ceremonial (titles, labels, numerals), EB Garamond for body, Cormorant Garamond italic for thesis lines and classical-language text. A sans-serif is permitted for technical specs only — never narrative, never ceremonial.</div></div></li>
+      <li class="law-row"><div class="law-numeral">III</div><div class="law-content"><div class="name">Square corners, always</div><div class="note">Every border, pill, swatch, and box is <code class="mono">border-radius: 0</code>. Rounding reads as software friendliness; the system refuses it. Corners are cut, not softened.</div></div></li>
+      <li class="law-row"><div class="law-numeral">IV</div><div class="law-content"><div class="name">Tonal-on-tonal marks</div><div class="note">The mark is recovered from its ground, not stamped onto it — forged silver on near-black, nearly invisible until the eye adjusts. The reader who cannot find the mark is reading someone else's document.</div></div></li>
+      <li class="law-row"><div class="law-numeral">V</div><div class="law-content"><div class="name">One rationed accent per page</div><div class="note">Cross Red appears at most once per page, never as decoration. When it shows up, it means something. Bull Gold is reserved for covers and callouts. Metals are scarce by rule.</div></div></li>
+      <li class="law-row"><div class="law-numeral">VI</div><div class="law-content"><div class="name">Tracking widens as type shrinks</div><div class="note">The smaller and more ceremonial a line, the more air between its letters — from <code class="mono">0.04em</code> body to <code class="mono">0.55em</code> eyebrows. This single rule is the most recognisable signature of the system.</div></div></li>
+      <li class="law-row"><div class="law-numeral">VII</div><div class="law-content"><div class="name">A classical eyebrow over a plain title</div><div class="note">Each section opens with a short label in a classical register (a Latin word, a category, or a code), then the plain-English title, then a one-line italic thesis stating the single idea the section defends. Always centred.</div></div></li>
+      <li class="law-row"><div class="law-numeral">VIII</div><div class="law-content"><div class="name">Print-first, stillness over motion</div><div class="note">The canonical artifact prints clean to paper, one section per page. Motion is not a feature; its absence is. The only permitted movement is a single slow reveal on load. Heavy things do not bounce.</div></div></li>
+    </ol>
+  </section>
+
+  <!-- ============ III · COLOUR ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Colour · iii</span>
+    </header>
+
+    <div class="section-eyebrow">Pigmentum</div>
+    <h2 class="section-title">The Palette</h2>
+    <div class="section-thesis">Grounds and metals, plus ink and status. Warm earth throughout. No tourist colours.</div>
+
+    <table class="token-table">
+      <thead><tr><th class="col-w">Swatch</th><th>Token</th><th>Hex</th><th class="col-r">Role &amp; discipline</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tok-swatch" style="background:#0E0E0E"></span></td><td><span class="tok-name">Sable</span><br><span class="tok-var">--sable</span></td><td><span class="tok-hex">#0E0E0E</span></td><td><span class="tok-role">Primary dark ground</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#E8E1CF"></span></td><td><span class="tok-name">Vellum</span><br><span class="tok-var">--vellum</span></td><td><span class="tok-hex">#E8E1CF</span></td><td><span class="tok-role">Primary light ground</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#F4F2EC"></span></td><td><span class="tok-name">Hospital White</span><br><span class="tok-var">--hospital-white</span></td><td><span class="tok-hex">#F4F2EC</span></td><td><span class="tok-role">Tertiary ground, sparing use</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#8C6B2A"></span></td><td><span class="tok-name">Brass</span><br><span class="tok-var">--brass</span></td><td><span class="tok-hex">#8C6B2A</span></td><td><span class="tok-role">Working accent — rules, labels</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#A8842B"></span></td><td><span class="tok-name">Bull Gold</span><br><span class="tok-var">--bull-gold</span></td><td><span class="tok-hex">#A8842B</span></td><td><span class="tok-role">Ceremonial — covers, callouts only</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#5C2A1A"></span></td><td><span class="tok-name">Iron Oxide</span><br><span class="tok-var">--iron-oxide</span></td><td><span class="tok-hex">#5C2A1A</span></td><td><span class="tok-role">Aged depth — italic + classical text</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#B91C1C"></span></td><td><span class="tok-name">Cross Red</span><br><span class="tok-var">--cross-red</span></td><td><span class="tok-hex">#B91C1C</span></td><td><span class="tok-role">Rationed accent — ONE per page</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="sub-eyebrow">Ink &amp; status</div>
+    <table class="token-table">
+      <tbody>
+        <tr><td class="col-w"><span class="tok-swatch" style="background:#1A1612"></span></td><td><span class="tok-name">Ink</span> &nbsp;<span class="tok-var">--ink</span></td><td><span class="tok-hex">#1A1612</span></td><td class="col-r"><span class="tok-role">Body text on light ground</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#463F33"></span></td><td><span class="tok-name">Ink Soft</span> &nbsp;<span class="tok-var">--ink-soft</span></td><td><span class="tok-hex">#463F33</span></td><td><span class="tok-role">Labels, captions, secondary</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#5C7A2A"></span></td><td><span class="tok-name">Pass</span> &nbsp;<span class="tok-var">--pass</span></td><td><span class="tok-hex">#5C7A2A</span></td><td><span class="tok-role">Affirm / complete (olive)</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#A8842B"></span></td><td><span class="tok-name">Stress</span> &nbsp;<span class="tok-var">--stress</span></td><td><span class="tok-hex">#A8842B</span></td><td><span class="tok-role">Caution / drift (gold)</span></td></tr>
+        <tr><td><span class="tok-swatch" style="background:#B91C1C"></span></td><td><span class="tok-name">Fail</span> &nbsp;<span class="tok-var">--fail</span></td><td><span class="tok-hex">#B91C1C</span></td><td><span class="tok-role">Reject / error (red)</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <span class="tag">Discipline:</span> Grounds do the work; metals are scarce. Everything sits in a warm-earth family except the olive Pass, which lives strictly inside the status system. Cross Red is rationed to one appearance per page so it never decays into decoration.
+    </div>
+  </section>
+
+  <!-- ============ IV · TYPOGRAPHY ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Type · iv</span>
+    </header>
+
+    <div class="section-eyebrow">Litterae</div>
+    <h2 class="section-title">Three Faces, No More</h2>
+    <div class="section-thesis">Cinzel for the chisel, Garamond for the page, Cormorant for the whisper.</div>
+
+    <div class="sub-eyebrow">The three faces</div>
+    <div class="body">
+      <p><strong>Cinzel</strong> — a Trajan-equivalent inscriptional capital — carries titles, eyebrows, labels, codes, and numerals; always uppercase, always tracked. <strong>EB Garamond</strong> — a Caslon-equivalent oldstyle — carries narrative body, justified with hyphenation. <strong>Cormorant Garamond</strong> italic carries thesis lines and classical-language text. A geometric sans-serif is permitted for dense technical specs only.</p>
+    </div>
+
+    <div class="sub-eyebrow">The scale — rendered live</div>
+    <div class="type-spec"><div class="spec-display" style="font-size:46px; letter-spacing:0.30em; line-height:1; padding-left:0.30em;">Rubric</div><div class="type-meta"><b>Cover title</b><br>Cinzel 700 · 62px<br>tracking 0.30em</div></div>
+    <div class="type-spec"><div class="spec-display" style="font-size:30px; letter-spacing:0.1em; font-weight:600;">Section Title</div><div class="type-meta"><b>Section title</b><br>Cinzel 600 · 32px<br>tracking 0.10em</div></div>
+    <div class="type-spec"><div class="spec-display" style="font-size:40px; color:var(--brass); font-weight:700; line-height:0.9;">IV</div><div class="type-meta"><b>Numeral</b><br>Cinzel 700 · 38px<br>Roman, brass</div></div>
+    <div class="type-spec"><div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:19px; color:var(--iron-oxide);">One idea, stated once.</div><div class="type-meta"><b>Thesis line</b><br>Cormorant italic · 19px<br>iron-oxide</div></div>
+    <div class="type-spec"><div style="font-family:'EB Garamond',serif; font-size:17px; line-height:1.5; color:var(--ink);">Body copy is set justified with automatic hyphenation, for the texture of a typeset page.</div><div class="type-meta"><b>Body</b><br>EB Garamond · 17px<br>line-height 1.7, justified</div></div>
+    <div class="type-spec"><div style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.4em; text-transform:uppercase; color:var(--ink-soft);">RBC—04 &nbsp;·&nbsp; Eyebrow</div><div class="type-meta"><b>Label / code</b><br>Cinzel · 10–11px<br>tracking 0.30–0.55em</div></div>
+
+    <div class="sub-eyebrow">The tracking ladder</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; Letter-spacing widens as type shrinks and rises in ceremony. This is the single most recognisable signature of the system.</div>
+    <div class="ladder-row" style="font-size:16px; letter-spacing:0.04em;">Body · 0.04em<span class="ladder-val">0.04em</span></div>
+    <div class="ladder-row" style="font-size:15px; letter-spacing:0.10em;">Title · 0.10em<span class="ladder-val">0.10em</span></div>
+    <div class="ladder-row" style="font-size:13px; letter-spacing:0.22em;">Display · 0.22em<span class="ladder-val">0.22em</span></div>
+    <div class="ladder-row" style="font-size:12px; letter-spacing:0.35em;">Header · 0.35em<span class="ladder-val">0.35em</span></div>
+    <div class="ladder-row" style="font-size:11px; letter-spacing:0.55em;">Eyebrow · 0.55em<span class="ladder-val">0.55em</span></div>
+  </section>
+
+  <!-- ============ V · LAYOUT ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Layout · v</span>
+    </header>
+
+    <div class="section-eyebrow">Mensura</div>
+    <h2 class="section-title">Measure &amp; Margin</h2>
+    <div class="section-thesis">A single narrow column, monastic margins, hairline rules. The page is the unit, not the viewport.</div>
+
+    <div class="sub-eyebrow">The page grid</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; Content caps at <code class="mono">880px</code> wide and is centred on the dark void. Each page is a full <code class="mono">100vh</code> sheet with <code class="mono">96px</code> top/bottom and <code class="mono">88px</code> side padding, and breaks to its own page in print. One column. No sidebars.</div>
+    <div class="grid-diagram">
+      <div class="grid-margin"></div>
+      <div class="grid-content">
+        <div class="grid-line">Single column</div>
+        <div class="grid-line" style="color:var(--brass);">max-width 880 · pad 96 × 88</div>
+        <div class="grid-line">One idea per sheet</div>
+      </div>
+      <div class="grid-margin"></div>
+      <div class="grid-dim" style="top:6px; left:50%; transform:translateX(-50%);">— content well —</div>
+    </div>
+
+    <div class="sub-eyebrow">Vertical rhythm</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; Sections fall in a fixed cadence: a header rule, then eyebrow → <code class="mono">14px</code> → title → <code class="mono">14px</code> → thesis → <code class="mono">48px</code> → body. Sub-headings get <code class="mono">44px</code> of air above. Spacing is generous and consistent; density is never the goal.</div>
+    <ul class="findings-list">
+      <li class="findings-item holds"><span class="lead">Hairline borders, low opacity</span> Dividers are <code class="mono">1px</code> at 18–25% opacity in warm earth or brass. They organise without shouting — never a hard black line on the light ground.</li>
+      <li class="findings-item holds"><span class="lead">Centred ceremonial, justified body</span> Eyebrows, titles, and theses centre on the column axis. Body copy justifies to both edges for the texture of a set page.</li>
+      <li class="findings-item holds"><span class="lead">The page is the unit</span> Layout is composed in sheets, not scroll regions. Each sheet carries one idea and prints as one page.</li>
+    </ul>
+  </section>
+
+  <!-- ============ VI · THE MARK ============ -->
+  <section class="page sable">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Mark · vi</span>
+    </header>
+
+    <div class="section-eyebrow">Signum</div>
+    <h2 class="section-title">The Forged Mark</h2>
+    <div class="section-thesis">A method, not a logo. Silver on near-black, beveled and aged, sized by ceremony.</div>
+
+    <div style="display:grid; grid-template-columns:200px 1fr; gap:40px; align-items:center; margin-bottom:20px;">
+      <svg viewBox="-110 -110 220 220" width="172" height="172" xmlns="http://www.w3.org/2000/svg" aria-label="Forged mark, large">
+        <defs>
+          <linearGradient id="mA" x1="20%" y1="0%" x2="80%" y2="100%"><stop offset="0%" stop-color="#DCD8CE"/><stop offset="45%" stop-color="#8E8B82"/><stop offset="55%" stop-color="#7A7770"/><stop offset="100%" stop-color="#6E6B64"/></linearGradient>
+          <linearGradient id="mB" x1="80%" y1="0%" x2="20%" y2="100%"><stop offset="0%" stop-color="#C8C5BC"/><stop offset="55%" stop-color="#7E7B73"/><stop offset="100%" stop-color="#5E5C56"/></linearGradient>
+        </defs>
+        <g stroke="#3A3833" stroke-width="0.6" stroke-linejoin="miter">
+          <path d="M 0,0 L -7.7,-18.5 L 0.0,-94.0 Z" fill="url(#mA)"/><path d="M 0,0 L 7.7,-18.5 L 66.5,-66.5 Z" fill="url(#mA)"/>
+          <path d="M 0,0 L 18.5,-7.7 L 94.0,0.0 Z" fill="url(#mA)"/><path d="M 0,0 L 18.5,7.7 L 66.5,66.5 Z" fill="url(#mA)"/>
+          <path d="M 0,0 L 7.7,18.5 L 0.0,94.0 Z" fill="url(#mA)"/><path d="M 0,0 L -7.7,18.5 L -66.5,66.5 Z" fill="url(#mA)"/>
+          <path d="M 0,0 L -18.5,7.7 L -94.0,0.0 Z" fill="url(#mA)"/><path d="M 0,0 L -18.5,-7.7 L -66.5,-66.5 Z" fill="url(#mA)"/>
+          <path d="M 0,0 L 0.0,-94.0 L 7.7,-18.5 Z" fill="url(#mB)"/><path d="M 0,0 L 66.5,-66.5 L 18.5,-7.7 Z" fill="url(#mB)"/>
+          <path d="M 0,0 L 94.0,0.0 L 18.5,7.7 Z" fill="url(#mB)"/><path d="M 0,0 L 66.5,66.5 L 7.7,18.5 Z" fill="url(#mB)"/>
+          <path d="M 0,0 L 0.0,94.0 L -7.7,18.5 Z" fill="url(#mB)"/><path d="M 0,0 L -66.5,66.5 L -18.5,7.7 Z" fill="url(#mB)"/>
+          <path d="M 0,0 L -94.0,0.0 L -18.5,-7.7 Z" fill="url(#mB)"/><path d="M 0,0 L -66.5,-66.5 L -7.7,-18.5 Z" fill="url(#mB)"/>
+        </g>
+        <circle cx="0" cy="0" r="4" fill="#2A2825" opacity="0.7"/><circle cx="0" cy="0" r="1.2" fill="#0E0E0E"/>
+      </svg>
+      <div class="body">
+        <p style="color:#D8D0C0;">The mark is built from sixteen flat facets — two per point of an eight-point star — laid on <em>two</em> alternating silver gradients so adjacent facets catch light from opposite directions. That alternation, plus mitered joins and a hairline stroke, reads as forged metal rather than flat fill. A fractal-noise <em>patina</em> ages the surface; a tiny dark core anchors the centre.</p>
+      </div>
+    </div>
+
+    <div class="sub-eyebrow" style="color:var(--bull-gold); border-bottom-color:rgba(168,132,43,0.3);">Construction rules</div>
+    <ul class="findings-list">
+      <li class="findings-item holds"><span class="lead">Silver, never gold</span> The mark is pewter and steel; gold is reserved for ceremonial type. A gold mark would break the rationing of metal.</li>
+      <li class="findings-item holds"><span class="lead">Two gradients, opposed</span> Light enters from <code class="mono">20%/0%→80%/100%</code> on one set and the mirror on the other. Single-gradient marks look stamped; opposed gradients look forged.</li>
+      <li class="findings-item holds"><span class="lead">Sized by ceremony</span> Large on a cover (168px), small at a close (84px). The mark grows for arrival and shrinks for farewell — never decorative repetition.</li>
+      <li class="findings-item holds"><span class="lead">Geometry is swappable</span> Star, cross, rosette, monogram — any centred radial form forges the same way. The <em>method</em> is the system; the shape belongs to the project.</li>
+    </ul>
+
+    <div class="callout">
+      <span class="tag">Imagery:</span> photography in this system is tenebrist — a single light source, a black ground, the subject in chiaroscuro or deep shadow. No flat product shots, no bright stock, no glamour. The subject is recovered from darkness, the way the mark is recovered from its ground.
+    </div>
+  </section>
+
+  <!-- ============ VII · COMPONENTS ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Components · vii</span>
+    </header>
+
+    <div class="section-eyebrow">Membra</div>
+    <h2 class="section-title">Component Vocabulary</h2>
+    <div class="section-thesis">Each part shown live, with the rule that generates it. The kit every RUBRIC document is assembled from.</div>
+
+    <div class="sub-eyebrow">Section block</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; A classical eyebrow, a plain title, an italic thesis — centred. The eyebrow names the thing in an old register; the title names it plainly; the thesis states the single idea the section defends.</div>
+    <div class="demo">
+      <span class="demo-tag">.section-eyebrow / .section-title / .section-thesis</span>
+      <div style="text-align:center;">
+        <div style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.55em; color:var(--ink-soft); text-transform:uppercase; margin-bottom:10px;">Exemplum</div>
+        <div style="font-family:'Cinzel',serif; font-size:26px; letter-spacing:0.1em; font-weight:600; text-transform:uppercase; margin-bottom:10px;">A Section</div>
+        <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:18px; color:var(--iron-oxide);">One idea, stated once, centred.</div>
+      </div>
+    </div>
+
+    <div class="sub-eyebrow">Indexed entry + status pill</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; Three columns: an oversized Roman numeral, the content (code / name / note), and a status pill justified right. The pill is bordered, square-cornered, dot-marked — never filled, never rounded.</div>
+    <div class="demo">
+      <span class="demo-tag">.law-row / .audit-grade</span>
+      <div style="display:grid; grid-template-columns:60px 1fr 120px; gap:20px; align-items:start;">
+        <div style="font-family:'Cinzel',serif; font-weight:700; font-size:38px; color:var(--brass); line-height:0.9;">II</div>
+        <div>
+          <div style="font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.4em; color:var(--ink-soft); text-transform:uppercase; margin-bottom:4px;">RBC—02</div>
+          <div style="font-family:'Cinzel',serif; font-weight:600; font-size:16px; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:8px;">An indexed item</div>
+          <div style="font-size:14px; line-height:1.5; color:var(--ink);">A numbered entry with a code, a name, and a short note.</div>
+        </div>
+        <div style="justify-self:end;"><span class="audit-grade pass" style="margin:0;">Pass</span></div>
+      </div>
+    </div>
+
+    <div class="sub-eyebrow">Margin-glyph list</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; A glyph in the left margin sets the verdict before a word is read — <span style="color:var(--pass);">✚</span> affirm, <span style="color:var(--stress);">▲</span> caution, <span style="color:var(--cross-red);">✕</span> reject. A Cinzel lead label, then the line in body.</div>
+    <div class="demo">
+      <span class="demo-tag">.findings-item</span>
+      <ul class="findings-list">
+        <li class="findings-item holds"><span class="lead">An affirmed item</span> Marked with the heavy cross for things that hold.</li>
+        <li class="findings-item stress"><span class="lead">A flagged item</span> Marked with the triangle for things that need attention.</li>
+      </ul>
+    </div>
+
+    <div class="sub-eyebrow">Callout</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; A gold-tinted block with a 3px brass left border, opened by an uppercase Cinzel tag. For the one conclusion a section must not let the reader miss.</div>
+    <div class="demo">
+      <span class="demo-tag">.callout</span>
+      <div class="callout" style="margin:0;"><span class="tag">Result:</span> The single line the reader should leave with, set apart from the body.</div>
+    </div>
+
+    <div class="sub-eyebrow">Swatch row &amp; pairing formula</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; A colour gets a chip, an uppercase label, and an italic role pushed to the right margin. A pairing gets a Cinzel <code class="mono">formula</code> line over a plain description.</div>
+    <div class="demo">
+      <span class="demo-tag">.swatch-row / .stack-pair</span>
+      <div class="swatch-row"><span class="swatch" style="background:#5C2A1A;"></span><span class="swatch-label">Iron Oxide</span><span class="swatch-note">Aged depth</span></div>
+      <div class="stack-pair" style="border-top:1px solid rgba(70,50,20,0.18); margin-top:8px; padding-top:16px;">
+        <div class="stack-formula">Sable × Brass</div>
+        A ground-and-metal pairing line, with the relationship described in plain body beneath it.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VIII · MEDIA & MOTION ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Media · viii</span>
+    </header>
+
+    <div class="section-eyebrow">Quies</div>
+    <h2 class="section-title">Media &amp; Motion</h2>
+    <div class="section-thesis">The discipline of stillness. A record does not animate. A page does not autoplay.</div>
+
+    <div class="body">
+      <p>RUBRIC is print-first. The canonical artifact prints clean to paper — a page break after every section, exact colour adjustment forced, full-bleed grounds preserved. Motion is not a feature of the system; its absence is part of its weight.</p>
+
+      <p>Where an interface demands transition, the only permitted motion is the <em>slow reveal</em>: a single staggered fade on load, never looping, never bouncing, never calling attention to itself. No parallax, no hover theatrics, no spring physics. The model is a page turning, not an app responding.</p>
+
+      <p>Imagery follows the same logic — tenebrist, single-source, dark-ground, the subject in chiaroscuro. Sound, where it exists, is low and sparse: a struck bell, paper, near-silence. Never a notification tone, never a product chime.</p>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Rule:</span> if you are unsure whether an animation belongs, it does not. Stillness is the default and the discipline. The work is heavy; heavy things do not bounce.
+    </div>
+  </section>
+
+  <!-- ============ IX · REJECTIONS ============ -->
+  <section class="page sable">
+    <header class="page-header">
+      <span>RUBRIC · DESIGN SYSTEM</span>
+      <span>Rejections · ix</span>
+    </header>
+
+    <div class="section-eyebrow">Reiecta</div>
+    <h2 class="section-title">What RUBRIC Refuses</h2>
+    <div class="section-thesis">The boundary is as much the system as the palette. These reads break it. Listed so they are never argued for again.</div>
+
+    <ul class="findings-list">
+      <li class="reject-item"><span class="lead">Gloss, bevel, and chrome</span> Showroom polish is the visual signature of marketing. The only permitted shine is the forged mark's; finishes stay matte.</li>
+      <li class="reject-item"><span class="lead">Rounded corners</span> Soft radii read as software friendliness. Corners are cut. <code class="mono">border-radius</code> stays at zero.</li>
+      <li class="reject-item"><span class="lead">A fourth typeface</span> Three faces carry the whole system. A decorative display font or a second sans collapses the discipline.</li>
+      <li class="reject-item"><span class="lead">Competing accents</span> More than one saturated colour per page turns doctrine into packaging. Cross Red is rationed; nothing else competes.</li>
+      <li class="reject-item"><span class="lead">Pure white and flat grounds</span> White (#FFFFFF) and untextured fills break the parchment illusion. Grounds are warm and faintly stained.</li>
+      <li class="reject-item"><span class="lead">Animation theatrics</span> Parallax, bounce, spring, looping motion. The page turns; it does not perform.</li>
+      <li class="reject-item"><span class="lead">Bright, generic stock imagery</span> Evenly-lit photography on white defeats the tenebrist register. The subject is recovered from shadow or it is not used.</li>
+    </ul>
+  </section>
+
+  <!-- ============ CLOSING ============ -->
+  <section class="page closing">
+    <header class="closing-header">
+      <span>DESIGN SYSTEM</span>
+      <span>FINIS</span>
+    </header>
+
+    <div class="closing-center">
+      <svg class="closing-mark" viewBox="-110 -110 220 220" xmlns="http://www.w3.org/2000/svg" aria-label="Forged mark, small">
+        <defs>
+          <linearGradient id="cA" x1="20%" y1="0%" x2="80%" y2="100%"><stop offset="0%" stop-color="#A8A59C"/><stop offset="45%" stop-color="#7E7B73"/><stop offset="55%" stop-color="#6E6B64"/><stop offset="100%" stop-color="#5E5C56"/></linearGradient>
+          <linearGradient id="cB" x1="80%" y1="0%" x2="20%" y2="100%"><stop offset="0%" stop-color="#9A978E"/><stop offset="55%" stop-color="#6E6B64"/><stop offset="100%" stop-color="#52504A"/></linearGradient>
+        </defs>
+        <g stroke="#2A2825" stroke-width="0.6" stroke-linejoin="miter">
+          <path d="M 0,0 L -7.7,-18.5 L 0.0,-94.0 Z" fill="url(#cA)"/><path d="M 0,0 L 7.7,-18.5 L 66.5,-66.5 Z" fill="url(#cA)"/>
+          <path d="M 0,0 L 18.5,-7.7 L 94.0,0.0 Z" fill="url(#cA)"/><path d="M 0,0 L 18.5,7.7 L 66.5,66.5 Z" fill="url(#cA)"/>
+          <path d="M 0,0 L 7.7,18.5 L 0.0,94.0 Z" fill="url(#cA)"/><path d="M 0,0 L -7.7,18.5 L -66.5,66.5 Z" fill="url(#cA)"/>
+          <path d="M 0,0 L -18.5,7.7 L -94.0,0.0 Z" fill="url(#cA)"/><path d="M 0,0 L -18.5,-7.7 L -66.5,-66.5 Z" fill="url(#cA)"/>
+          <path d="M 0,0 L 0.0,-94.0 L 7.7,-18.5 Z" fill="url(#cB)"/><path d="M 0,0 L 66.5,-66.5 L 18.5,-7.7 Z" fill="url(#cB)"/>
+          <path d="M 0,0 L 94.0,0.0 L 18.5,7.7 Z" fill="url(#cB)"/><path d="M 0,0 L 66.5,66.5 L 7.7,18.5 Z" fill="url(#cB)"/>
+          <path d="M 0,0 L 0.0,94.0 L -7.7,18.5 Z" fill="url(#cB)"/><path d="M 0,0 L -66.5,66.5 L -18.5,7.7 Z" fill="url(#cB)"/>
+          <path d="M 0,0 L -94.0,0.0 L -18.5,-7.7 Z" fill="url(#cB)"/><path d="M 0,0 L -66.5,-66.5 L -7.7,-18.5 Z" fill="url(#cB)"/>
+        </g>
+        <circle cx="0" cy="0" r="4" fill="#2A2825" opacity="0.7"/><circle cx="0" cy="0" r="1.2" fill="#0E0E0E"/>
+      </svg>
+
+      <div class="closing-thesis">
+        The document is the interface.
+      </div>
+      <div class="closing-thesis-extended">
+        Two grounds, three faces, square corners, one rationed red. Build the page like it has to survive.
+      </div>
+
+      <div class="closing-rule"></div>
+
+      <div class="closing-signature">
+        <span class="name">RUBRIC</span>
+        Design System &nbsp;·&nbsp; Reverse-engineered from a single brief<br>
+        Version I &nbsp;·&nbsp; XXVI · V · MMXXVI
+      </div>
+    </div>
+
+    <div class="closing-final">
+      A reusable visual language · Built in the system it documents
+    </div>
+  </section>
+
+</article>
+
+</body>
+</html>

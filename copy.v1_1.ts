@@ -17,7 +17,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.3.0",
+    version: "3.4.1",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -106,12 +106,13 @@ export const CT_DOSSIER_COPY_V120 = {
         "The systems below are authored visual languages. Each carries its own palette, typography, component logic, interaction vocabulary, and source of authority. The registers sit underneath them: Monastery, Forge, Oracle. Not as themes. As grammar.",
       ].join("\n\n"),
 
-      // CTA hrefs are null until the matching file is dropped into
-      // Founder/public/library/ — broken links are suppressed, not rendered
-      // (CT-PRD-MARY-01.3). Intended paths, when assets land:
-      //   DOSSIER  cta  -> /library/dossier-visual-operating-language-v4.pdf
-      //   DEADLIGHT 2nd  -> /library/deadlight-rulebook-v2.pdf
-      //   IAA cta/2nd    -> /library/iaa-manifesto.md , /library/iaa-brand-architecture.md
+      // CTA hrefs: relative paths under public/library/ (the component prepends
+      // import.meta.env.BASE_URL so they resolve under the /CT-DOSSIER/ Pages
+      // base); absolute http(s) hrefs are left untouched. null = suppressed (no
+      // file deployed yet → no broken link). V3.4.1 asset wiring.
+      //   DOSSIER   -> library/dossier-visual-operating-language-v4.pdf  (wired)
+      //   DEADLIGHT -> deadlight.vercel.app (external); rulebook PDF not deployed
+      //   IAA       -> manifesto / brand-architecture files not deployed (suppressed)
       languages: [
         {
           id: "dossier",
@@ -134,7 +135,7 @@ export const CT_DOSSIER_COPY_V120 = {
             "Decorative data", "Generic dark mode", "Fake sci-fi interface language",
             "Unmapped color meaning", "Cosmetic motion", "Gradients that hide information",
           ],
-          cta: null,
+          cta: { label: "VIEW SPEC", href: "library/dossier-visual-operating-language-v4.pdf" },
           secondaryCta: null,
         },
         {
@@ -318,17 +319,18 @@ export const CT_DOSSIER_COPY_V120 = {
       short: "One head for the eye, the system, and the artifact.",
     },
 
-    // 06 — DOCTRINE LIBRARY (V3.3). The shelf of written source texts behind
-    // the practice: essays, papers, rulebooks, manifestos. Not a blog, not a
-    // portfolio. CTA hrefs are null until the matching file lands in
-    // Founder/public/library/ (intended paths kept on each card's `href`-pending
-    // note); broken links are suppressed, not rendered.
+    // 06 — DOCTRINE LIBRARY (V3.3 + V3.4.1). The shelf of written source texts
+    // behind the practice. card.href is a relative path under public/library/
+    // (component prepends BASE_URL) for deployed assets, or null when the file
+    // isn't deployed yet (CTA suppressed, no broken link).
     doctrineLibrary: {
       title: "DOCTRINE LIBRARY",
       prompt: "WHERE THE THINKING LIVES",
       hero: "The work has a written layer.",
       intro:
         "Essays, rulebooks, white papers, and doctrine documents are where the practice names its own laws before those laws become visual systems. They answer the recurring questions: What survives pressure? What deserves to be preserved? What becomes visible only when the system is under stress? What should a brand stay faithful to while everything around it changes?",
+      shelfLogic:
+        "Each text anchors a different part of the practice: pressure, memory, signal, brand, systems, or identity.",
       filterAllLabel: "ALL",
       cards: [
         {
@@ -340,7 +342,7 @@ export const CT_DOSSIER_COPY_V120 = {
           description: "A working paper on systems failure, iterative adaptation, and design laws under maximum pressure.",
           why: "The Forge doctrine. It argues that design principles are domain-invariant: the failures that kill products, campaigns, spacecraft, and organizations often rhyme.",
           ctaLabel: "READ PAPER",
-          href: null, // /library/design-under-fire-1942.pdf
+          href: "library/design-under-fire-stalingrad.pdf",
         },
         {
           id: "creative-strategy-54",
@@ -351,7 +353,7 @@ export const CT_DOSSIER_COPY_V120 = {
           description: "A strategy document for creative work where trust, compliance, and operational credibility become first-class product features.",
           why: "The bridge between visual language and institutional trust. It explains why defense creative must function as a risk-managed evidence system, not just marketing.",
           ctaLabel: "READ STRATEGY",
-          href: null, // /library/creative-strategy-5-4.pdf
+          href: "library/creative-strategy-5-4.pdf",
         },
         {
           id: "watchman-builder",
@@ -407,6 +409,39 @@ export const CT_DOSSIER_COPY_V120 = {
           why: "The meta-system. It codifies Anthropological Moodboarding, Invariance Auditing, the Evidence Engine, and Generative Discomfort.",
           ctaLabel: "VIEW ARCHITECTURE",
           href: null, // /library/iaa-brand-architecture.md
+        },
+        {
+          id: "rubric-design-system",
+          title: "Rubric Design System",
+          subtitle: "A codified evaluation and design-language artifact",
+          type: "Design system / rubric",
+          registers: ["Systems", "Oracle"],
+          description: "A structured design-system artifact for turning judgment, criteria, and evaluation into a usable visual and conceptual framework.",
+          why: "This extends the dossier beyond aesthetics into evaluation logic — how taste becomes criteria.",
+          ctaLabel: "VIEW SYSTEM",
+          href: "library/rubric-design-system.html",
+        },
+        {
+          id: "hospitaller-codex",
+          title: "Hospitaller Codex",
+          subtitle: "A doctrine of care, defense, and institutional memory",
+          type: "Codex / doctrine artifact",
+          registers: ["Monastery", "Forge"],
+          description: "A codex-style artifact exploring the relationship between protection, care, duty, and institutional continuity.",
+          why: "This belongs to the Monastery / Forge axis: memory and protection, care and defense, restraint and force.",
+          ctaLabel: "VIEW CODEX",
+          href: "library/hospitaller-codex.html",
+        },
+        {
+          id: "hospitaller-doctrine-brief",
+          title: "Hospitaller Doctrine Brief",
+          subtitle: "A brief on protection, service, and the moral architecture of force",
+          type: "Doctrine brief",
+          registers: ["Monastery", "Forge"],
+          description: "A compact doctrine brief on the Hospitaller pattern: care first, defense as the outer wall, and force subordinated to protection.",
+          why: "This sharpens the moral logic behind the defense work. It frames power as a duty of care, not an aesthetic of aggression.",
+          ctaLabel: "READ BRIEF",
+          href: "library/hospitaller-doctrine-brief.html",
         },
       ],
     },

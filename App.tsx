@@ -247,10 +247,10 @@ const App: React.FC = () => {
                 <button
                   type="button"
                   onClick={clearAudience}
-                  className="font-mono text-xs uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity ml-auto"
+                  className="font-mono text-xs uppercase tracking-widest border border-black px-3 py-1 hover:bg-black hover:text-white transition-colors ml-auto"
                   aria-label="Show all modules"
                 >
-                  Show all ✕
+                  STUDY ALL
                 </button>
               )}
             </div>
@@ -265,7 +265,6 @@ const App: React.FC = () => {
             module={module}
             isOpen={openModuleIndex === module.index}
             onToggle={() => handleToggle(module.index)}
-            onInquiryRequest={handleInquiryRequest}
           />
         ))}
 

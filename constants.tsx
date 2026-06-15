@@ -314,6 +314,9 @@ export const CONTENT_MODULES: ModuleData[] = [
         <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
           {COPY.modules.doctrineLibrary.intro}
         </p>
+        <p className="font-serif italic text-lg md:text-xl opacity-tertiary leading-relaxed max-w-3xl">
+          {COPY.modules.doctrineLibrary.shelfLogic}
+        </p>
 
         <div className="pt-4 border-t border-white/20">
           <DoctrineLibrary

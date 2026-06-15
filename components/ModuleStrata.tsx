@@ -9,10 +9,9 @@ interface ModuleStrataProps {
   module: ModuleData;
   isOpen: boolean;
   onToggle: () => void;
-  onInquiryRequest: (context: string) => void;
 }
 
-export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onToggle, onInquiryRequest }) => {
+export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onToggle }) => {
   const themeClass = COLORS[module.themeColor];
   const containerRef = useRef<HTMLElement>(null);
   const { copy, copied: linkCopied } = useClipboard();
@@ -88,9 +87,9 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
         onToggle();
       }}
     >
-      {/* Accessible toggle for keyboard / screen-reader users.
-          Visible only on focus so sighted keyboard users can discover it.
-          Resolves ARIA violation: no interactive descendants inside role="button". */}
+      {/* Sole keyboard / screen-reader control. The section itself is a plain
+          mouse click-target (no role/tabIndex); this button carries the
+          aria-expanded/aria-controls state and becomes visible on focus. */}
       <button
         aria-expanded={isOpen}
         aria-controls={panelId}
@@ -126,29 +125,19 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
           </div>
           
           
-          <div className="hidden md:flex items-center gap-6 font-mono text-xs uppercase tracking-widest opacity-muted">
-             {/* Header Inspect Button - Only visible when open or hovering */}
-             <button
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onInquiryRequest(`${module.title} — ${module.promptText}`);
-                }}
-                className={`hover:opacity-100 hover:underline transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-             >
-                + STUDY
-             </button>
-            
+          {/* Single visible open/close control — "+ STUDY" collapsed, "FOLD"
+              expanded. Decorative (aria-hidden/tabIndex -1): the sr-only button
+              above carries the accessible semantics; the band itself is clickable. */}
+          <div className="hidden md:flex items-center gap-3 font-mono text-xs uppercase tracking-widest opacity-muted">
             <button
                 aria-hidden="true"
                 tabIndex={-1}
                 onClick={(e) => { e.stopPropagation(); onToggle(); }}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 hover:opacity-100 transition-opacity"
             >
-                <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                    {isOpen ? 'FOLD' : 'UNFOLD'}
-                </span>
+                <span>{isOpen ? 'FOLD' : '+ STUDY'}</span>
                 <div className={`transform transition-transform duration-500 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-                <ChevronDownIcon />
+                  <ChevronDownIcon />
                 </div>
             </button>
           </div>
@@ -168,6 +157,11 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
         {/* Primary Content (Prompt + Response) - Visible when Open */}
         <div
           id={panelId}
+          // When collapsed the panel is `inert`: kept in the DOM for the fold
+          // animation, but removed from the tab order and the accessibility tree
+          // so screen readers and keyboard users don't reach a folded module's
+          // chart, filter chips, or CTA links. Mirrors aria-expanded=false.
+          inert={!isOpen}
           className={`overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isOpen ? 'max-h-[5000px] opacity-100 mt-8' : 'max-h-0 opacity-0 mt-0'}`}
         >
           

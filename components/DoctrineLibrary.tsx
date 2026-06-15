@@ -27,19 +27,32 @@ interface DoctrineLibraryProps {
   allLabel: string;
 }
 
+// Canonical chip order: the three register-grammar sources first, then secondary
+// tags. Only tags actually present on cards render, so the taxonomy can't drift.
+const CHIP_ORDER = ['Monastery', 'Forge', 'Oracle', 'Systems', 'Brand', 'Defense', 'Codex'];
+
+// Resolve a CTA href: absolute http(s) untouched; relative library paths get the
+// deployment base (BASE_URL) so they resolve under the /CT-DOSSIER/ Pages base.
+const assetHref = (href: string): string =>
+  /^https?:\/\//.test(href) ? href : `${import.meta.env.BASE_URL}${href}`;
+
 export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabel }) => {
   // null = show all; otherwise filter to cards carrying this register tag.
   const [filter, setFilter] = useState<string | null>(null);
 
-  // Filter chips: ALL + the union of register tags actually present on cards,
-  // in first-seen order (so the taxonomy can never drift from the data).
   const tags = useMemo(() => {
-    const seen: string[] = [];
-    cards.forEach(c => c.registers.forEach(r => { if (!seen.includes(r)) seen.push(r); }));
-    return seen;
+    const present = new Set<string>();
+    cards.forEach(c => c.registers.forEach(r => present.add(r)));
+    const ordered = CHIP_ORDER.filter(t => present.has(t));
+    // Append any present tag not in the canonical list (defensive, keeps it visible).
+    present.forEach(t => { if (!ordered.includes(t)) ordered.push(t); });
+    return ordered;
   }, [cards]);
 
   const visible = filter ? cards.filter(c => c.registers.includes(filter)) : cards;
+  const status = filter
+    ? `Showing ${visible.length} of ${cards.length} source texts tagged ${filter}.`
+    : `Showing all ${cards.length} source texts.`;
 
   const chip = (label: string, active: boolean, onClick: () => void) => (
     <button
@@ -57,14 +70,20 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
 
   return (
     <div className="space-y-5">
-      {/* Filter chips */}
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter the library by register">
-        {chip(allLabel, filter === null, () => setFilter(null))}
-        {tags.map(t => chip(t, filter === t, () => setFilter(prev => (prev === t ? null : t))))}
+      {/* Current shelf + filter chips */}
+      <div className="space-y-3">
+        <div className="flex items-baseline gap-3">
+          <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">Current shelf</span>
+          <span className="font-mono text-xs uppercase tracking-widest">{filter ?? allLabel}</span>
+        </div>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter the library by register">
+          {chip(allLabel, filter === null, () => setFilter(null))}
+          {tags.map(t => chip(t, filter === t, () => setFilter(prev => (prev === t ? null : t))))}
+        </div>
+        <p className="font-mono text-micro uppercase tracking-wide opacity-muted" role="status" aria-live="polite">
+          {status}
+        </p>
       </div>
-      <p className="sr-only" role="status" aria-live="polite">
-        {filter ? `${visible.length} of ${cards.length} documents shown, filtered by ${filter}.` : `All ${cards.length} documents shown.`}
-      </p>
 
       {/* Archive-record cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -95,7 +114,7 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
             <div className="mt-auto">
               {doc.href && (
                 <a
-                  href={doc.href}
+                  href={assetHref(doc.href)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}

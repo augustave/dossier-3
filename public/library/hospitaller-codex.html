@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSP—01 CODEX · HOSPITALLER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ——— CANONICAL GROUND ——— */
+    --void:           #050505;  /* the dark behind the record */
+    --sable:          #0E0E0E;  /* war dress — primary dark ground */
+    --sable-2:        #1A1816;  /* raised dark surface */
+    --vellum:         #E8E1CF;  /* records — primary light ground */
+    --vellum-2:       #DDD4BC;  /* aged vellum, secondary light */
+    --hospital-white: #F4F2EC;  /* medical-lineage tertiary ground */
+
+    /* ——— SACRAMENTAL METAL ——— */
+    --brass:          #8C6B2A;  /* rank · sacramental working gold */
+    --bull-gold:      #A8842B;  /* ceremonial mark — charters only */
+
+    /* ——— BLOOD & DECAY ——— */
+    --iron-oxide:     #5C2A1A;  /* rust, decay, age */
+    --cross-red:      #B91C1C;  /* mortal stakes — ONE use per page */
+
+    /* ——— INK ——— */
+    --ink:            #1A1612;  /* body text on vellum */
+    --ink-soft:       #463F33;  /* secondary text, labels */
+
+    /* ——— STATUS (audit) ——— */
+    --pass:           #5C7A2A;  /* in-doctrine */
+    --stress:         #A8842B;  /* drift, correctable */
+    --fail:           #B91C1C;  /* out-of-doctrine */
+
+    /* ——— INHERITED (ARMOR map-in, non-core) ——— */
+    --union-blue:     #1E2F4A;  /* maps to Sable register for Americana */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--void);
+    font-family: 'EB Garamond', Garamond, 'Times New Roman', serif;
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .codex { max-width: 880px; margin: 0 auto; }
+
+  .page {
+    min-height: 100vh;
+    padding: 96px 88px;
+    position: relative;
+    page-break-after: always;
+    border-bottom: 1px solid var(--void);
+  }
+
+  .page.vellum {
+    background: var(--vellum);
+    color: var(--ink);
+    background-image:
+      radial-gradient(ellipse at 15% 12%, rgba(120, 100, 60, 0.08), transparent 45%),
+      radial-gradient(ellipse at 88% 78%, rgba(80, 60, 30, 0.07), transparent 50%),
+      radial-gradient(ellipse at 70% 30%, rgba(140, 110, 70, 0.05), transparent 40%);
+  }
+
+  .page.sable {
+    background: var(--sable);
+    color: var(--vellum);
+    background-image:
+      radial-gradient(ellipse at 80% 10%, rgba(168, 132, 43, 0.05), transparent 50%),
+      radial-gradient(ellipse at 12% 88%, rgba(92, 42, 26, 0.06), transparent 55%);
+  }
+
+  /* ============ COVER ============ */
+  .cover {
+    background: var(--sable);
+    color: var(--vellum);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 80px 80px 64px;
+    min-height: 100vh;
+  }
+
+  .cover-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: #6E6962;
+    text-transform: uppercase;
+  }
+
+  .cover-cross { margin-top: 48px; width: 180px; height: 180px; }
+
+  .cover-title-block { text-align: center; margin-top: 40px; }
+
+  .cover-doc-code {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.55em;
+    color: var(--bull-gold);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .cover-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 58px;
+    letter-spacing: 0.22em;
+    color: var(--vellum);
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+
+  .cover-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: #B8B0A0;
+    letter-spacing: 0.03em;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .cover-rule { width: 80px; height: 1px; background: var(--bull-gold); margin: 36px auto; opacity: 0.7; }
+
+  .cover-meta {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    color: #8A847B;
+    text-transform: uppercase;
+    line-height: 2.2;
+  }
+
+  .cover-thesis {
+    margin-top: auto;
+    padding-top: 56px;
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #C8C0B0;
+    letter-spacing: 0.04em;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  .cover-thesis::before {
+    content: "✚";
+    display: block;
+    color: var(--bull-gold);
+    font-size: 14px;
+    margin-bottom: 14px;
+    opacity: 0.6;
+  }
+
+  /* ============ PAGE HEADER + SECTION ============ */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(70, 50, 20, 0.25);
+    margin-bottom: 48px;
+  }
+
+  .sable .page-header { color: #6E6962; border-bottom-color: rgba(168, 132, 43, 0.25); }
+
+  .section-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.55em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .sable .section-eyebrow { color: #8A847B; }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+
+  .section-thesis {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 19px;
+    color: var(--iron-oxide);
+    margin-bottom: 48px;
+    letter-spacing: 0.02em;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.55;
+  }
+
+  .sable .section-thesis { color: #C8C0B0; }
+
+  .body p { margin-bottom: 16px; font-size: 17px; line-height: 1.7; text-align: justify; hyphens: auto; }
+  .body em { font-style: italic; color: var(--iron-oxide); }
+  .sable .body em { color: var(--bull-gold); }
+  .body strong { font-weight: 600; letter-spacing: 0.01em; }
+  .latin { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--iron-oxide); }
+  .sable .latin { color: var(--bull-gold); }
+
+  /* sub-heading inside a section */
+  .sub-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--bull-gold);
+    text-transform: uppercase;
+    margin: 44px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(140, 107, 42, 0.3);
+  }
+
+  /* ============ THE SIX LAWS (pillar pattern, stated as doctrine) ============ */
+  .law-list { list-style: none; }
+  .law-row {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(70, 50, 20, 0.2);
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .law-row:last-child { border-bottom: none; }
+  .law-numeral {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 42px;
+    color: var(--brass);
+    line-height: 0.9;
+  }
+  .law-content .code {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .law-content .name {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+  .law-content .note { font-size: 15px; line-height: 1.55; color: var(--ink); }
+
+  /* ============ CALLOUT (result / rule box) ============ */
+  .callout {
+    margin-top: 36px;
+    padding: 22px 32px;
+    background: rgba(168, 132, 43, 0.08);
+    border-left: 3px solid var(--bull-gold);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .sable .callout { background: rgba(168, 132, 43, 0.10); }
+  .callout .tag {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  /* ============ TOKEN TABLE (colour) ============ */
+  .token-table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; }
+  .token-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brass);
+    text-align: left;
+    padding: 0 0 12px;
+    border-bottom: 1px solid rgba(140, 107, 42, 0.35);
+  }
+  .token-table td {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(70, 50, 20, 0.18);
+    vertical-align: middle;
+    font-size: 14px;
+  }
+  .token-table tr:last-child td { border-bottom: none; }
+  .tok-swatch {
+    width: 34px; height: 34px;
+    border: 1px solid rgba(70, 50, 20, 0.35);
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .tok-name {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .tok-var {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    text-transform: lowercase;
+  }
+  .tok-hex {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+  .tok-role { font-style: italic; font-size: 13px; color: var(--iron-oxide); }
+  .col-w { width: 52px; } .col-r { width: 120px; }
+
+  /* ============ TYPE SPECIMENS ============ */
+  .type-spec {
+    display: grid;
+    grid-template-columns: 1fr 230px;
+    gap: 28px;
+    padding: 22px 0;
+    border-bottom: 1px solid rgba(70, 50, 20, 0.18);
+    align-items: center;
+  }
+  .type-spec:last-child { border-bottom: none; }
+  .type-meta {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    line-height: 1.9;
+  }
+  .type-meta b { color: var(--brass); font-weight: 600; }
+  .spec-display { font-family: 'Cinzel', serif; font-weight: 700; text-transform: uppercase; color: var(--ink); }
+
+  /* tracking ladder */
+  .ladder-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 11px 0; border-bottom: 1px solid rgba(70, 50, 20, 0.15);
+    font-family: 'Cinzel', serif; text-transform: uppercase; color: var(--ink);
+  }
+  .ladder-row:last-child { border-bottom: none; }
+  .ladder-val { font-size: 10px; letter-spacing: 0.05em; color: var(--brass); }
+
+  /* ============ COMPONENT DEMO FRAME ============ */
+  .demo {
+    border: 1px solid rgba(70, 50, 20, 0.22);
+    background: rgba(244, 242, 236, 0.5);
+    padding: 28px 30px;
+    margin: 4px 0 14px;
+    position: relative;
+  }
+  .demo-tag {
+    position: absolute; top: -9px; left: 18px;
+    background: var(--vellum);
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--brass);
+    padding: 0 8px;
+  }
+  .rule-note {
+    font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+    margin-bottom: 30px;
+    padding-left: 16px; border-left: 2px solid rgba(140, 107, 42, 0.4);
+  }
+  .rule-note b {
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--brass); display: inline;
+  }
+
+  /* live grade pills (from source) */
+  .audit-grade {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px; border-radius: 0; border: 1px solid;
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.25em;
+    font-weight: 600; text-transform: uppercase; background: transparent;
+    white-space: nowrap; margin-right: 10px;
+  }
+  .audit-grade::before { content: ""; width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .audit-grade.pass { color: var(--pass); border-color: var(--pass); }
+  .audit-grade.pass::before { background: var(--pass); }
+  .audit-grade.stress { color: var(--stress); border-color: var(--stress); }
+  .audit-grade.stress::before { background: var(--stress); }
+  .audit-grade.fail { color: var(--fail); border-color: var(--fail); }
+  .audit-grade.fail::before { background: var(--fail); }
+
+  /* live findings (from source) */
+  .findings-list { list-style: none; }
+  .findings-item {
+    padding: 16px 0 16px 48px;
+    border-bottom: 1px solid rgba(70, 50, 20, 0.18);
+    position: relative; font-size: 16px; line-height: 1.7;
+  }
+  .findings-item:last-child { border-bottom: none; }
+  .findings-item.holds::before { content: "✚"; position: absolute; left: 12px; top: 18px; color: var(--pass); font-size: 16px; }
+  .findings-item.stress::before { content: "▲"; position: absolute; left: 14px; top: 19px; color: var(--stress); font-size: 11px; }
+  .findings-item .lead {
+    font-family: 'Cinzel', serif; font-weight: 600; font-size: 12px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink);
+    display: block; margin-bottom: 3px;
+  }
+
+  /* live swatch-row + stack-pair (from source) */
+  .swatch-row { display: flex; align-items: center; gap: 14px; padding: 8px 0; font-size: 14px; }
+  .swatch { width: 28px; height: 28px; flex-shrink: 0; border: 1px solid rgba(70, 50, 20, 0.3); }
+  .swatch-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+  .swatch-note { font-family: 'EB Garamond', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-left: auto; }
+
+  .stack-pair { padding: 18px 0; border-bottom: 1px solid rgba(70, 50, 20, 0.18); font-size: 16px; line-height: 1.65; }
+  .stack-pair:last-child { border-bottom: none; }
+  .stack-formula {
+    font-family: 'Cinzel', serif; font-weight: 600; font-size: 14px;
+    letter-spacing: 0.12em; color: var(--brass); text-transform: uppercase; margin-bottom: 6px;
+  }
+
+  /* mini section header used inside the demo */
+  .mini-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.3em;
+    color: var(--ink-soft); text-transform: uppercase;
+    padding-bottom: 14px; border-bottom: 1px solid rgba(70, 50, 20, 0.25);
+  }
+
+  /* rejection list */
+  .reject-item {
+    padding: 14px 0 14px 44px; position: relative;
+    border-bottom: 1px solid rgba(168, 132, 43, 0.15);
+    font-size: 16px; line-height: 1.65; color: #D8D0C0;
+  }
+  .reject-item:last-child { border-bottom: none; }
+  .reject-item::before {
+    content: "✕"; position: absolute; left: 14px; top: 15px;
+    color: var(--cross-red); font-size: 13px; font-weight: 700;
+  }
+  .reject-item .lead {
+    font-family: 'Cinzel', serif; font-weight: 600; font-size: 12px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--vellum);
+    display: block; margin-bottom: 3px;
+  }
+
+  /* lineage timeline */
+  .lineage-row {
+    display: grid; grid-template-columns: 150px 1fr; gap: 22px;
+    padding: 16px 0; border-bottom: 1px solid rgba(70, 50, 20, 0.18);
+    align-items: baseline;
+  }
+  .lineage-row:last-child { border-bottom: none; }
+  .lineage-when {
+    font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--brass); font-weight: 600;
+  }
+  .lineage-what { font-size: 15px; line-height: 1.6; }
+
+  /* ============ CLOSING ============ */
+  .closing {
+    background: var(--sable); color: var(--vellum);
+    display: flex; flex-direction: column; justify-content: space-between;
+    align-items: center; padding: 96px 88px 80px; min-height: 100vh;
+  }
+  .closing-header {
+    width: 100%; display: flex; justify-content: space-between;
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.35em;
+    color: #6E6962; text-transform: uppercase;
+  }
+  .closing-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 64px 0; }
+  .closing-cross { width: 88px; height: 88px; margin-bottom: 48px; opacity: 0.85; }
+  .closing-thesis {
+    text-align: center; font-family: 'Cinzel', serif; font-weight: 500;
+    font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--vellum); line-height: 1.9; max-width: 580px;
+  }
+  .closing-thesis-extended {
+    margin-top: 24px; font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 17px; color: #B8B0A0; letter-spacing: 0.04em; text-transform: none;
+    line-height: 1.7; max-width: 480px;
+  }
+  .closing-rule { width: 60px; height: 1px; background: var(--bull-gold); margin: 48px auto; opacity: 0.7; }
+  .closing-signature {
+    text-align: center; font-family: 'Cinzel', serif; font-size: 11px;
+    letter-spacing: 0.4em; color: #8A847B; text-transform: uppercase; line-height: 2.4;
+  }
+  .closing-signature .name {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px;
+    color: var(--vellum); letter-spacing: 0.06em; text-transform: none; display: block; margin-bottom: 8px;
+  }
+  .closing-final {
+    margin-top: auto; text-align: center; font-family: 'Cinzel', serif;
+    font-size: 9px; letter-spacing: 0.5em; color: #5A5550; text-transform: uppercase;
+  }
+
+  @media print {
+    body { background: white; }
+    .codex { max-width: none; }
+    .page { min-height: auto; padding: 50px 50px; page-break-after: always; }
+    .cover, .closing, .sable { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<article class="codex">
+
+  <!-- ============ COVER ============ -->
+  <section class="page cover">
+    <header class="cover-header">
+      <span>DEVGRU·COMPUTER</span>
+      <span>HOSPITALLER · CODEX</span>
+    </header>
+
+    <svg class="cover-cross" viewBox="-110 -110 220 220" xmlns="http://www.w3.org/2000/svg" aria-label="Hospitaller Cross">
+      <defs>
+        <linearGradient id="silverArm" x1="20%" y1="0%" x2="80%" y2="100%">
+          <stop offset="0%" stop-color="#DCD8CE"/><stop offset="20%" stop-color="#C2BEB5"/>
+          <stop offset="45%" stop-color="#8E8B82"/><stop offset="55%" stop-color="#7A7770"/>
+          <stop offset="75%" stop-color="#A6A299"/><stop offset="100%" stop-color="#6E6B64"/>
+        </linearGradient>
+        <linearGradient id="silverArmAlt" x1="80%" y1="0%" x2="20%" y2="100%">
+          <stop offset="0%" stop-color="#C8C5BC"/><stop offset="30%" stop-color="#A8A59C"/>
+          <stop offset="55%" stop-color="#7E7B73"/><stop offset="80%" stop-color="#92908A"/>
+          <stop offset="100%" stop-color="#5E5C56"/>
+        </linearGradient>
+        <filter id="patina" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="3" seed="11" result="noise"/>
+          <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.14 0" result="darkNoise"/>
+          <feComposite in="darkNoise" in2="SourceGraphic" operator="in" result="patinaMasked"/>
+          <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="patinaMasked"/></feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#patina)" stroke="#3A3833" stroke-width="0.6" stroke-linejoin="miter">
+        <path d="M -9,-3 L -42,-92 L 0,-58 L 42,-92 L 9,-3 Z" fill="url(#silverArm)"/>
+        <path d="M 3,-9 L 92,-42 L 58,0 L 92,42 L 3,9 Z" fill="url(#silverArmAlt)"/>
+        <path d="M 9,3 L 42,92 L 0,58 L -42,92 L -9,3 Z" fill="url(#silverArm)"/>
+        <path d="M -3,9 L -92,42 L -58,0 L -92,-42 L -3,-9 Z" fill="url(#silverArmAlt)"/>
+      </g>
+      <g fill="#EFECE2" opacity="0.32" pointer-events="none">
+        <path d="M -9,-3 L -41,-89 L -39,-88 L -8,-3 Z"/>
+        <path d="M 3,-9 L 89,-41 L 88,-39 L 3,-8 Z"/>
+        <path d="M 9,3 L 41,89 L 39,88 L 8,3 Z"/>
+        <path d="M -3,9 L -89,41 L -88,39 L -3,8 Z"/>
+      </g>
+      <g fill="#2A2825" opacity="0.4" pointer-events="none">
+        <path d="M 9,-3 L 41,-89 L 39,-88 L 8,-3 Z"/>
+        <path d="M 3,9 L 89,41 L 88,39 L 3,8 Z"/>
+        <path d="M -9,3 L -41,89 L -39,88 L -8,3 Z"/>
+        <path d="M -3,-9 L -89,-41 L -88,-39 L -3,-9 Z"/>
+      </g>
+      <circle cx="0" cy="0" r="5" fill="#6A6862" opacity="0.4"/>
+      <circle cx="0" cy="0" r="3" fill="#3A3833" opacity="0.6"/>
+      <circle cx="0" cy="0" r="1.2" fill="#0E0E0E" opacity="0.9"/>
+      <circle cx="-0.8" cy="-0.8" r="0.5" fill="#D0CDC4" opacity="0.7"/>
+    </svg>
+
+    <div class="cover-title-block">
+      <div class="cover-doc-code">HSP—01 &nbsp;·&nbsp; Codex</div>
+      <h1 class="cover-title">Hospitaller</h1>
+      <div class="cover-subtitle">
+        The moral substrate of the THEATER stack — <br>reverse-engineered from the HSP—04 ARMOR brief into its generating doctrine.
+      </div>
+      <div class="cover-rule"></div>
+      <div class="cover-meta">
+        Vibe · Six Laws · Colour · Type · Materials · Mark · Components · Stack<br>
+        Version I &nbsp;·&nbsp; XXVI · V · MMXXVI
+      </div>
+    </div>
+
+    <div class="cover-thesis">
+      A theater has a doctrine. A doctrine has a look.<br>
+      This is the look of the order that heals before it defends.
+    </div>
+  </section>
+
+  <!-- ============ I · VIBE ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Vibe · i</span>
+    </header>
+
+    <div class="section-eyebrow">Spiritus</div>
+    <h2 class="section-title">What HOSPITALLER Is</h2>
+    <div class="section-thesis">Not a theater. The substrate every theater stands on. The conscience layer of the stack.</div>
+
+    <div class="body">
+      <p>The four canonical THEATER palettes — Coldwater, Rustbelt, Anechoic, Desert — describe <em>where</em> the work happens. HOSPITALLER describes <em>why</em> it is permitted to happen at all. It is not a fifth theater competing for ground; it is the moral and material substrate the other four are built on. Where a host palette wins on theater-specific cues, HOSPITALLER supplies the constraint: <em>heal first, defend second, never conquer, never perform.</em></p>
+
+      <p>The register is the illuminated record, not the product launch. The reference object is a 12th-century field hospital that became a 900-year institution: medical first, military second, surviving Jerusalem, Acre, Rhodes, and Malta by outlasting the loss of every territory it ever held. The aesthetic carries that weight — vellum and sable, brass and bone, a silver cross too dark to read unless you already know what you are looking at.</p>
+
+      <p>HOSPITALLER is what you reach for when the work touches mortal stakes and you need the visual language to take that seriously without spectacle. It is austere, literate, and deliberately unmarketable. The customer who cannot read the symbol is browsing someone else's brand.</p>
+
+      <p>Its first sized application is <strong>ARMOR</strong>, the apparel imprint of DEFENSE·OBSERVER. The HSP—04 brief audits ARMOR against this codex. This document is the codex that audit was run against — recovered, stated, and rendered in its own grammar.</p>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Position:</span> HOSPITALLER is to the four theaters what a charter is to a campaign. The campaign is fought in a theater. The charter is why the order exists at all. Read this codex before applying any host palette to mortal-stakes work.
+    </div>
+  </section>
+
+  <!-- ============ II · THE SIX LAWS ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Doctrine · ii</span>
+    </header>
+
+    <div class="section-eyebrow">Lex</div>
+    <h2 class="section-title">The Six Laws</h2>
+    <div class="section-thesis">Coded HD—01 through HD—06. Every application is audited against these. A piece that breaks a law is corrected, not shipped.</div>
+
+    <ol class="law-list">
+      <li class="law-row">
+        <div class="law-numeral">I</div>
+        <div class="law-content">
+          <div class="code">HD—01</div>
+          <div class="name">Legibility under degradation</div>
+          <div class="note">The mark must survive being made nearly invisible. Black-on-black, tonal-on-tonal, untranslated Latin (<span class="latin">Quis ut Deus</span>), Greek (IC XC NIKA), and Hebrew (<span class="latin">לא אירא רע</span>). The literacy filter is built at the design level: the reader either knows, or finds out, or leaves.</div>
+        </div>
+      </li>
+      <li class="law-row">
+        <div class="law-numeral">II</div>
+        <div class="law-content">
+          <div class="code">HD—02</div>
+          <div class="name">Just War, not conquest</div>
+          <div class="note">The register sits between Maccabee resistance and crusader maximalism — and must land on the resistance side. Where copy references active force, the surrounding text names the constraint: what duty requires, what the cost is, why fighting is tragic even when right. The warrior who would prefer not to fight is the voice.</div>
+        </div>
+      </li>
+      <li class="law-row">
+        <div class="law-numeral">III</div>
+        <div class="law-content">
+          <div class="code">HD—03</div>
+          <div class="name">Subsidiarity, not nationalism</div>
+          <div class="note">The doctrine defends what is <em>prior</em> to the state — the person, the family, the parish. Any piece touching state iconography must frame the defence at that scale, visibly, in the copy and not only in the maker's head. The state is downstream of the family.</div>
+        </div>
+      </li>
+      <li class="law-row">
+        <div class="law-numeral">IV</div>
+        <div class="law-content">
+          <div class="code">HD—04</div>
+          <div class="name">Symbol earned, not displayed</div>
+          <div class="note">Hospitaller chosen over Templar — the order that survived, not the order that was destroyed. Tonal cross treatment. Untranslated tags. References cited by name, never explained. The symbol is a vow made quietly, not a logo shouted loudly.</div>
+        </div>
+      </li>
+      <li class="law-row">
+        <div class="law-numeral">V</div>
+        <div class="law-content">
+          <div class="code">HD—05</div>
+          <div class="name">Institution outlives territory</div>
+          <div class="note">No seasonal cadence. No "Drop 1, Drop 2." Each release is an entry in a fifty-year ledger — <strong>Charter, Dispatch, Edition, Liber</strong> — indexable by a reader in 2074. The Hospitallers measured their existence in centuries; the work is named on that scale.</div>
+        </div>
+      </li>
+      <li class="law-row">
+        <div class="law-numeral">VI</div>
+        <div class="law-content">
+          <div class="code">HD—06</div>
+          <div class="name">Duty without glamour</div>
+          <div class="note">Baldwin IV's silver mask is the corrective: the cost is hidden so the work can continue. No operator-LARP, no founder-as-protagonist, no spectacle. The work speaks. The maker does not perform. The face is the work, not the marketing.</div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout">
+      <span class="tag">Audit grammar:</span> An application is graded against all six —
+      <span class="audit-grade pass">Pass</span>
+      <span class="audit-grade stress">Stressed</span>
+      <span class="audit-grade fail">Fail</span>
+      — where STRESSED means correctable surface drift and FAIL means a foundational break. Foundation rarely fails; surface frequently stresses.
+    </div>
+  </section>
+
+  <!-- ============ III · COLOUR ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Colour · iii</span>
+    </header>
+
+    <div class="section-eyebrow">Color</div>
+    <h2 class="section-title">The Canonical Palette</h2>
+    <div class="section-thesis">Seven grounds and metals, plus ink and status. No tourist colours. Each one has a job and a discipline.</div>
+
+    <table class="token-table">
+      <thead>
+        <tr><th class="col-w">Swatch</th><th>Token</th><th>Hex</th><th class="col-r">Discipline</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tok-swatch" style="background:#0E0E0E"></span></td>
+          <td><span class="tok-name">Sable</span><br><span class="tok-var">--sable</span></td>
+          <td><span class="tok-hex">#0E0E0E</span></td>
+          <td><span class="tok-role">War dress. Primary dark ground.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#E8E1CF"></span></td>
+          <td><span class="tok-name">Vellum</span><br><span class="tok-var">--vellum</span></td>
+          <td><span class="tok-hex">#E8E1CF</span></td>
+          <td><span class="tok-role">Records. Primary light ground.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#F4F2EC"></span></td>
+          <td><span class="tok-name">Hospital White</span><br><span class="tok-var">--hospital-white</span></td>
+          <td><span class="tok-hex">#F4F2EC</span></td>
+          <td><span class="tok-role">Tertiary ground. Medical-lineage pieces only.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#8C6B2A"></span></td>
+          <td><span class="tok-name">Brass</span><br><span class="tok-var">--brass</span></td>
+          <td><span class="tok-hex">#8C6B2A</span></td>
+          <td><span class="tok-role">Rank. Sacramental working gold. Rules, labels.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#A8842B"></span></td>
+          <td><span class="tok-name">Bull Gold</span><br><span class="tok-var">--bull-gold</span></td>
+          <td><span class="tok-hex">#A8842B</span></td>
+          <td><span class="tok-role">Ceremonial mark. Charter documents only.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#5C2A1A"></span></td>
+          <td><span class="tok-name">Iron Oxide</span><br><span class="tok-var">--iron-oxide</span></td>
+          <td><span class="tok-hex">#5C2A1A</span></td>
+          <td><span class="tok-role">Decay, rust, age. Italic and Latin on vellum.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#B91C1C"></span></td>
+          <td><span class="tok-name">Cross Red</span><br><span class="tok-var">--cross-red</span></td>
+          <td><span class="tok-hex">#B91C1C</span></td>
+          <td><span class="tok-role">Mortal stakes. ONE use per page, maximum.</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="sub-eyebrow">Ink &amp; status</div>
+    <table class="token-table">
+      <tbody>
+        <tr>
+          <td class="col-w"><span class="tok-swatch" style="background:#1A1612"></span></td>
+          <td><span class="tok-name">Ink</span> &nbsp;<span class="tok-var">--ink</span></td>
+          <td><span class="tok-hex">#1A1612</span></td>
+          <td class="col-r"><span class="tok-role">Body text on vellum</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#463F33"></span></td>
+          <td><span class="tok-name">Ink Soft</span> &nbsp;<span class="tok-var">--ink-soft</span></td>
+          <td><span class="tok-hex">#463F33</span></td>
+          <td><span class="tok-role">Labels, secondary text</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#5C7A2A"></span></td>
+          <td><span class="tok-name">Pass</span> &nbsp;<span class="tok-var">--pass</span></td>
+          <td><span class="tok-hex">#5C7A2A</span></td>
+          <td><span class="tok-role">In-doctrine (olive)</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#A8842B"></span></td>
+          <td><span class="tok-name">Stress</span> &nbsp;<span class="tok-var">--stress</span></td>
+          <td><span class="tok-hex">#A8842B</span></td>
+          <td><span class="tok-role">Correctable drift (gold)</span></td>
+        </tr>
+        <tr>
+          <td><span class="tok-swatch" style="background:#B91C1C"></span></td>
+          <td><span class="tok-name">Fail</span> &nbsp;<span class="tok-var">--fail</span></td>
+          <td><span class="tok-hex">#B91C1C</span></td>
+          <td><span class="tok-role">Out-of-doctrine (red)</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <span class="tag">Discipline:</span> Vellum and Sable do the work; metals are scarce by rule. Bull Gold appears on ceremonial surfaces only. Cross Red is rationed to one appearance per page so it never decays into decoration — when blood shows up, it means something. <span class="latin">Pass</span> green is the only colour outside the warm-earth family and lives strictly in the audit system.
+    </div>
+  </section>
+
+  <!-- ============ IV · TYPOGRAPHY ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Type · iv</span>
+    </header>
+
+    <div class="section-eyebrow">Litterae</div>
+    <h2 class="section-title">Three Faces, No More</h2>
+    <div class="section-thesis">Cinzel for the chisel, Garamond for the page, Cormorant for the whisper. Sans-serif only for technical specs — never narrative, never ceremonial.</div>
+
+    <div class="sub-eyebrow">The three faces</div>
+    <div class="body">
+      <p><strong>Cinzel</strong> (a Trajan-equivalent) carries everything ceremonial — titles, eyebrows, labels, codes, numerals — always uppercase, always tracked. <strong>EB Garamond</strong> (a Caslon-equivalent) carries narrative body copy, justified with hyphenation. <strong>Cormorant Garamond</strong> carries italic thesis lines and untranslated Latin. Blackletter is permitted <em>only</em> for direct Latin quotation, never for English. Cistercian numerals are reserved for marking and identification.</p>
+    </div>
+
+    <div class="sub-eyebrow">The scale — rendered live</div>
+    <div class="type-spec">
+      <div class="spec-display" style="font-size:48px; letter-spacing:0.22em; line-height:1;">Armor</div>
+      <div class="type-meta"><b>Cover title</b><br>Cinzel 700 · 58px<br>tracking 0.22em</div>
+    </div>
+    <div class="type-spec">
+      <div class="spec-display" style="font-size:30px; letter-spacing:0.1em; font-weight:600;">The Six Laws</div>
+      <div class="type-meta"><b>Section title</b><br>Cinzel 600 · 32px<br>tracking 0.10em</div>
+    </div>
+    <div class="type-spec">
+      <div class="spec-display" style="font-size:42px; color:var(--brass); font-weight:700; line-height:0.9;">IV</div>
+      <div class="type-meta"><b>Numeral</b><br>Cinzel 700 · 42px<br>Roman, brass</div>
+    </div>
+    <div class="type-spec">
+      <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:19px; color:var(--iron-oxide);">Heal and defend. No conquest.</div>
+      <div class="type-meta"><b>Thesis line</b><br>Cormorant italic · 19px<br>iron-oxide</div>
+    </div>
+    <div class="type-spec">
+      <div style="font-family:'EB Garamond',serif; font-size:17px; line-height:1.5; color:var(--ink);">The order that survived rather than the order that was destroyed.</div>
+      <div class="type-meta"><b>Body</b><br>EB Garamond · 17px<br>line-height 1.7, justified</div>
+    </div>
+    <div class="type-spec">
+      <div style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.4em; text-transform:uppercase; color:var(--ink-soft);">HD—04 &nbsp;·&nbsp; Eyebrow</div>
+      <div class="type-meta"><b>Label / code</b><br>Cinzel · 10–11px<br>tracking 0.30–0.55em</div>
+    </div>
+
+    <div class="sub-eyebrow">The tracking ladder</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; Letter-spacing widens as type shrinks and rises in ceremony. The smaller and more sacred the line, the more air between its letters. This is the single most recognisable signature of the system.</div>
+    <div class="ladder-row" style="font-size:16px; letter-spacing:0.04em;">Body · 0.04em<span class="ladder-val">0.04em</span></div>
+    <div class="ladder-row" style="font-size:15px; letter-spacing:0.10em;">Title · 0.10em<span class="ladder-val">0.10em</span></div>
+    <div class="ladder-row" style="font-size:13px; letter-spacing:0.22em;">Cover · 0.22em<span class="ladder-val">0.22em</span></div>
+    <div class="ladder-row" style="font-size:12px; letter-spacing:0.35em;">Header · 0.35em<span class="ladder-val">0.35em</span></div>
+    <div class="ladder-row" style="font-size:11px; letter-spacing:0.55em;">Eyebrow · 0.55em<span class="ladder-val">0.55em</span></div>
+  </section>
+
+  <!-- ============ V · MATERIALS ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Materials · v</span>
+    </header>
+
+    <div class="section-eyebrow">Materia</div>
+    <h2 class="section-title">Ground &amp; Surface</h2>
+    <div class="section-thesis">Two grounds, one texture, zero rounding. The page is parchment or it is war dress. Nothing in between.</div>
+
+    <div class="sub-eyebrow">Vellum ground</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; The light page is never flat. Three faint radial stains — top-left, bottom-right, upper-centre — at 5–8% opacity simulate aged parchment. The eye reads it as a document that has survived, not a screen that was rendered.</div>
+    <div class="demo" style="background:var(--vellum); background-image:radial-gradient(ellipse at 15% 12%, rgba(120,100,60,0.10), transparent 45%),radial-gradient(ellipse at 88% 78%, rgba(80,60,30,0.09), transparent 50%);">
+      <span class="demo-tag">.page.vellum</span>
+      <div style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.3em; color:var(--ink-soft); text-transform:uppercase;">Aged parchment ground · ink on vellum</div>
+    </div>
+
+    <div class="sub-eyebrow">Sable ground</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; The dark page carries the same texture logic inverted — faint gold and oxide stains on near-black. Used for the stress register, the cover, and the closing. Vellum text, brass accents.</div>
+    <div class="demo" style="background:var(--sable); background-image:radial-gradient(ellipse at 80% 10%, rgba(168,132,43,0.07), transparent 50%); border-color:rgba(168,132,43,0.25);">
+      <span class="demo-tag" style="background:var(--sable); color:var(--bull-gold);">.page.sable</span>
+      <div style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.3em; color:#8A847B; text-transform:uppercase;">War dress ground · vellum on sable</div>
+    </div>
+
+    <div class="sub-eyebrow">The four material laws</div>
+    <ul class="findings-list">
+      <li class="findings-item holds"><span class="lead">Square corners, always</span> Every border, pill, swatch, and box uses <span class="latin">border-radius: 0</span>. Rounding reads as software friendliness; the system rejects it. Corners are cut, not softened.</li>
+      <li class="findings-item holds"><span class="lead">Hairline borders at low opacity</span> Dividers are 1px at 18–25% opacity in warm earth (vellum) or brass (sable). They organise without shouting. Never a hard black line on the light ground.</li>
+      <li class="findings-item holds"><span class="lead">Tonal-on-tonal, not contrast-on-contrast</span> The Maltese cross is silver-on-near-black, almost invisible. Marks are recovered from their ground, not stamped onto it. This <em>is</em> HD—01 expressed in material.</li>
+      <li class="findings-item holds"><span class="lead">Generous monastic margins</span> Pages breathe at 96px × 88px padding; content caps at 880px wide. The whitespace is the silence the doctrine speaks into.</li>
+    </ul>
+  </section>
+
+  <!-- ============ VI · THE MARK ============ -->
+  <section class="page sable">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Mark · vi</span>
+    </header>
+
+    <div class="section-eyebrow">Signum</div>
+    <h2 class="section-title">The Mark &amp; Its Glyphs</h2>
+    <div class="section-thesis">The eight-pointed Hospitaller cross, chosen over the Templar. Plus the working glyphs that carry status through the system.</div>
+
+    <div style="display:grid; grid-template-columns:200px 1fr; gap:40px; align-items:center; margin-bottom:20px;">
+      <svg viewBox="-110 -110 220 220" width="180" height="180" xmlns="http://www.w3.org/2000/svg" aria-label="Hospitaller Cross">
+        <defs>
+          <linearGradient id="markArm" x1="20%" y1="0%" x2="80%" y2="100%">
+            <stop offset="0%" stop-color="#DCD8CE"/><stop offset="45%" stop-color="#8E8B82"/>
+            <stop offset="55%" stop-color="#7A7770"/><stop offset="100%" stop-color="#6E6B64"/>
+          </linearGradient>
+          <linearGradient id="markArmAlt" x1="80%" y1="0%" x2="20%" y2="100%">
+            <stop offset="0%" stop-color="#C8C5BC"/><stop offset="55%" stop-color="#7E7B73"/><stop offset="100%" stop-color="#5E5C56"/>
+          </linearGradient>
+        </defs>
+        <g stroke="#3A3833" stroke-width="0.6" stroke-linejoin="miter">
+          <path d="M -9,-3 L -42,-92 L 0,-58 L 42,-92 L 9,-3 Z" fill="url(#markArm)"/>
+          <path d="M 3,-9 L 92,-42 L 58,0 L 92,42 L 3,9 Z" fill="url(#markArmAlt)"/>
+          <path d="M 9,3 L 42,92 L 0,58 L -42,92 L -9,3 Z" fill="url(#markArm)"/>
+          <path d="M -3,9 L -92,42 L -58,0 L -92,-42 L -3,-9 Z" fill="url(#markArmAlt)"/>
+        </g>
+        <circle cx="0" cy="0" r="4" fill="#2A2825" opacity="0.7"/>
+        <circle cx="0" cy="0" r="1.2" fill="#0E0E0E"/>
+      </svg>
+      <div class="body" style="color:#D8D0C0;">
+        <p style="color:#D8D0C0;">Four arrowhead arms meeting at a point, each notched into a deep V — the eight points are the eight obligations of a knight. Built from four <span class="latin">&lt;path&gt;</span> shapes on alternating silver gradients so adjacent arms catch light differently, giving forged depth. A fractal-noise <span class="latin">patina</span> filter ages the metal; faint highlight and shadow facets bevel each arm.</p>
+      </div>
+    </div>
+
+    <div class="sub-eyebrow" style="color:var(--bull-gold); border-bottom-color:rgba(168,132,43,0.3);">Construction rules</div>
+    <ul class="findings-list">
+      <li class="findings-item holds"><span class="lead">Hospitaller, never Templar</span> The choice is doctrine, not taste — the order that survived the loss of its territory over the order that was annihilated. HD—04 and HD—05 made visible.</li>
+      <li class="findings-item holds"><span class="lead">Silver, never gold</span> The cross is pewter and steel. Gold is reserved for ceremonial type. A gold cross would break the rationing of metal.</li>
+      <li class="findings-item holds"><span class="lead">Sized by ceremony</span> 180px on a cover, 88px at a close. The mark grows for arrival and shrinks for farewell — never decorative repetition.</li>
+    </ul>
+
+    <div class="sub-eyebrow" style="color:var(--bull-gold); border-bottom-color:rgba(168,132,43,0.3);">Working glyphs</div>
+    <div style="display:flex; gap:40px; flex-wrap:wrap; font-size:15px; color:#D8D0C0;">
+      <div><span style="color:var(--pass); font-size:22px;">✚</span> &nbsp; <b style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.1em; color:var(--vellum);">HEAVY CROSS</b> — holds, affirmation, divider</div>
+      <div><span style="color:var(--stress); font-size:15px;">▲</span> &nbsp; <b style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.1em; color:var(--vellum);">TRIANGLE</b> — stress, caution</div>
+      <div><span style="color:var(--cross-red); font-size:16px; font-weight:700;">✕</span> &nbsp; <b style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.1em; color:var(--vellum);">SALTIRE</b> — rejection, out-of-doctrine</div>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Photography:</span> Caravaggio's <span class="latin">Knight of Malta</span> is the canonical reference. Tenebrism. Single light source. Black ground. Subject in chiaroscuro or deep shadow. No tactical-bro register, no founder-as-protagonist, no glamour.
+    </div>
+  </section>
+
+  <!-- ============ VII · COMPONENTS ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Components · vii</span>
+    </header>
+
+    <div class="section-eyebrow">Membra</div>
+    <h2 class="section-title">Component Vocabulary</h2>
+    <div class="section-thesis">Each component shown live, with the rule that generates it. These are the parts every HOSPITALLER document is assembled from.</div>
+
+    <!-- section block -->
+    <div class="sub-eyebrow">Section block</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; A Latin eyebrow, an English title, an italic thesis. The eyebrow names the thing in the old tongue; the title names it plainly; the thesis states the single idea the section defends. Always centred.</div>
+    <div class="demo">
+      <span class="demo-tag">.section-eyebrow / .section-title / .section-thesis</span>
+      <div style="text-align:center;">
+        <div style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.55em; color:var(--ink-soft); text-transform:uppercase; margin-bottom:10px;">Examinatio</div>
+        <div style="font-family:'Cinzel',serif; font-size:26px; letter-spacing:0.1em; font-weight:600; text-transform:uppercase; margin-bottom:10px;">The Audit</div>
+        <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:18px; color:var(--iron-oxide);">One idea, stated once, centred.</div>
+      </div>
+    </div>
+
+    <!-- audit / law row -->
+    <div class="sub-eyebrow">Audit row + grade pill</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; Three columns: oversized Roman numeral, content (code / name / note), and a grade pill justified right. The pill is a bordered, square-cornered tag with a status dot — never filled, never rounded.</div>
+    <div class="demo">
+      <span class="demo-tag">.audit-row / .audit-grade</span>
+      <div style="display:grid; grid-template-columns:60px 1fr 120px; gap:20px; align-items:start;">
+        <div style="font-family:'Cinzel',serif; font-weight:700; font-size:38px; color:var(--brass); line-height:0.9;">II</div>
+        <div>
+          <div style="font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.4em; color:var(--ink-soft); text-transform:uppercase; margin-bottom:4px;">HD—02</div>
+          <div style="font-family:'Cinzel',serif; font-weight:600; font-size:16px; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:8px;">Just War, not conquest</div>
+          <div style="font-size:14px; line-height:1.5; color:var(--ink);">The register must land on the resistance side of the line.</div>
+        </div>
+        <div style="justify-self:end;"><span class="audit-grade stress" style="margin:0;">Stressed</span></div>
+      </div>
+    </div>
+
+    <!-- findings -->
+    <div class="sub-eyebrow">Findings item</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; A glyph in the left margin sets the verdict before a word is read — <span style="color:var(--pass);">✚</span> for holds, <span style="color:var(--stress);">▲</span> for stress. A Cinzel lead label, then the finding in body.</div>
+    <div class="demo">
+      <span class="demo-tag">.findings-item</span>
+      <ul class="findings-list">
+        <li class="findings-item holds"><span class="lead">Hospitaller cross selection</span> The order that survived. The 945-year line.</li>
+        <li class="findings-item stress"><span class="lead">"Drop" lifecycle naming</span> Flattens the institutional horizon to a season.</li>
+      </ul>
+    </div>
+
+    <!-- callout -->
+    <div class="sub-eyebrow">Callout (result / rule box)</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; A gold-tinted block with a 3px brass left border, opened by an uppercase Cinzel tag. Used for the one conclusion a section must not let the reader miss.</div>
+    <div class="demo">
+      <span class="demo-tag">.callout</span>
+      <div class="callout" style="margin:0;"><span class="tag">Result:</span> Two pass, four stressed, zero fail. In-doctrine on foundation, drift on surface.</div>
+    </div>
+
+    <!-- swatch row + stack pair -->
+    <div class="sub-eyebrow">Swatch row &amp; stack pairing</div>
+    <div class="rule-note"><b>Rule</b> &nbsp; A colour gets a chip, an uppercase label, and an italic role pushed to the right margin. A stack pairing gets a Cinzel <span class="latin">formula</span> line over a plain description.</div>
+    <div class="demo">
+      <span class="demo-tag">.swatch-row / .stack-pair</span>
+      <div class="swatch-row"><span class="swatch" style="background:#5C2A1A;"></span><span class="swatch-label">Iron Oxide</span><span class="swatch-note">Decay</span></div>
+      <div class="stack-pair" style="border-top:1px solid rgba(70,50,20,0.18); margin-top:8px; padding-top:16px;">
+        <div class="stack-formula">Desert × Hospitaller</div>
+        Forward-deployed chaplaincy. Combat medicine. The dual mission on austere ground.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VIII · MOTION ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Motion · viii</span>
+    </header>
+
+    <div class="section-eyebrow">Quies</div>
+    <h2 class="section-title">Motion &amp; Sound</h2>
+    <div class="section-thesis">The discipline of stillness. A record does not animate. A vow does not autoplay.</div>
+
+    <div class="body">
+      <p>HOSPITALLER is print-first. The canonical artifact is a document that prints clean to paper — <span class="latin">page-break-after</span> on every section, exact colour adjustment forced, full-bleed grounds preserved. Motion is not a feature of the system; its absence is.</p>
+
+      <p>Where an interface demands transition, the only permitted motion is the <em>slow reveal</em> — a single staggered fade on page load, never looping, never bouncing, never drawing attention to itself. No parallax. No hover theatrics. No spring physics. The model is a page turning, not an app responding.</p>
+
+      <p>Sound, where it exists, is the same logic: low, sparse, ecclesiastical — a single struck bell, the rustle of paper, plainchant at the threshold of audibility. Never a notification tone. Never a product chime.</p>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Rule:</span> If you are unsure whether an animation belongs, it does not. Stillness is the default and the discipline. The work is heavy; heavy things do not bounce.
+    </div>
+  </section>
+
+  <!-- ============ IX · REJECTIONS ============ -->
+  <section class="page sable">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Rejections · ix</span>
+    </header>
+
+    <div class="section-eyebrow">Reiecta</div>
+    <h2 class="section-title">What HOSPITALLER Refuses</h2>
+    <div class="section-thesis">The boundary is as much doctrine as the palette. These reads are off-substrate. Listed so they are never argued for again.</div>
+
+    <ul class="findings-list">
+      <li class="reject-item"><span class="lead">Gloss, bevel, and chrome</span> Showroom polish is the visual signature of marketing. The only permitted shine is environmental — metal under light — never finish itself.</li>
+      <li class="reject-item"><span class="lead">Operator-LARP register</span> Tactical gear, face tattoos, snow camo, skull-and-bones flags. The Black Rifle / Forward Observations genre is downmarket from where the substrate sits. The intellectual frame is the separation.</li>
+      <li class="reject-item"><span class="lead">Conquest-coding</span> Maximalist copy without the Just War constraint stated. The crusader-triumphant read is a foundational break, not a surface stress.</li>
+      <li class="reject-item"><span class="lead">Founder-as-protagonist</span> Baldwin IV's mask exists to prevent exactly this. The maker does not perform. The work speaks.</li>
+      <li class="reject-item"><span class="lead">Seasonal streetwear cadence</span> "Drop 1, Drop 2." The fifty-year ledger is flattened to a lookbook timeline. Releases are charters, not seasons.</li>
+      <li class="reject-item"><span class="lead">The derivative "Sunday Service" finish</span> Washed-black hoodies with halo'd saint portraits in the borrowed Yeezy register. If it reads as someone else's brand, it is re-treated through the canonical palette or cut.</li>
+      <li class="reject-item"><span class="lead">Translation of the literacy filter</span> Latin, Greek, and Hebrew stay untranslated. Subtitling the symbol defeats HD—01. The reader earns it or leaves.</li>
+    </ul>
+  </section>
+
+  <!-- ============ X · LINEAGE ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Lineage · x</span>
+    </header>
+
+    <div class="section-eyebrow">Stirps</div>
+    <h2 class="section-title">The 945-Year Line</h2>
+    <div class="section-thesis">A palette without lineage is a moodboard. HOSPITALLER inherits an institution that outlived every territory it held.</div>
+
+    <div class="lineage-row"><div class="lineage-when">c. 1099</div><div class="lineage-what">Jerusalem. The Order of St. John founded as a field hospital. <strong>Medical first, military second</strong> — the inheritance the surface must keep visible.</div></div>
+    <div class="lineage-row"><div class="lineage-when">1177 · 1185</div><div class="lineage-what"><strong>Baldwin IV</strong>, the Leper King. Crowned at thirteen, won Montgisard at sixteen, wore a silver mask to hide the cost, died at twenty-four. The founder archetype: duty without glamour.</div></div>
+    <div class="lineage-row"><div class="lineage-when">1291</div><div class="lineage-what">Acre falls. The order does not. It relocates rather than dies — the first proof of HD—05, institution over territory.</div></div>
+    <div class="lineage-row"><div class="lineage-when">1530 · 1565</div><div class="lineage-what">Rhodes, then Malta. The Great Siege of 1565. Centuries at sea — Lepanto 1571 — feeding the Coldwater × Hospitaller pairing.</div></div>
+    <div class="lineage-row"><div class="lineage-when">1608</div><div class="lineage-what"><strong>Caravaggio</strong> paints in Malta. Tenebrism becomes the canonical photographic reference: single source, black ground, the cost in shadow.</div></div>
+    <div class="lineage-row"><div class="lineage-when">17th c. →</div><div class="lineage-what">The <strong>recusant tradition</strong>: hidden faith, the secret uniform, the Sacred Heart worn where it cannot be seen. Operationalised as the woven hem tag.</div></div>
+    <div class="lineage-row"><div class="lineage-when">1926 · 1939</div><div class="lineage-what">The Cristero War. The Polish Home Army medic logs. The substrate of suppressed records — the AKTE × Hospitaller pairing, where the brand recovers what was hidden.</div></div>
+
+    <div class="callout">
+      <span class="tag">Bridge text:</span> Michael Walzer's <span class="latin">Just and Unjust Wars</span> (1977) is the table at which the four-character bar — Catholic, Christian, Jew, SEAL — can sit together. The intellectual frame that separates the substrate from the genre below it.
+    </div>
+  </section>
+
+  <!-- ============ XI · STACK ============ -->
+  <section class="page vellum">
+    <header class="page-header">
+      <span>HSP—01 CODEX · HOSPITALLER</span>
+      <span>Stack · xi</span>
+    </header>
+
+    <div class="section-eyebrow">Stipes</div>
+    <h2 class="section-title">Position in the Stack</h2>
+    <div class="section-thesis">HOSPITALLER does not stand beside the four theaters. It stands beneath them. The host palette wins on theater cues; HOSPITALLER supplies the moral substrate.</div>
+
+    <div class="body">
+      <p>When work crosses into a specific operational theater, HOSPITALLER pairs with one of the four canonical SEAL palettes. The <strong>host palette wins on theater-specific cues</strong> — colour, materials, instrument language. HOSPITALLER supplies what sits underneath all of them: the constraint, the lineage, the reason the work is permitted. Each Charter declares its pairing on the inside-front cover.</p>
+    </div>
+
+    <div style="margin-top:28px;">
+      <div class="stack-pair">
+        <div class="stack-formula">Desert × Hospitaller</div>
+        Forward-deployed chaplaincy. Combat medicine. Cristero-coded pieces. The dual mission applied to austere ground operations.
+      </div>
+      <div class="stack-pair">
+        <div class="stack-formula">Coldwater × Hospitaller</div>
+        Maritime medical and naval Hospitaller history. Lepanto 1571. Malta 1565. The submarine medical bay. Naval chaplaincy.
+      </div>
+      <div class="stack-pair">
+        <div class="stack-formula">Anechoic × Hospitaller</div>
+        Cryptographic protection of medical data in conflict zones. The conscience layer of EW. Hospital-protection corridors. Quiet, technical, ascetic.
+      </div>
+      <div class="stack-pair">
+        <div class="stack-formula">Rustbelt × Hospitaller</div>
+        The arsenal of care. MEDEVAC airframes, ambulances, surgical robotics. The brass and bell-metal heritage applied to production.
+      </div>
+      <div class="stack-pair">
+        <div class="stack-formula">AKTE × Hospitaller</div>
+        The recovered archive. Recusant documents. Cristero church records. Home Army medic logs. Where the brand recovers what was suppressed.
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="tag">Rule:</span> <span class="latin">Hospitallarius cum Coldwater. Hospitallarius cum Desert.</span> The carrier's palette wins; the payload never overrides the host. HOSPITALLER is the payload that is permitted to ride every one of them — because it is the conscience, not the cargo.
+    </div>
+  </section>
+
+  <!-- ============ CLOSING ============ -->
+  <section class="page closing">
+    <header class="closing-header">
+      <span>DEVGRU·COMPUTER</span>
+      <span>FINIS · CODEX</span>
+    </header>
+
+    <div class="closing-center">
+      <svg class="closing-cross" viewBox="-110 -110 220 220" xmlns="http://www.w3.org/2000/svg" aria-label="Hospitaller Cross">
+        <defs>
+          <linearGradient id="closeArm" x1="20%" y1="0%" x2="80%" y2="100%">
+            <stop offset="0%" stop-color="#A8A59C"/><stop offset="45%" stop-color="#7E7B73"/>
+            <stop offset="55%" stop-color="#6E6B64"/><stop offset="100%" stop-color="#5E5C56"/>
+          </linearGradient>
+          <linearGradient id="closeArmAlt" x1="80%" y1="0%" x2="20%" y2="100%">
+            <stop offset="0%" stop-color="#9A978E"/><stop offset="55%" stop-color="#6E6B64"/><stop offset="100%" stop-color="#52504A"/>
+          </linearGradient>
+        </defs>
+        <g stroke="#2A2825" stroke-width="0.6" stroke-linejoin="miter">
+          <path d="M -9,-3 L -42,-92 L 0,-58 L 42,-92 L 9,-3 Z" fill="url(#closeArm)"/>
+          <path d="M 3,-9 L 92,-42 L 58,0 L 92,42 L 3,9 Z" fill="url(#closeArmAlt)"/>
+          <path d="M 9,3 L 42,92 L 0,58 L -42,92 L -9,3 Z" fill="url(#closeArm)"/>
+          <path d="M -3,9 L -92,42 L -58,0 L -92,-42 L -3,-9 Z" fill="url(#closeArmAlt)"/>
+        </g>
+        <circle cx="0" cy="0" r="4" fill="#2A2825" opacity="0.7"/>
+        <circle cx="0" cy="0" r="1.2" fill="#0E0E0E"/>
+      </svg>
+
+      <div class="closing-thesis">
+        Heal and defend.<br>
+        No conquest. No spectacle.
+      </div>
+      <div class="closing-thesis-extended">
+        Persist beyond the loss of any single territory.
+      </div>
+
+      <div class="closing-rule"></div>
+
+      <div class="closing-signature">
+        <span class="name">Ven · Ebenz Augustave</span>
+        DEVGRU·COMPUTER &nbsp;|&nbsp; DEFENSE·OBSERVER<br>
+        HSP—01 CODEX &nbsp;·&nbsp; Version I &nbsp;·&nbsp; XXVI · V · MMXXVI
+      </div>
+    </div>
+
+    <div class="closing-final">
+      The codex the audit was run against · Apply before any host pairing
+    </div>
+  </section>
+
+</article>
+
+</body>
+</html>

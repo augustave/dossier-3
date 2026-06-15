@@ -49,6 +49,12 @@ interface VisualLanguagesProps {
   grammarIntro: string;
 }
 
+// Resolve a CTA href: leave absolute http(s) URLs untouched; prefix relative
+// library paths with the deployment base (BASE_URL) so they resolve under the
+// /CT-DOSSIER/ GitHub Pages base instead of 404-ing at the site root.
+const assetHref = (href: string): string =>
+  /^https?:\/\//.test(href) ? href : `${import.meta.env.BASE_URL}${href}`;
+
 export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
   languages,
   registers,
@@ -155,7 +161,7 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
                   {[lang.cta, lang.secondaryCta].filter(Boolean).map((c) => (
                     <a
                       key={c!.href}
-                      href={c!.href}
+                      href={assetHref(c!.href)}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
