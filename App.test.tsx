@@ -78,7 +78,7 @@ describe('Manifest overlay', () => {
 
   it('opens from the INDEX button and renders the V3 module order (01–07)', async () => {
     render(<App />);
-    fireEvent.click(screen.getByText(/INDEX \(00\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(07\)/i));
 
     const items = await screen.findAllByTestId('manifest-item');
     const order = items.map(el => el.getAttribute('data-index'));
@@ -87,7 +87,7 @@ describe('Manifest overlay', () => {
 
   it('closes when the Close Index button is clicked', async () => {
     render(<App />);
-    fireEvent.click(screen.getByText(/INDEX \(00\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(07\)/i));
 
     const closeBtn = await screen.findByRole('button', { name: /Close Index/i });
     fireEvent.click(closeBtn);
@@ -299,33 +299,42 @@ describe('Faceted audience entry', () => {
   });
 });
 
-describe('Register explorer (DIRECTION, module 03)', () => {
+describe('Visual Languages (module 03)', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
     try {
       window.history.replaceState(null, '', window.location.pathname);
     } catch (e) {}
-    // Open Module 03 (DIRECTION) so its register explorer renders for query.
+    // Open Module 03 (VISUAL LANGUAGES) so its language cards render for query.
     window.location.hash = '#module-03';
   });
 
-  it('renders the first register by default and swaps when a different tab is clicked', async () => {
+  it('renders the three authored visual language cards and the register grammar', async () => {
     render(<App />);
-
-    // Monastery (MN) is first in the registers array — its quote is the default.
-    await waitFor(() => {
-      expect(screen.getByText(/anything that survives deserves inspection/i)).toBeInTheDocument();
-    });
-    expect(screen.queryByText(/The unseen still has structure/i)).not.toBeInTheDocument();
-
-    // Click the Oracle tab.
-    const orTab = screen.getByRole('tab', { name: /^OR/ });
-    fireEvent.click(orTab);
+    const m3 = () => document.getElementById('module-03') as HTMLElement;
 
     await waitFor(() => {
-      expect(screen.getByText(/The unseen still has structure/i)).toBeInTheDocument();
+      expect(within(m3()).getByText(/^DOSSIER$/)).toBeInTheDocument();
     });
-    // Monastery's quote is gone after swap.
-    expect(screen.queryByText(/anything that survives deserves inspection/i)).not.toBeInTheDocument();
+    expect(within(m3()).getByText(/^DEADLIGHT$/)).toBeInTheDocument();
+    expect(within(m3()).getByText(/^IAA$/)).toBeInTheDocument();
+
+    // Register grammar present as toggle buttons, not a tab strip.
+    expect(within(m3()).getByRole('button', { name: /MONASTERY/i })).toBeInTheDocument();
+    expect(within(m3()).getByRole('button', { name: /FORGE/i })).toBeInTheDocument();
+    expect(within(m3()).getByRole('button', { name: /ORACLE/i })).toBeInTheDocument();
+  });
+
+  it('toggles a register highlight when its grammar chip is clicked', async () => {
+    render(<App />);
+    const m3 = () => document.getElementById('module-03') as HTMLElement;
+
+    const forge = await within(m3()).findByRole('button', { name: /FORGE/i });
+    expect(forge.getAttribute('aria-pressed')).toBe('false');
+    fireEvent.click(forge);
+    expect(forge.getAttribute('aria-pressed')).toBe('true');
+    // Clicking again clears it.
+    fireEvent.click(forge);
+    expect(forge.getAttribute('aria-pressed')).toBe('false');
   });
 });

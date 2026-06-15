@@ -7,9 +7,9 @@
    Section spine, in render order:
      01 TASTE        — where the work is sourced
      02 SEEING       — the cognitive lenses (was WORLD MODEL)
-     03 DIRECTION    — how taste becomes form (holds the register explorer)
+     03 VISUAL LANGUAGES — how taste becomes authored systems (language cards + register grammar)
      04 NEIGHBORHOOD — adjacent practices (holds the old FIELD POSITION chart)
-     05 PRACTICE     — how the work happens (was CREATIVE TECHNOLOGIST + OPERATING METHOD)
+     05 DOCTRINE     — what the work obeys and refuses (was PRACTICE / CREATIVE TECHNOLOGIST + OPERATING METHOD)
      06 PORTFOLIOS   — where the built work lives
      07 ENGAGEMENT   — when people call (replaced the ROLE MATRIX simulator)
    Voice: calmer than the v2 Meservey register — declarative, first person
@@ -17,7 +17,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.1.0",
+    version: "3.2.0",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -93,111 +93,123 @@ export const CT_DOSSIER_COPY_V120 = {
         "Coherence. Adoption. Survival. Most ambitious work fails because one of the three breaks first.",
     },
 
-    // 03 — DIRECTION. The explicit home for art direction. Holds the register
-    // explorer. V3.1: registers are now CIVILIZATIONAL, not domain-based — each
-    // names a source of authority (Monastery / Forge / Oracle), so the register
-    // system reads as a theory of taste rather than a palette selector.
-    direction: {
-      title: "DIRECTION",
-      prompt: "HOW TASTE BECOMES FORM",
-      hero: "Direction begins where references become decisions.",
+    // 03 — VISUAL LANGUAGES (V3.2, was DIRECTION). Proves taste becomes
+    // authored, reusable visual operating languages. Three language cards
+    // (DOSSIER / DEADLIGHT / IAA) are the centerpiece; the registers
+    // (Monastery / Forge / Oracle) are demoted to grammar tags underneath.
+    visualLanguages: {
+      title: "VISUAL LANGUAGES",
+      prompt: "HOW TASTE BECOMES SYSTEMS",
+      hero: "Taste becomes useful when it can repeat without becoming generic.",
       body: [
-        "Typography. Color. Symbols. Editorial rhythm. Interface behavior.",
-        "The goal isn't consistency for its own sake. It's recognition — a visual language that feels like itself wherever it shows up.",
+        "A visual language is not a moodboard. It's a rule system for how a thing should look, speak, behave, refuse, and survive translation.",
+        "The work below is organized as authored visual languages — each one carries its own palette, typography, component logic, interaction vocabulary, and source of authority. The registers sit underneath them: Monastery, Forge, Oracle. Not as themes. As grammar.",
       ].join("\n\n"),
-      volTitle: "VISUAL OPERATING LANGUAGES",
-      vol:
-        "A visual language should not need a logo to be recognized. The type, spacing, symbols, diagrams, hierarchy, and behavior should already carry identity. Branding is what gets added. Visual language is what remains when the branding is removed.",
 
-      registersTitle: "REGISTERS",
-      registersHero: "Click a register. The source of authority changes.",
-      registersFootnote: "Three registers. Different sources of authority, same discipline.",
-      registers: [
+      languages: [
         {
-          code: "MN",
-          name: "MONASTERY",
-          domain: "Monastery",
-          function: "Memory / Preservation / Restraint",
-          mainLine: "Authority through restraint.",
-          question: "What deserves to survive?",
-          description:
-            "Built from archives, rare books, field notes, religious architecture, illuminated margins, old libraries, and systems of preservation. Not nostalgic — concerned with what earns the right to remain. It uses silence, spacing, hierarchy, and material restraint to create authority. Preserved, not precious. Calm, not soft. Old enough to have memory; clear enough to be used now.",
-          palette: [
-            { name: "Parchment Bone", hex: "#E8E0D0", accent: false },
-            { name: "Carbon Ink",     hex: "#111111", accent: false },
-            { name: "Oxidized Blue",  hex: "#204C8D", accent: true  },
-            { name: "Archive Grey",   hex: "#8A8A82", accent: false },
+          id: "dossier",
+          name: "DOSSIER",
+          label: "Visual Operating Language v4.0",
+          type: "Design-token system + component grammar",
+          context: "Intelligence-style geospatial products",
+          registers: ["Forge", "Oracle"],
+          shortCopy:
+            "A visual operating language for intelligence-style geospatial products. Built around physical substrate, tactical illumination, dense data, and dossier-like interaction — it treats the interface as a handled object: tabs, stacks, bands, coordinates, cards, layers, and temporal evidence.",
+          governingRules: ["Physical constraints", "Utilitarian canvas", "Tactical illumination"],
+          includes: [
+            "Substrate palette", "Tactical markers", "Heatmap ramp", "Typography rules",
+            "Status badges", "Alert components", "Intel cards", "Scatter / heatmap / gauge grammar",
+            "GeoJSON projection logic", "Entity dossier stack", "Layout rules",
+            "Interaction vocabulary", "Motion and elevation tokens",
           ],
-          protectedAccent: "Oxidized Blue",
-          quote: "Not everything old is worth keeping. But anything that survives deserves inspection.",
-          ironRule: "Nothing decorative unless it carries memory.",
-          traits: [
-            "Large margins", "Editorial hierarchy", "Serif emphasis",
-            "Low saturation", "Document logic", "Quiet authority",
+          sourceOfAuthority: "Constraint. Visibility. Operational legibility.",
+          refuses: [
+            "Decorative data", "Generic dark mode", "Fake sci-fi UI",
+            "Unmapped color meaning", "Cosmetic motion", "Gradients that hide information",
           ],
-          avoid: [
-            "Nostalgia cosplay", "Fake parchment", "Medieval cliché", "Museum stiffness",
-          ],
+          ctaLabel: null,
+          ctaHref: null,
         },
         {
-          code: "FG",
-          name: "FORGE",
-          domain: "Forge",
-          function: "Pressure / Endurance / Material Force",
-          mainLine: "Authority through stress.",
-          question: "What survives pressure?",
-          description:
-            "Built from foundries, shipyards, armor, tools, infrastructure, and objects designed to work before they were designed to sell. The closest register to Mass Over Swagger. It values weight, force, durability, and consequence — beauty that comes from usefulness under pressure. It should feel already tested. Clean not because it's fragile, but because anything unnecessary has been burned away.",
-          palette: [
-            { name: "Iron Black",    hex: "#0D0D0D", accent: false },
-            { name: "Heat Rust",     hex: "#8A3A22", accent: false },
-            { name: "Hammer Grey",   hex: "#5F6363", accent: false },
-            { name: "Safety Orange", hex: "#FF4F00", accent: true  },
+          id: "deadlight",
+          name: "DEADLIGHT",
+          label: "Archive / design system",
+          type: "Visual archive system",
+          context: "Dark editorial memory system",
+          registers: ["Monastery", "Oracle"],
+          shortCopy:
+            "A dark archive language for memory, absence, symbolic residue, and signal. DEADLIGHT should feel like a system for preserving what almost disappeared — not a horror aesthetic, not a cyberpunk skin. An archive where darkness isn't decoration; it's the condition that makes signal visible.",
+          governingRules: ["Memory before spectacle", "Darkness as substrate", "Signal only when meaningful"],
+          includes: [
+            "Archive surface", "Dark editorial hierarchy", "Symbolic navigation",
+            "Sparse illumination", "Memory objects", "Quiet metadata", "Ritualized reading flow",
           ],
-          protectedAccent: "Safety Orange",
-          quote: "Effectiveness is a form of beauty.",
-          ironRule: "If it cannot survive pressure, it does not belong.",
-          traits: [
-            "Dense blocks", "Strong rules", "Industrial spacing",
-            "Material contrast", "Weighty type", "Utility-first composition",
+          sourceOfAuthority: "Absence. Memory. Perception.",
+          refuses: [
+            "Random glow", "Horror cliché", "Generic AI neon",
+            "Decorative darkness", "Empty mysticism", "Texture without meaning",
           ],
-          avoid: [
-            "Tactical cosplay", "Fake military texture", "Overuse of orange", "Cyberpunk noise",
-          ],
+          ctaLabel: "VIEW DEADLIGHT",
+          ctaHref: "https://deadlight.vercel.app/",
         },
         {
-          code: "OR",
-          name: "ORACLE",
-          domain: "Oracle",
-          function: "Signal / Perception / Invisible Systems",
-          mainLine: "Authority through perception.",
-          question: "What remains unseen?",
-          description:
-            "Built from radar, astronomy, bioelectric fields, intelligence diagrams, machine perception, and the attempt to make invisible systems legible. Not mystical decoration — perception design. For systems that can't be seen directly but still shape behavior: signals, fields, networks, patterns, latent structures. It should feel like the moment a hidden order becomes visible.",
-          palette: [
-            { name: "Anechoic Black", hex: "#0F1316", accent: false },
-            { name: "Signal Green",   hex: "#42FC04", accent: true  },
-            { name: "Spectral Blue",  hex: "#315CFF", accent: false },
-            { name: "Ghost White",    hex: "#EDEDED", accent: false },
+          id: "iaa",
+          name: "IAA",
+          label: "Identity Architecture Agent",
+          type: "Brand doctrine + visual identity system",
+          context: "Personal brand / art direction / cognitive identity",
+          registers: ["Monastery", "Forge"],
+          shortCopy:
+            "A brand language for turning biography, taste, memory, pressure, and visual authorship into a coherent identity system. IAA is where the practice becomes self-aware. It doesn't ask “what style do I like?” — it asks what keeps appearing across the work, and what that pattern reveals.",
+          governingRules: ["Mass over swagger", "Lineage over trend", "Constraint as input"],
+          includes: [
+            "Brand architecture", "Voice principles", "Taste doctrine",
+            "Personal mythology refinement", "Visual authority rules", "Positioning language",
+            "Refusal logic", "Creative identity map",
           ],
-          protectedAccent: "Signal Green",
-          quote: "The unseen still has structure.",
-          ironRule: "Every signal must reveal something.",
-          traits: [
-            "Layered information", "Thin lines", "Signal traces",
-            "Dark fields", "Diagram logic", "Emergent patterns",
+          sourceOfAuthority: "Lineage. Pressure. Authorship.",
+          refuses: [
+            "Generic personal branding", "Trend-cycle identity", "Empty mystique",
+            "Over-explaining", "Style without worldview", "Technology without taste",
           ],
-          avoid: [
-            "Generic AI neon", "Random particles", "Mystical fog", "Sci-fi interface cliché",
-          ],
+          ctaLabel: null,
+          ctaHref: null,
         },
       ],
 
-      principleTitle: "WORKING PRINCIPLE",
-      principle:
-        "A strong visual language should survive translation — across products, teams, years, technologies, and contexts.",
-      registersNote:
-        "The register is not a theme. It is a rule system. It determines what the work is allowed to emphasize, what it must refuse, and where its authority comes from.",
+      registersGrammarTitle: "REGISTER GRAMMAR",
+      registersGrammarIntro:
+        "The registers are not themes. They are sources of authority — they explain where a visual language gets its weight. Tap one to highlight the languages built on it.",
+      registers: [
+        {
+          id: "monastery",
+          code: "MN",
+          name: "MONASTERY",
+          function: "Memory / Preservation / Restraint",
+          question: "What deserves to survive?",
+          usedWhen: "When the work needs quiet authority, archival logic, editorial pacing, and cultural memory.",
+          color: "#204C8D",
+        },
+        {
+          id: "forge",
+          code: "FG",
+          name: "FORGE",
+          function: "Pressure / Endurance / Material Force",
+          question: "What survives pressure?",
+          usedWhen: "When the work needs weight, consequence, durability, and visible constraint.",
+          color: "#FF4F00",
+        },
+        {
+          id: "oracle",
+          code: "OR",
+          name: "ORACLE",
+          function: "Signal / Perception / Invisible Systems",
+          question: "What remains unseen?",
+          usedWhen: "When the work needs to reveal hidden structures, signals, networks, patterns, or latent systems.",
+          color: "#42FC04",
+        },
+      ],
     },
 
     // 04 — THE NEIGHBORHOOD. Orientation, not ranking. Holds the old FIELD
@@ -250,44 +262,47 @@ export const CT_DOSSIER_COPY_V120 = {
       },
     },
 
-    // 05 — PRACTICE. Merges the old CREATIVE TECHNOLOGIST + OPERATING METHOD
-    // into one narrative: Direction → Proof → Trust. Practitioner, not recruiter.
-    practice: {
-      title: "PRACTICE",
-      prompt: "HOW THE WORK HAPPENS",
-      hero: "The work runs across three connected layers.",
-      layersTitle: "DIRECTION · PROOF · TRUST",
+    // 05 — DOCTRINE (V3.2, was PRACTICE). What the work obeys and refuses.
+    // Direction → Form → Trust (Proof routed through art direction as Form).
+    doctrine: {
+      title: "DOCTRINE",
+      prompt: "WHAT THE WORK OBEYS AND REFUSES",
+      hero: "The work isn't held together by style. It's held together by rules.",
+      intro:
+        "A doctrine is the set of things a practice obeys when taste, pressure, and execution start to conflict. It defines what the work is allowed to become — and what it must refuse.",
+      layersTitle: "DIRECTION · FORM · TRUST",
       layers: [
         {
           code: "01",
           title: "DIRECTION",
           body:
-            "What should people understand? What should they remember? What should they believe? The visual and narrative system starts here.",
+            "What should people understand? What should they remember? What should they believe? The visual and narrative system begins here — deciding what matters before anything is built.",
         },
         {
           code: "02",
-          title: "PROOF",
+          title: "FORM",
           body:
-            "Once the idea is clear, it becomes tangible — interfaces, diagrams, motion studies, interactive prototypes, working software. Anything a person can inspect instead of imagine.",
+            "Once the direction is clear, it needs a body: interfaces, diagrams, motion studies, documents, prototypes, working software. Form is what lets a person inspect the idea instead of only imagining it.",
         },
         {
           code: "03",
           title: "TRUST",
           body:
-            "Trust isn't made by aesthetics. It's made when claims survive inspection. The goal isn't persuasion; it's clarity strong enough that people can decide.",
+            "Trust isn't made by aesthetics. It's made when the form keeps its promise. The goal isn't persuasion; it's clarity strong enough that people can decide.",
         },
       ],
-      rulesTitle: "WORKING RULES",
+      rulesTitle: "WORKING DOCTRINE",
       rules: [
-        "Evidence over claims.",
-        "Build early.",
-        "Explain simply.",
-        "Write the rules down.",
-        "Prefer inspection over presentation.",
+        "Taste is a sourcing discipline.",
+        "Constraint is an input, not an obstacle.",
+        "Visual language must survive translation.",
+        "Nothing decorative unless it carries meaning.",
+        "Build only when the idea demands form.",
+        "Evidence matters, but spectacle does not.",
         "Calm under load is a designed property.",
+        "The work should know what it refuses.",
       ],
-      shortTitle: "SHORT VERSION",
-      short: "One head for the look, the build, and the story.",
+      short: "One head for the eye, the system, and the artifact.",
     },
 
     // 06 — PORTFOLIOS. Where the built work lives. Order is taste-first:
@@ -316,7 +331,7 @@ export const CT_DOSSIER_COPY_V120 = {
           domain: "defense.observer",
           register: "Defense",
           frame:
-            "Doctrine-driven visual systems for autonomy, sensing, command, and technical communication. The same practice under harder constraints.",
+            "Visual systems for autonomy, sensing, command, and technical communication. The same practice tested under harder constraints.",
         },
       ],
       outcomeLine:

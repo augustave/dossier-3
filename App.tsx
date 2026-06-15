@@ -23,15 +23,19 @@ const RENDERED_MODULES = CONTENT_MODULES
   .filter(m => m.id !== ModuleType.MANIFEST)
   .sort((a, b) => a.index.localeCompare(b.index));
 
+// Index label count — derived from the rendered module count so the chrome
+// can never go stale against the module list (was hardcoded "00").
+const INDEX_COUNT = String(RENDERED_MODULES.length).padStart(2, '0');
+
 /**
  * Faceted entry — audience reads. Each maps to a curated subset of the V3
  * taste-led spine, ordered by "start with" priority for that audience.
  * Every read still opens on TASTE or SEEING so the eye/point-of-view lands
  * before execution — the core of the CT-PRD-MARY-01 repositioning.
- *   hiring → 01 Taste / 04 Neighborhood / 06 Portfolios
- *   client → 01 Taste / 03 Direction    / 07 Engagement
- *   collab → 02 Seeing / 03 Direction   / 05 Practice
- *   acad   → 02 Seeing / 01 Taste       / 04 Neighborhood
+ *   hiring → 01 Taste / 04 Neighborhood     / 06 Portfolios
+ *   client → 01 Taste / 03 Visual Languages / 07 Engagement
+ *   collab → 02 Seeing / 03 Visual Languages / 05 Doctrine
+ *   acad   → 02 Seeing / 01 Taste           / 04 Neighborhood
  * NOTE: mapping is a sensible default pending an owner war-game; adjust here.
  */
 type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
@@ -181,7 +185,7 @@ const App: React.FC = () => {
                   onClick={() => setIsIndexOpen(true)}
                   className="font-mono text-xs uppercase tracking-widest border border-black px-3 py-1 hover:bg-black hover:text-white transition-colors text-black"
                >
-                  INDEX (00)
+                  INDEX ({INDEX_COUNT})
                </button>
              </div>
              <div className="hidden md:block font-mono text-micro text-right text-black">
@@ -204,13 +208,15 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            <div className="mb-5 md:mb-6 max-w-3xl">
+            <div className="mb-5 md:mb-6 max-w-3xl space-y-4">
               <p className="font-sans text-base md:text-lg leading-relaxed">
                 <span className="font-bold">This is not a portfolio.</span> The built work lives at three dedicated sites —{' '}
                 <a href="https://artdirector.rocks" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">artdirector.rocks</a>,{' '}
                 <a href="https://brandproduct.dev" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">brandproduct.dev</a>, and{' '}
                 <a href="https://defense.observer" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">defense.observer</a>.
-                {' '}This dossier documents the practice behind them: where the references come from, how the systems are built, and why certain forms keep surviving long after fashion has moved on.
+              </p>
+              <p className="font-sans text-base md:text-lg leading-relaxed">
+                This dossier documents the practice behind them: where the references come from, how the visual languages take shape, and why certain forms keep surviving long after fashion has moved on.
               </p>
             </div>
 

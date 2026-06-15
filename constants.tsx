@@ -1,7 +1,7 @@
 import React from 'react';
 import { ModuleData, ModuleType } from './types';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
-import { DoctrineExplorer } from './components/DoctrineExplorer';
+import { VisualLanguages } from './components/VisualLanguages';
 
 export const COLORS = {
   blue: 'bg-strata-blue text-white border-white/20 theme-blue',
@@ -11,10 +11,10 @@ export const COLORS = {
 };
 
 /**
- * Content modules for the CT Dossier — V3 taste-led spine.
+ * Content modules for the CT Dossier — taste-led spine (V3.2).
  * Display index === narrative order (no more index/key mismatch).
- *   00 MANIFEST (overlay)  01 TASTE  02 SEEING  03 DIRECTION
- *   04 NEIGHBORHOOD  05 PRACTICE  06 PORTFOLIOS  07 ENGAGEMENT
+ *   00 MANIFEST (overlay)  01 TASTE  02 SEEING  03 VISUAL LANGUAGES
+ *   04 NEIGHBORHOOD  05 DOCTRINE  06 PORTFOLIOS  07 ENGAGEMENT
  */
 export const CONTENT_MODULES: ModuleData[] = [
   {
@@ -110,56 +110,33 @@ export const CONTENT_MODULES: ModuleData[] = [
     ),
   },
 
-  // 03 — DIRECTION. The explicit home for art direction. Holds the register
-  // explorer (palette + thesis + iron rule, swappable on click).
+  // 03 — VISUAL LANGUAGES (V3.2). Authored visual operating languages are the
+  // centerpiece; the registers are demoted to grammar tags beneath them.
   {
-    id: ModuleType.DIRECTION,
+    id: ModuleType.VISUAL_LANGUAGES,
     index: "03",
-    title: COPY.modules.direction.title,
-    promptText: COPY.modules.direction.prompt,
+    title: COPY.modules.visualLanguages.title,
+    promptText: COPY.modules.visualLanguages.prompt,
     themeColor: 'black',
-    responseText: COPY.modules.direction.hero,
+    responseText: COPY.modules.visualLanguages.hero,
     responseDisplay: (
       <div className="space-y-8">
-        <div className="font-serif text-2xl md:text-4xl leading-relaxed">
-          {COPY.modules.direction.hero}
+        <div className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.visualLanguages.hero}
         </div>
         <div className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-2xl">
-          {COPY.modules.direction.body.split('\n\n').map((para, i) => (
+          {COPY.modules.visualLanguages.body.split('\n\n').map((para, i) => (
             <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
           ))}
         </div>
 
-        <div className="border-t border-white/20 pt-6">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">{COPY.modules.direction.volTitle}</h4>
-          <p className="font-sans text-base md:text-lg opacity-secondary leading-relaxed max-w-2xl">
-            {COPY.modules.direction.vol}
-          </p>
-        </div>
-
-        {/* Register explorer — moved here from the old Operating Method module.
-            Direction is its natural home: it shows taste codified into rules. */}
-        <div className="mt-4 pt-8 border-t border-white/20">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
-            {COPY.modules.direction.registersTitle}
-          </h4>
-          <p className="font-serif text-xl md:text-2xl leading-relaxed mb-6 max-w-2xl">
-            {COPY.modules.direction.registersHero}
-          </p>
-          <DoctrineExplorer registers={COPY.modules.direction.registers} />
-          <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
-            {COPY.modules.direction.registersFootnote}
-          </p>
-        </div>
-
-        <div className="border-t border-white/20 pt-6">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">{COPY.modules.direction.principleTitle}</h4>
-          <p className="font-serif text-lg md:text-xl italic opacity-tertiary leading-relaxed max-w-2xl">
-            {COPY.modules.direction.principle}
-          </p>
-          <p className="font-sans text-sm md:text-base opacity-muted leading-relaxed max-w-2xl mt-4">
-            {COPY.modules.direction.registersNote}
-          </p>
+        <div className="pt-4 border-t border-white/20">
+          <VisualLanguages
+            languages={COPY.modules.visualLanguages.languages}
+            registers={COPY.modules.visualLanguages.registers}
+            grammarTitle={COPY.modules.visualLanguages.registersGrammarTitle}
+            grammarIntro={COPY.modules.visualLanguages.registersGrammarIntro}
+          />
         </div>
       </div>
     ),
@@ -264,25 +241,28 @@ export const CONTENT_MODULES: ModuleData[] = [
     ),
   },
 
-  // 05 — PRACTICE. How the work happens (merges the old Creative Technologist
-  // + Operating Method). Direction → Proof → Trust.
+  // 05 — DOCTRINE (V3.2, was PRACTICE). What the work obeys and refuses.
+  // Direction → Form → Trust.
   {
-    id: ModuleType.PRACTICE,
+    id: ModuleType.DOCTRINE,
     index: "05",
-    title: COPY.modules.practice.title,
-    promptText: COPY.modules.practice.prompt,
+    title: COPY.modules.doctrine.title,
+    promptText: COPY.modules.doctrine.prompt,
     themeColor: 'cream',
-    responseText: COPY.modules.practice.hero,
+    responseText: COPY.modules.doctrine.hero,
     responseDisplay: (
       <div className="space-y-8">
         <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.practice.hero}
+          {COPY.modules.doctrine.hero}
+        </p>
+        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
+          {COPY.modules.doctrine.intro}
         </p>
 
         <div>
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.practice.layersTitle}</h4>
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.doctrine.layersTitle}</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {COPY.modules.practice.layers.map((l, idx) => (
+            {COPY.modules.doctrine.layers.map((l, idx) => (
               <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
                 <div className="flex items-baseline justify-between mb-3 gap-3">
                   <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{l.code}</span>
@@ -295,9 +275,9 @@ export const CONTENT_MODULES: ModuleData[] = [
         </div>
 
         <div className="space-y-3 border-t border-current/20 pt-6">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted">{COPY.modules.practice.rulesTitle}</h4>
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted">{COPY.modules.doctrine.rulesTitle}</h4>
           <ul className="space-y-2">
-            {COPY.modules.practice.rules.map((b, i) => (
+            {COPY.modules.doctrine.rules.map((b, i) => (
               <li key={i} className="flex gap-3 items-start">
                 <span className="font-mono text-xs opacity-muted pt-1">&bull;</span>
                 <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{b}</span>
@@ -307,7 +287,7 @@ export const CONTENT_MODULES: ModuleData[] = [
         </div>
 
         <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-current/10 pt-4">
-          {COPY.modules.practice.short}
+          {COPY.modules.doctrine.short}
         </p>
       </div>
     ),

@@ -135,7 +135,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
                 }}
                 className={`hover:opacity-100 hover:underline transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
              >
-                + INSPECT
+                + STUDY
              </button>
             
             <button
