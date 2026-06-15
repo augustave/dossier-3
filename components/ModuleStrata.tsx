@@ -87,17 +87,6 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
         onToggle();
       }}
     >
-      {/* Sole keyboard / screen-reader control. The section itself is a plain
-          mouse click-target (no role/tabIndex); this button carries the
-          aria-expanded/aria-controls state and becomes visible on focus. */}
-      <button
-        aria-expanded={isOpen}
-        aria-controls={panelId}
-        onClick={(e) => { e.stopPropagation(); onToggle(); }}
-        className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:top-2 focus:left-4 focus:p-2 focus:bg-white focus:text-black focus:border focus:border-black focus:font-mono focus:text-xs focus:uppercase focus:tracking-widest"
-      >
-        {isOpen ? 'Collapse' : 'Expand'} {module.title}
-      </button>
       <div className="container mx-auto px-4 md:px-8 max-w-6xl">
         {/* Header Band */}
         <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 md:gap-12 select-none">
@@ -125,13 +114,16 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
           </div>
           
           
-          {/* Single visible open/close control — "+ STUDY" collapsed, "FOLD"
-              expanded. Decorative (aria-hidden/tabIndex -1): the sr-only button
-              above carries the accessible semantics; the band itself is clickable. */}
-          <div className="hidden md:flex items-center gap-3 font-mono text-xs uppercase tracking-widest opacity-muted">
+          {/* Single open/close control. The ONLY visible label is "+ STUDY"
+              (collapsed) / "FOLD" (expanded); the descriptive Expand/Collapse
+              wording lives in aria-label, never as visible text. This button is
+              the real focusable control (carries aria-expanded/-controls), so no
+              separate sr-only toggle is needed. */}
+          <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest opacity-muted shrink-0">
             <button
-                aria-hidden="true"
-                tabIndex={-1}
+                aria-expanded={isOpen}
+                aria-controls={panelId}
+                aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${module.title}`}
                 onClick={(e) => { e.stopPropagation(); onToggle(); }}
                 className="flex items-center gap-2 hover:opacity-100 transition-opacity"
             >
