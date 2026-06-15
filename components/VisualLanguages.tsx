@@ -11,6 +11,11 @@ import React, { useState } from 'react';
  * `copy.v1_1.ts` under modules.visualLanguages.
  */
 
+export interface LanguageCta {
+  label: string;
+  href: string;
+}
+
 export interface VisualLanguage {
   id: string;
   name: string;
@@ -23,8 +28,8 @@ export interface VisualLanguage {
   includes: string[];
   sourceOfAuthority: string;
   refuses: string[];
-  ctaLabel: string | null;
-  ctaHref: string | null;
+  cta: LanguageCta | null;
+  secondaryCta: LanguageCta | null;
 }
 
 export interface RegisterGrammar {
@@ -139,22 +144,27 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
               </div>
             </div>
 
-            {/* Source of authority + optional CTA */}
+            {/* Source of authority + optional CTAs (suppressed when href missing) */}
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mt-5 pt-4 border-t border-white/10">
               <div>
                 <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-1">Source of authority</div>
                 <p className="font-serif italic text-lg">{lang.sourceOfAuthority}</p>
               </div>
-              {lang.ctaHref && lang.ctaLabel && (
-                <a
-                  href={lang.ctaHref}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="font-mono text-xs uppercase tracking-widest border border-white/40 px-3 py-2 hover:bg-white hover:text-black transition-colors whitespace-nowrap w-fit"
-                >
-                  {lang.ctaLabel} -&gt;
-                </a>
+              {(lang.cta || lang.secondaryCta) && (
+                <div className="flex flex-wrap gap-2">
+                  {[lang.cta, lang.secondaryCta].filter(Boolean).map((c) => (
+                    <a
+                      key={c!.href}
+                      href={c!.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="font-mono text-xs uppercase tracking-widest border border-white/40 px-3 py-2 hover:bg-white hover:text-black transition-colors whitespace-nowrap w-fit"
+                    >
+                      {c!.label} -&gt;
+                    </a>
+                  ))}
+                </div>
               )}
             </div>
           </div>

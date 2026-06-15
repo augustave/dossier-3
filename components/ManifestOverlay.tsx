@@ -56,7 +56,7 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
           <p className="font-serif text-2xl md:text-3xl opacity-secondary mt-2">{COPY.indexEpigraph}</p>
         </div>
 
-        {/* Module list — V3 narrative order, ascending 01–07. */}
+        {/* Module list — narrative order, ascending 01–08. */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
           {CONTENT_MODULES
             .filter(m => m.id !== ModuleType.MANIFEST)
@@ -83,7 +83,7 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
         <div className="mt-12 font-mono text-xs opacity-subtle max-w-md">
             CT DOSSIER v{COPY.meta.version}<br/>
             NO API. STATIC GENERATION.<br/>
-            TASTE-LED. SEVEN STRATA.
+            TASTE-LED. {CONTENT_MODULES.filter(m => m.id !== ModuleType.MANIFEST).length} STRATA.
         </div>
 
       </div>

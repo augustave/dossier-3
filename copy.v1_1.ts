@@ -17,7 +17,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.2.0",
+    version: "3.3.0",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -103,9 +103,15 @@ export const CT_DOSSIER_COPY_V120 = {
       hero: "Taste becomes useful when it can repeat without becoming generic.",
       body: [
         "A visual language is not a moodboard. It's a rule system for how a thing should look, speak, behave, refuse, and survive translation.",
-        "The work below is organized as authored visual languages — each one carries its own palette, typography, component logic, interaction vocabulary, and source of authority. The registers sit underneath them: Monastery, Forge, Oracle. Not as themes. As grammar.",
+        "The systems below are authored visual languages. Each carries its own palette, typography, component logic, interaction vocabulary, and source of authority. The registers sit underneath them: Monastery, Forge, Oracle. Not as themes. As grammar.",
       ].join("\n\n"),
 
+      // CTA hrefs are null until the matching file is dropped into
+      // Founder/public/library/ — broken links are suppressed, not rendered
+      // (CT-PRD-MARY-01.3). Intended paths, when assets land:
+      //   DOSSIER  cta  -> /library/dossier-visual-operating-language-v4.pdf
+      //   DEADLIGHT 2nd  -> /library/deadlight-rulebook-v2.pdf
+      //   IAA cta/2nd    -> /library/iaa-manifesto.md , /library/iaa-brand-architecture.md
       languages: [
         {
           id: "dossier",
@@ -125,44 +131,49 @@ export const CT_DOSSIER_COPY_V120 = {
           ],
           sourceOfAuthority: "Constraint. Visibility. Operational legibility.",
           refuses: [
-            "Decorative data", "Generic dark mode", "Fake sci-fi UI",
+            "Decorative data", "Generic dark mode", "Fake sci-fi interface language",
             "Unmapped color meaning", "Cosmetic motion", "Gradients that hide information",
           ],
-          ctaLabel: null,
-          ctaHref: null,
+          cta: null,
+          secondaryCta: null,
         },
         {
           id: "deadlight",
           name: "DEADLIGHT",
-          label: "Archive / design system",
-          type: "Visual archive system",
-          context: "Dark editorial memory system",
-          registers: ["Monastery", "Oracle"],
+          label: "Visual Systems Specification v2.0",
+          type: "Defense-technology visual rulebook",
+          context: "Defense-technology communication",
+          registers: ["Forge", "Oracle", "Monastery"],
           shortCopy:
-            "A dark archive language for memory, absence, symbolic residue, and signal. DEADLIGHT should feel like a system for preserving what almost disappeared — not a horror aesthetic, not a cyberpunk skin. An archive where darkness isn't decoration; it's the condition that makes signal visible.",
-          governingRules: ["Memory before spectacle", "Darkness as substrate", "Signal only when meaningful"],
+            "A production-grade visual system for making invisible structure visible under pressure. DEADLIGHT governs defense-technology communication across presentations, product visualization, mark systems, gallery and exhibition, collage R&D, and tactical-interface subsystems. It isn't a mood — it's a rulebook. Material registers, type registers, color protocol, content functions, production categories, R&D practice, mark systems, gallery rules, and scope boundaries all resolve into one visual grammar.",
+          governingRules: [
+            "Controlled occlusion", "Material is meaning", "Color is functional",
+            "Scale is accountability", "The system survives density",
+            "The collage feeds the system", "Range proves discipline",
+          ],
           includes: [
-            "Archive surface", "Dark editorial hierarchy", "Symbolic navigation",
-            "Sparse illumination", "Memory objects", "Quiet metadata", "Ritualized reading flow",
+            "Material registers", "Type registers", "Color protocol", "Content functions",
+            "Production categories", "R&D practice", "Mark systems", "Gallery rules", "Scope boundaries",
           ],
-          sourceOfAuthority: "Absence. Memory. Perception.",
+          sourceOfAuthority: "Pressure. Visibility. Controlled revelation.",
           refuses: [
-            "Random glow", "Horror cliché", "Generic AI neon",
-            "Decorative darkness", "Empty mysticism", "Texture without meaning",
+            "Decorative texture", "Unmapped accent color", "Heroic military cliché",
+            "Generic terminal aesthetics", "Portfolio-only spectacle",
+            "Density that collapses the system", "Outliers that are not killed or codified",
           ],
-          ctaLabel: "VIEW DEADLIGHT",
-          ctaHref: "https://deadlight.vercel.app/",
+          cta: { label: "VIEW DEADLIGHT", href: "https://deadlight.vercel.app/" },
+          secondaryCta: null,
         },
         {
           id: "iaa",
           name: "IAA",
           label: "Identity Architecture Agent",
-          type: "Brand doctrine + visual identity system",
+          type: "Brand doctrine + identity architecture system",
           context: "Personal brand / art direction / cognitive identity",
           registers: ["Monastery", "Forge"],
           shortCopy:
-            "A brand language for turning biography, taste, memory, pressure, and visual authorship into a coherent identity system. IAA is where the practice becomes self-aware. It doesn't ask “what style do I like?” — it asks what keeps appearing across the work, and what that pattern reveals.",
-          governingRules: ["Mass over swagger", "Lineage over trend", "Constraint as input"],
+            "A brand architecture system for turning biography, taste, pressure, memory, and recurring symbols into a coherent identity. IAA is where the practice turns back on itself and becomes identity. It doesn't ask what style I like — it asks what keeps appearing across the work, and what that pattern reveals.",
+          governingRules: ["Mass over swagger", "Lineage over trend", "Constraint as input", "Taste with a load rating"],
           includes: [
             "Brand architecture", "Voice principles", "Taste doctrine",
             "Personal mythology refinement", "Visual authority rules", "Positioning language",
@@ -171,10 +182,10 @@ export const CT_DOSSIER_COPY_V120 = {
           sourceOfAuthority: "Lineage. Pressure. Authorship.",
           refuses: [
             "Generic personal branding", "Trend-cycle identity", "Empty mystique",
-            "Over-explaining", "Style without worldview", "Technology without taste",
+            "Technology without taste", "Style without worldview", "Over-explaining what should be felt",
           ],
-          ctaLabel: null,
-          ctaHref: null,
+          cta: null,
+          secondaryCta: null,
         },
       ],
 
@@ -302,10 +313,105 @@ export const CT_DOSSIER_COPY_V120 = {
         "Calm under load is a designed property.",
         "The work should know what it refuses.",
       ],
+      // Handoff into the Doctrine Library — renders before the short close.
+      handoff: "The library below is where those rules are argued in longer form.",
       short: "One head for the eye, the system, and the artifact.",
     },
 
-    // 06 — PORTFOLIOS. Where the built work lives. Order is taste-first:
+    // 06 — DOCTRINE LIBRARY (V3.3). The shelf of written source texts behind
+    // the practice: essays, papers, rulebooks, manifestos. Not a blog, not a
+    // portfolio. CTA hrefs are null until the matching file lands in
+    // Founder/public/library/ (intended paths kept on each card's `href`-pending
+    // note); broken links are suppressed, not rendered.
+    doctrineLibrary: {
+      title: "DOCTRINE LIBRARY",
+      prompt: "WHERE THE THINKING LIVES",
+      hero: "The work has a written layer.",
+      intro:
+        "Essays, rulebooks, white papers, and doctrine documents are where the practice names its own laws before those laws become visual systems. They answer the recurring questions: What survives pressure? What deserves to be preserved? What becomes visible only when the system is under stress? What should a brand stay faithful to while everything around it changes?",
+      filterAllLabel: "ALL",
+      cards: [
+        {
+          id: "design-under-fire",
+          title: "Design Under Fire",
+          subtitle: "Product Thinking and the Battle of Stalingrad",
+          type: "Working paper",
+          registers: ["Forge", "Systems"],
+          description: "A working paper on systems failure, iterative adaptation, and design laws under maximum pressure.",
+          why: "The Forge doctrine. It argues that design principles are domain-invariant: the failures that kill products, campaigns, spacecraft, and organizations often rhyme.",
+          ctaLabel: "READ PAPER",
+          href: null, // /library/design-under-fire-1942.pdf
+        },
+        {
+          id: "creative-strategy-54",
+          title: "Creative Strategy 5:4",
+          subtitle: "Ethos and Compliant Go-to-Market for Defense Startups",
+          type: "Strategic doctrine",
+          registers: ["Forge", "Oracle"],
+          description: "A strategy document for creative work where trust, compliance, and operational credibility become first-class product features.",
+          why: "The bridge between visual language and institutional trust. It explains why defense creative must function as a risk-managed evidence system, not just marketing.",
+          ctaLabel: "READ STRATEGY",
+          href: null, // /library/creative-strategy-5-4.pdf
+        },
+        {
+          id: "watchman-builder",
+          title: "The Watchman Builder",
+          subtitle: "An American Dynamism Doctrine for First-Sight, Moral Force, and Civilizational Continuity",
+          type: "Essay / white paper",
+          registers: ["Monastery", "Forge"],
+          description: "An essay on builders, protection, first-sight, moral force, and the village as the unit of defense.",
+          why: "The moral doctrine under the technical work. It gives the practice a theory of protection, memory, and civilizational continuity.",
+          ctaLabel: "READ ESSAY",
+          href: null, // /library/watchman-builder-american-dynamism.md
+        },
+        {
+          id: "algorithmic-aesthetics",
+          title: "A New Visual Language for the Age of AGI",
+          subtitle: "Algorithmic Aesthetics and the Non-Human Gaze",
+          type: "Article",
+          registers: ["Oracle"],
+          description: "A speculative article on brand design for machine intelligence, algorithmic identity, non-human perception, and visual systems beyond human-centric aesthetics.",
+          why: "The Oracle doctrine. It explains the recurring interest in signal, fragmentation, non-human perception, organic–technological fusion, and the #42FC04 signature.",
+          ctaLabel: "READ ARTICLE",
+          href: null, // /library/a-new-visual-language-for-the-age-of-agi.md
+        },
+        {
+          id: "dirty-canvas",
+          title: "Dirty Canvas",
+          subtitle: "Brand as Living System in the AGI Era",
+          type: "Brand essay",
+          registers: ["Monastery", "Oracle"],
+          description: "An essay on brand as emotional contract, live API, creative partner, and unfinished system.",
+          why: "The brand doctrine. It explains why a brand system should behave like a living rule-set with soul, not a static cage.",
+          ctaLabel: "READ ESSAY",
+          href: null, // /library/dirty-canvas-brand-01.md
+        },
+        {
+          id: "iaa-manifesto",
+          title: "IAA Manifesto",
+          subtitle: "Mass Over Swagger",
+          type: "Manifesto",
+          registers: ["Monastery", "Forge"],
+          description: "A working manifesto on taste, pressure, restraint, discomfort, and the difference between work built to be admired and work built to survive.",
+          why: "The identity doctrine. It names the emotional and philosophical source of the practice: taste with a load rating.",
+          ctaLabel: "READ MANIFESTO",
+          href: null, // /library/iaa-manifesto.md
+        },
+        {
+          id: "iaa-brand-architecture",
+          title: "IAA Brand Architecture",
+          subtitle: "Cognitive Brand Architecture",
+          type: "Brand architecture document",
+          registers: ["Monastery", "Forge", "Oracle"],
+          description: "A structured identity document mapping the practice across themes, methods, psychic architecture, market translation, and proprietary frameworks.",
+          why: "The meta-system. It codifies Anthropological Moodboarding, Invariance Auditing, the Evidence Engine, and Generative Discomfort.",
+          ctaLabel: "VIEW ARCHITECTURE",
+          href: null, // /library/iaa-brand-architecture.md
+        },
+      ],
+    },
+
+    // 07 — PORTFOLIOS. Where the built work lives. Order is taste-first:
     // art direction, then brand × product, then defense.
     portfolios: {
       title: "PORTFOLIOS",
@@ -478,17 +584,33 @@ export const CT_DOSSIER_COPY_V120 = {
       ],
     },
 
-    // 07 — ENGAGEMENT MODELS. Replaces the ROLE MATRIX simulator. Human
+    // 08 — ENGAGEMENT MODELS. Replaces the ROLE MATRIX simulator. Human
     // explanation of when people call, not a consulting framework or fit engine.
     engagement: {
       title: "ENGAGEMENT MODELS",
       prompt: "WHEN PEOPLE USUALLY CALL",
       hero: "Most engagements start in one of four situations.",
       models: [
-        { code: "01", title: "NEW CATEGORY",         body: "The technology exists. Nobody understands it yet." },
-        { code: "02", title: "TECHNICAL TRANSLATION", body: "The product works. The story doesn't." },
-        { code: "03", title: "DESIGN LANGUAGE",       body: "The system functions. The identity is fragmented." },
-        { code: "04", title: "EVIDENCE BUILDING",     body: "The team needs something people can inspect, not just discuss." },
+        {
+          code: "01",
+          title: "CATEGORY FORMATION",
+          body: "The thing is real, but people don't yet have a category for it. Useful when a team needs language, framing, and visual order before the market understands what it's looking at.",
+        },
+        {
+          code: "02",
+          title: "MEANING TRANSLATION",
+          body: "The product works, but the story doesn't. Useful when technical capability needs to become legible to buyers, partners, operators, investors, or the public.",
+        },
+        {
+          code: "03",
+          title: "VISUAL LANGUAGE",
+          body: "The system functions, but the identity is fragmented. Useful when a product, company, or body of work needs a coherent visual grammar across surfaces.",
+        },
+        {
+          code: "04",
+          title: "INSPECTABLE FORM",
+          body: "The idea needs a body. Useful when the team needs an artifact people can inspect, not just a deck people can believe.",
+        },
       ],
       shortTitle: "SHORT VERSION",
       short: "Useful when direction, explanation, and execution need to stay connected.",

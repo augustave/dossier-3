@@ -76,18 +76,18 @@ describe('Manifest overlay', () => {
     window.location.hash = '';
   });
 
-  it('opens from the INDEX button and renders the V3 module order (01–07)', async () => {
+  it('opens from the INDEX button and renders the module order (01–08)', async () => {
     render(<App />);
-    fireEvent.click(screen.getByText(/INDEX \(07\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
 
     const items = await screen.findAllByTestId('manifest-item');
     const order = items.map(el => el.getAttribute('data-index'));
-    expect(order).toEqual(['01', '02', '03', '04', '05', '06', '07']);
+    expect(order).toEqual(['01', '02', '03', '04', '05', '06', '07', '08']);
   });
 
   it('closes when the Close Index button is clicked', async () => {
     render(<App />);
-    fireEvent.click(screen.getByText(/INDEX \(07\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
 
     const closeBtn = await screen.findByRole('button', { name: /Close Index/i });
     fireEvent.click(closeBtn);
@@ -219,7 +219,7 @@ describe('Faceted audience entry', () => {
     } catch (e) {}
   });
 
-  it('reads ?read=hiring on mount, activates pill, filters to modules 01/04/06', async () => {
+  it('reads ?read=hiring on mount, activates pill, filters to modules 01/04/07', async () => {
     window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
@@ -228,14 +228,15 @@ describe('Faceted audience entry', () => {
       expect(pill.getAttribute('aria-pressed')).toBe('true');
     });
 
-    // Hiring audience: 01, 04, 06 present; 02, 03, 05, 07 collapsed out.
+    // Hiring audience: 01, 04, 07 present; the rest collapsed out.
     expect(getModuleToggle('module-01')).not.toBeNull();
     expect(getModuleToggle('module-04')).not.toBeNull();
-    expect(getModuleToggle('module-06')).not.toBeNull();
+    expect(getModuleToggle('module-07')).not.toBeNull();
     expect(getModuleToggle('module-02')).toBeNull();
     expect(getModuleToggle('module-03')).toBeNull();
     expect(getModuleToggle('module-05')).toBeNull();
-    expect(getModuleToggle('module-07')).toBeNull();
+    expect(getModuleToggle('module-06')).toBeNull();
+    expect(getModuleToggle('module-08')).toBeNull();
   });
 
   it('clicking a pill writes ?read= to the URL and filters the module list', async () => {
@@ -248,14 +249,15 @@ describe('Faceted audience entry', () => {
       expect(window.location.search).toContain('read=client');
     });
 
-    // Client audience: 01, 03, 07 present; 02, 04, 05, 06 collapsed out.
+    // Client audience: 01, 03, 08 present; the rest collapsed out.
     expect(getModuleToggle('module-01')).not.toBeNull();
     expect(getModuleToggle('module-03')).not.toBeNull();
-    expect(getModuleToggle('module-07')).not.toBeNull();
+    expect(getModuleToggle('module-08')).not.toBeNull();
     expect(getModuleToggle('module-02')).toBeNull();
     expect(getModuleToggle('module-04')).toBeNull();
     expect(getModuleToggle('module-05')).toBeNull();
     expect(getModuleToggle('module-06')).toBeNull();
+    expect(getModuleToggle('module-07')).toBeNull();
   });
 
   it('clicking the active pill toggles it off and restores all seven modules', async () => {
@@ -273,7 +275,7 @@ describe('Faceted audience entry', () => {
       expect(pill.getAttribute('aria-pressed')).toBe('false');
     });
     expect(window.location.search).not.toContain('read=');
-    // All seven modules are present after clearing.
+    // All eight modules are present after clearing.
     expect(getModuleToggle('module-01')).not.toBeNull();
     expect(getModuleToggle('module-02')).not.toBeNull();
     expect(getModuleToggle('module-03')).not.toBeNull();
@@ -281,6 +283,7 @@ describe('Faceted audience entry', () => {
     expect(getModuleToggle('module-05')).not.toBeNull();
     expect(getModuleToggle('module-06')).not.toBeNull();
     expect(getModuleToggle('module-07')).not.toBeNull();
+    expect(getModuleToggle('module-08')).not.toBeNull();
   });
 
   it('Show all button clears the active audience and restores all seven modules', async () => {
@@ -336,5 +339,42 @@ describe('Visual Languages (module 03)', () => {
     // Clicking again clears it.
     fireEvent.click(forge);
     expect(forge.getAttribute('aria-pressed')).toBe('false');
+  });
+});
+
+describe('Doctrine Library (module 06)', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = () => {};
+    try {
+      window.history.replaceState(null, '', window.location.pathname);
+    } catch (e) {}
+    window.location.hash = '#module-06';
+  });
+
+  it('renders the doctrine shelf with its source-text cards', async () => {
+    render(<App />);
+    const m6 = () => document.getElementById('module-06') as HTMLElement;
+
+    await waitFor(() => {
+      expect(within(m6()).getByText('Design Under Fire')).toBeInTheDocument();
+    });
+    expect(within(m6()).getByText('The Watchman Builder')).toBeInTheDocument();
+    expect(within(m6()).getByText('IAA Manifesto')).toBeInTheDocument();
+    expect(within(m6()).getByText('IAA Brand Architecture')).toBeInTheDocument();
+  });
+
+  it('filters the shelf when a register chip is clicked', async () => {
+    render(<App />);
+    const m6 = () => document.getElementById('module-06') as HTMLElement;
+
+    // Oracle filter hides Forge/Systems-only papers (Design Under Fire) and
+    // keeps Oracle-tagged ones (Dirty Canvas).
+    const oracleChip = await within(m6()).findByRole('button', { name: /^Oracle$/i });
+    fireEvent.click(oracleChip);
+
+    await waitFor(() => {
+      expect(within(m6()).queryByText('Design Under Fire')).not.toBeInTheDocument();
+    });
+    expect(within(m6()).getByText('Dirty Canvas')).toBeInTheDocument();
   });
 });

@@ -32,10 +32,10 @@ const INDEX_COUNT = String(RENDERED_MODULES.length).padStart(2, '0');
  * taste-led spine, ordered by "start with" priority for that audience.
  * Every read still opens on TASTE or SEEING so the eye/point-of-view lands
  * before execution — the core of the CT-PRD-MARY-01 repositioning.
- *   hiring → 01 Taste / 04 Neighborhood     / 06 Portfolios
- *   client → 01 Taste / 03 Visual Languages / 07 Engagement
+ *   hiring → 01 Taste / 04 Neighborhood     / 07 Portfolios
+ *   client → 01 Taste / 03 Visual Languages / 08 Engagement
  *   collab → 02 Seeing / 03 Visual Languages / 05 Doctrine
- *   acad   → 02 Seeing / 01 Taste           / 04 Neighborhood
+ *   acad   → 02 Seeing / 06 Doctrine Library / 04 Neighborhood
  * NOTE: mapping is a sensible default pending an owner war-game; adjust here.
  */
 type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
@@ -47,10 +47,10 @@ interface Audience {
 }
 
 const AUDIENCES: Audience[] = [
-  { id: 'hiring', label: 'HIRING MANAGER', modules: ['01', '04', '06'] },
-  { id: 'client', label: 'CLIENT',         modules: ['01', '03', '07'] },
+  { id: 'hiring', label: 'HIRING MANAGER', modules: ['01', '04', '07'] },
+  { id: 'client', label: 'CLIENT',         modules: ['01', '03', '08'] },
   { id: 'collab', label: 'COLLABORATOR',   modules: ['02', '03', '05'] },
-  { id: 'acad',   label: 'ACADEMIC',       modules: ['02', '01', '04'] }
+  { id: 'acad',   label: 'ACADEMIC',       modules: ['02', '06', '04'] }
 ];
 const AUDIENCE_IDS = AUDIENCES.map(a => a.id);
 const isAudienceId = (s: string | null): s is AudienceId =>
@@ -211,9 +211,9 @@ const App: React.FC = () => {
             <div className="mb-5 md:mb-6 max-w-3xl space-y-4">
               <p className="font-sans text-base md:text-lg leading-relaxed">
                 <span className="font-bold">This is not a portfolio.</span> The built work lives at three dedicated sites —{' '}
-                <a href="https://artdirector.rocks" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">artdirector.rocks</a>,{' '}
-                <a href="https://brandproduct.dev" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">brandproduct.dev</a>, and{' '}
-                <a href="https://defense.observer" target="_blank" rel="noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">defense.observer</a>.
+                <a href="https://artdirector.rocks" target="_blank" rel="noopener noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">artdirector.rocks</a>,{' '}
+                <a href="https://brandproduct.dev" target="_blank" rel="noopener noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">brandproduct.dev</a>, and{' '}
+                <a href="https://defense.observer" target="_blank" rel="noopener noreferrer" className="font-mono text-sm border-b border-black hover:bg-black hover:text-white transition-colors">defense.observer</a>.
               </p>
               <p className="font-sans text-base md:text-lg leading-relaxed">
                 This dossier documents the practice behind them: where the references come from, how the visual languages take shape, and why certain forms keep surviving long after fashion has moved on.
@@ -295,7 +295,7 @@ const App: React.FC = () => {
                   <a
                     href={CONTACT.linkedin}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
                   >
                     LinkedIn -&gt;

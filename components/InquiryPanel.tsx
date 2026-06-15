@@ -256,7 +256,7 @@ If helpful, I would be open to a short conversation.
                   <a
                     href={CONTACT.linkedin}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
                   >
                     LinkedIn -&gt;

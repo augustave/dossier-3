@@ -2,6 +2,7 @@ import React from 'react';
 import { ModuleData, ModuleType } from './types';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
 import { VisualLanguages } from './components/VisualLanguages';
+import { DoctrineLibrary } from './components/DoctrineLibrary';
 
 export const COLORS = {
   blue: 'bg-strata-blue text-white border-white/20 theme-blue',
@@ -14,7 +15,7 @@ export const COLORS = {
  * Content modules for the CT Dossier — taste-led spine (V3.2).
  * Display index === narrative order (no more index/key mismatch).
  *   00 MANIFEST (overlay)  01 TASTE  02 SEEING  03 VISUAL LANGUAGES
- *   04 NEIGHBORHOOD  05 DOCTRINE  06 PORTFOLIOS  07 ENGAGEMENT
+ *   04 NEIGHBORHOOD  05 DOCTRINE  06 DOCTRINE LIBRARY  07 PORTFOLIOS  08 ENGAGEMENT
  */
 export const CONTENT_MODULES: ModuleData[] = [
   {
@@ -286,17 +287,48 @@ export const CONTENT_MODULES: ModuleData[] = [
           </ul>
         </div>
 
-        <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-current/10 pt-4">
+        <p className="font-sans text-base md:text-lg opacity-secondary leading-relaxed border-t border-current/10 pt-4">
+          {COPY.modules.doctrine.handoff}
+        </p>
+
+        <p className="font-serif text-lg md:text-xl italic opacity-tertiary">
           {COPY.modules.doctrine.short}
         </p>
       </div>
     ),
   },
 
-  // 06 — PORTFOLIOS. Where the built work lives. Taste-first order.
+  // 06 — DOCTRINE LIBRARY (V3.3). The shelf of written source texts.
+  {
+    id: ModuleType.DOCTRINE_LIBRARY,
+    index: "06",
+    title: COPY.modules.doctrineLibrary.title,
+    promptText: COPY.modules.doctrineLibrary.prompt,
+    themeColor: 'black',
+    responseText: COPY.modules.doctrineLibrary.hero,
+    responseDisplay: (
+      <div className="space-y-8">
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.doctrineLibrary.hero}
+        </p>
+        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
+          {COPY.modules.doctrineLibrary.intro}
+        </p>
+
+        <div className="pt-4 border-t border-white/20">
+          <DoctrineLibrary
+            cards={COPY.modules.doctrineLibrary.cards}
+            allLabel={COPY.modules.doctrineLibrary.filterAllLabel}
+          />
+        </div>
+      </div>
+    ),
+  },
+
+  // 07 — PORTFOLIOS. Where the built work lives. Taste-first order.
   {
     id: ModuleType.PORTFOLIOS,
-    index: "06",
+    index: "07",
     title: COPY.modules.portfolios.title,
     promptText: COPY.modules.portfolios.prompt,
     themeColor: 'clay',
@@ -316,7 +348,7 @@ export const CONTENT_MODULES: ModuleData[] = [
               key={idx}
               href={`https://${site.domain}`}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/site"
               onClick={(event) => event.stopPropagation()}
             >
@@ -336,10 +368,10 @@ export const CONTENT_MODULES: ModuleData[] = [
     ),
   },
 
-  // 07 — ENGAGEMENT MODELS. When people call (replaced the Role Matrix).
+  // 08 — ENGAGEMENT MODELS. When people call (replaced the Role Matrix).
   {
     id: ModuleType.ENGAGEMENT,
-    index: "07",
+    index: "08",
     title: COPY.modules.engagement.title,
     promptText: COPY.modules.engagement.prompt,
     themeColor: 'black',
