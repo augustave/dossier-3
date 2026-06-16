@@ -97,17 +97,6 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
             <h2 className="font-sans text-3xl md:text-5xl font-bold uppercase tracking-tightest leading-none">
               {module.title}
             </h2>
-            
-            {/* Share Button (Only visible on hover/open) */}
-            <button 
-              onClick={handleCopyLink}
-              aria-describedby={linkStatusId}
-              aria-label={`Copy link to ${module.title}`}
-              className={`absolute -right-12 top-2 p-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 transition-opacity hidden md:block`}
-              title="Copy link to module"
-            >
-              {linkCopied ? <CheckIcon className="w-5 h-5" /> : <LinkIcon className="w-5 h-5" />}
-            </button>
             <span id={linkStatusId} className="sr-only" role="status" aria-live="polite">
               {linkCopied ? 'Link copied to clipboard.' : ''}
             </span>
@@ -119,13 +108,23 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
               wording lives in aria-label, never as visible text. This button is
               the real focusable control (carries aria-expanded/-controls), so no
               separate sr-only toggle is needed. */}
-          <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest opacity-muted shrink-0">
+          <div className="flex items-center gap-4 font-mono text-xs uppercase tracking-widest opacity-muted shrink-0">
+            {/* Copy-link — hidden until the band is hovered or this button takes
+                keyboard focus (focus-visible). Same rule on every module. */}
+            <button
+                onClick={handleCopyLink}
+                aria-label={`Copy link to ${module.title}`}
+                title="Copy link to module"
+                className="hidden md:inline-flex p-1 opacity-0 group-hover:opacity-60 hover:!opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-current rounded-sm transition-opacity"
+            >
+                {linkCopied ? <CheckIcon className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
+            </button>
             <button
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${module.title}`}
                 onClick={(e) => { e.stopPropagation(); onToggle(); }}
-                className="flex items-center gap-2 hover:opacity-100 transition-opacity"
+                className="flex items-center gap-2 hover:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-current rounded-sm px-1 transition-opacity"
             >
                 <span>{isOpen ? 'FOLD' : '+ STUDY'}</span>
                 <div className={`transform transition-transform duration-500 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
