@@ -5,10 +5,14 @@ import React, { useState } from 'react';
  *
  * Three authored visual operating languages (DOSSIER / DEADLIGHT / IAA) as
  * design-system specimens. A compact register filter sits ABOVE the cards
- * (discoverable; clicking a register highlights the languages built on it);
- * the full register grammar exposition stays below as read-only "grammar
- * underneath." Cards carry a register-color top accent, consistent with the
- * Doctrine Library. Data lives in copy.v1_1.ts under modules.visualLanguages.
+ * (clicking a register highlights the languages built on it); the full register
+ * grammar exposition stays below as read-only "grammar underneath."
+ *
+ * Cards are calm by default — name, prose, source of authority, CTA — with the
+ * spec (governing rules / includes / refuses) folded behind a per-card "Full
+ * spec" toggle (progressive disclosure, matching the page's fold metaphor).
+ * Each card carries a register-color top accent, consistent with the Doctrine
+ * Library. Data lives in copy.v1_1.ts under modules.visualLanguages.
  */
 
 export interface LanguageCta {
@@ -59,6 +63,115 @@ const assetHref = (href: string): string =>
 // spec (the rest lives in the linked document).
 const SPEC_CAP = 6;
 
+interface LanguageCardProps {
+  lang: VisualLanguage;
+  accent: string;
+  tagColor: (name: string) => string;
+  dimmed: boolean;
+}
+
+const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor, dimmed }) => {
+  const [open, setOpen] = useState(false);
+  const specId = `vl-spec-${lang.id}`;
+
+  return (
+    <div
+      // 2px top accent in the primary register color — scannable variety + a
+      // visual tie to the register grammar (same pattern as DoctrineLibrary).
+      style={{ borderTopColor: accent, borderTopWidth: '2px' }}
+      className={`border border-white/15 bg-black/20 p-5 md:p-6 transition-opacity duration-300 ${
+        dimmed ? 'opacity-30' : 'opacity-100'
+      }`}
+    >
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 md:gap-4 mb-1">
+        <h5 className="font-sans text-2xl md:text-3xl font-bold uppercase tracking-tight">{lang.name}</h5>
+        <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{lang.label}</span>
+      </div>
+      <div className="font-mono text-micro uppercase tracking-wide opacity-muted mb-4">
+        {lang.type} · {lang.context}
+      </div>
+
+      {/* Register tags */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {lang.registers.map((tag) => (
+          <span
+            key={tag}
+            className="font-mono text-micro uppercase tracking-widest border px-2 py-1 flex items-center gap-1.5"
+            style={{ borderColor: `${tagColor(tag)}66` }}
+          >
+            <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: tagColor(tag) }} />
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Short copy — leads the card. */}
+      <p className="font-sans text-sm md:text-base opacity-secondary leading-relaxed mb-4">
+        {lang.shortCopy}
+      </p>
+
+      {/* Full-spec toggle — keeps the card calm by default. */}
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={specId}
+        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        className="font-mono text-micro uppercase tracking-widest opacity-muted hover:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-current rounded-sm transition-opacity"
+      >
+        {open ? 'Hide spec ↑' : 'Full spec ↓'}
+      </button>
+
+      {/* Spec — governing rules + trimmed inline includes/refuses (≤6). */}
+      {open && (
+        <div id={specId} className="mt-4 pt-4 border-t border-white/10 space-y-4">
+          <div className="flex flex-wrap gap-1.5">
+            {lang.governingRules.map((g) => (
+              <span key={g} className="font-mono text-micro uppercase tracking-wide border border-white/20 px-2 py-1 opacity-secondary">
+                {g}
+              </span>
+            ))}
+          </div>
+          <div className="space-y-1.5">
+            <p className="font-mono text-micro uppercase tracking-wide leading-relaxed">
+              <span className="opacity-tertiary">System includes — </span>
+              <span className="opacity-muted">{lang.includes.slice(0, SPEC_CAP).join(', ')}</span>
+            </p>
+            <p className="font-mono text-micro uppercase tracking-wide leading-relaxed">
+              <span className="opacity-tertiary">Refuses — </span>
+              <span className="opacity-muted">{lang.refuses.slice(0, SPEC_CAP).join(', ')}</span>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Source of authority + optional CTAs — always visible at the foot. */}
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mt-5 pt-4 border-t border-white/10">
+        <div>
+          <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-1">Source of authority</div>
+          <p className="font-serif italic text-lg">{lang.sourceOfAuthority}</p>
+        </div>
+        {(lang.cta || lang.secondaryCta) && (
+          <div className="flex flex-wrap gap-2">
+            {[lang.cta, lang.secondaryCta].filter(Boolean).map((c) => (
+              <a
+                key={c!.href}
+                href={assetHref(c!.href)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="font-mono text-xs uppercase tracking-widest border border-white/40 px-3 py-2 hover:bg-white hover:text-black transition-colors whitespace-nowrap w-fit"
+              >
+                {c!.label} -&gt;
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
   languages,
   registers,
@@ -106,93 +219,15 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
       </div>
 
       {/* Language specimen cards */}
-      {languages.map((lang) => {
-        const dimmed = !usesActive(lang);
-        return (
-          <div
-            key={lang.id}
-            // 2px top accent in the primary register color — scannable variety +
-            // visual tie to the register grammar (same pattern as DoctrineLibrary).
-            style={{ borderTopColor: colorFor(lang.registers[0]), borderTopWidth: '2px' }}
-            className={`border border-white/15 bg-black/20 p-5 md:p-6 transition-opacity duration-300 ${
-              dimmed ? 'opacity-30' : 'opacity-100'
-            }`}
-          >
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 md:gap-4 mb-1">
-              <h5 className="font-sans text-2xl md:text-3xl font-bold uppercase tracking-tight">{lang.name}</h5>
-              <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{lang.label}</span>
-            </div>
-            <div className="font-mono text-micro uppercase tracking-wide opacity-muted mb-4">
-              {lang.type} · {lang.context}
-            </div>
-
-            {/* Register tags */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {lang.registers.map((tag) => (
-                <span
-                  key={tag}
-                  className="font-mono text-micro uppercase tracking-widest border px-2 py-1 flex items-center gap-1.5"
-                  style={{ borderColor: `${colorFor(tag)}66` }}
-                >
-                  <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: colorFor(tag) }} />
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            {/* Short copy — now leads the card visually. */}
-            <p className="font-sans text-sm md:text-base opacity-secondary leading-relaxed mb-5">
-              {lang.shortCopy}
-            </p>
-
-            {/* Governing rules — the card's iron rules, kept as chips. */}
-            <div className="flex flex-wrap gap-1.5 mb-5">
-              {lang.governingRules.map((g) => (
-                <span key={g} className="font-mono text-micro uppercase tracking-wide border border-white/20 px-2 py-1 opacity-secondary">
-                  {g}
-                </span>
-              ))}
-            </div>
-
-            {/* Spec lines — trimmed to inline metadata (≤6) instead of chip walls. */}
-            <div className="space-y-1.5 pt-4 border-t border-white/10">
-              <p className="font-mono text-micro uppercase tracking-wide leading-relaxed">
-                <span className="opacity-tertiary">System includes — </span>
-                <span className="opacity-muted">{lang.includes.slice(0, SPEC_CAP).join(', ')}</span>
-              </p>
-              <p className="font-mono text-micro uppercase tracking-wide leading-relaxed">
-                <span className="opacity-tertiary">Refuses — </span>
-                <span className="opacity-muted">{lang.refuses.slice(0, SPEC_CAP).join(', ')}</span>
-              </p>
-            </div>
-
-            {/* Source of authority + optional CTAs (suppressed when href missing) */}
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mt-5 pt-4 border-t border-white/10">
-              <div>
-                <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-1">Source of authority</div>
-                <p className="font-serif italic text-lg">{lang.sourceOfAuthority}</p>
-              </div>
-              {(lang.cta || lang.secondaryCta) && (
-                <div className="flex flex-wrap gap-2">
-                  {[lang.cta, lang.secondaryCta].filter(Boolean).map((c) => (
-                    <a
-                      key={c!.href}
-                      href={assetHref(c!.href)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="font-mono text-xs uppercase tracking-widest border border-white/40 px-3 py-2 hover:bg-white hover:text-black transition-colors whitespace-nowrap w-fit"
-                    >
-                      {c!.label} -&gt;
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })}
+      {languages.map((lang) => (
+        <LanguageCard
+          key={lang.id}
+          lang={lang}
+          accent={colorFor(lang.registers[0])}
+          tagColor={colorFor}
+          dimmed={!usesActive(lang)}
+        />
+      ))}
 
       {/* Register grammar — read-only exposition; the "grammar underneath" the
           languages. Filtering lives in the chip strip above. */}
