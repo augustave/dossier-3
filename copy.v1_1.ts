@@ -17,7 +17,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.4.8",
+    version: "3.4.9",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -389,7 +389,7 @@ export const CT_DOSSIER_COPY_V120 = {
           description: "An essay on brand as emotional contract, live API, creative partner, and unfinished system.",
           why: "The brand doctrine. It explains why a brand system should behave like a living rule-set with soul, not a static cage.",
           ctaLabel: "READ ESSAY",
-          href: null, // /library/dirty-canvas-brand-01.md
+          href: "https://dirty.artdirector.rocks/",
         },
         {
           id: "iaa-manifesto",
@@ -445,6 +445,28 @@ export const CT_DOSSIER_COPY_V120 = {
           why: "This sharpens the moral logic behind the defense work. It frames power as a duty of care, not an aesthetic of aggression.",
           ctaLabel: "READ BRIEF",
           href: "library/hospitaller-doctrine-brief.html",
+        },
+        {
+          id: "algorithmic-branding-archive",
+          title: "Algorithmic Branding Archive",
+          subtitle: "Brand identity at the intersection of algorithm and archive",
+          type: "Archive / brand study",
+          registers: ["Oracle", "Monastery"],
+          description: "A working archive on how algorithmic systems reshape brand identity — collecting the patterns where computation and brand development meet.",
+          why: "The applied edge of the Oracle doctrine: brand-building when the audience, the medium, and the maker are increasingly non-human.",
+          ctaLabel: "VIEW ARCHIVE",
+          href: "https://branding.artdirector.rocks/",
+        },
+        {
+          id: "my-first-cpo",
+          title: "My First CPO",
+          subtitle: "The Unlikely Product Design Lessons from My Father",
+          type: "Essay",
+          registers: ["Monastery", "Forge"],
+          description: "An essay drawing product-design lessons from a childhood with the author's father — where what you observe and what's actually there rarely match.",
+          why: "The personal root of the practice's discipline: perception under pressure, and the habit of testing assumptions before trusting them.",
+          ctaLabel: "READ ESSAY",
+          href: "https://medium.com/@ebenz.aug/my-first-cpo-1587997fe93f",
         },
       ],
     },
