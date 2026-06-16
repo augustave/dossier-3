@@ -17,7 +17,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.4.5",
+    version: "3.4.6",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -192,7 +192,7 @@ export const CT_DOSSIER_COPY_V120 = {
 
       registersGrammarTitle: "REGISTER GRAMMAR",
       registersGrammarIntro:
-        "The registers are not themes. They are sources of authority — they explain where a visual language gets its weight. Tap one to highlight the languages built on it.",
+        "The registers are not themes. They are sources of authority — they explain where a visual language gets its weight.",
       registers: [
         {
           id: "monastery",
