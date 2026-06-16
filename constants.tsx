@@ -322,6 +322,7 @@ export const CONTENT_MODULES: ModuleData[] = [
           <DoctrineLibrary
             cards={COPY.modules.doctrineLibrary.cards}
             allLabel={COPY.modules.doctrineLibrary.filterAllLabel}
+            pendingNote={COPY.modules.doctrineLibrary.pendingNote}
           />
         </div>
       </div>

@@ -25,18 +25,32 @@ export interface DoctrineDoc {
 interface DoctrineLibraryProps {
   cards: DoctrineDoc[];
   allLabel: string;
+  pendingNote: string;
 }
 
 // Canonical chip order: the three register-grammar sources first, then secondary
 // tags. Only tags actually present on cards render, so the taxonomy can't drift.
 const CHIP_ORDER = ['Monastery', 'Forge', 'Oracle', 'Systems', 'Brand', 'Defense', 'Codex'];
 
+// Register accent colors — mirrored from modules.visualLanguages.registers so the
+// library and Visual Languages share one color language. A card's accent is the
+// first of its registers that has a color (Systems/etc. fall through to a sibling).
+const REGISTER_COLOR: Record<string, string> = {
+  Monastery: '#204C8D',
+  Forge: '#FF4F00',
+  Oracle: '#42FC04',
+};
+const accentFor = (registers: string[]): string => {
+  const hit = registers.find(r => REGISTER_COLOR[r]);
+  return hit ? REGISTER_COLOR[hit] : 'rgba(255,255,255,0.35)';
+};
+
 // Resolve a CTA href: absolute http(s) untouched; relative library paths get the
 // deployment base (BASE_URL) so they resolve under the /CT-DOSSIER/ Pages base.
 const assetHref = (href: string): string =>
   /^https?:\/\//.test(href) ? href : `${import.meta.env.BASE_URL}${href}`;
 
-export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabel }) => {
+export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabel, pendingNote }) => {
   // null = show all; otherwise filter to cards carrying this register tag.
   const [filter, setFilter] = useState<string | null>(null);
 
@@ -60,7 +74,7 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
       type="button"
       aria-pressed={active}
       onClick={(e) => { e.stopPropagation(); onClick(); }}
-      className={`font-mono text-micro uppercase tracking-widest border px-3 py-1.5 transition-colors ${
+      className={`font-mono text-micro uppercase tracking-widest border px-3 py-2 transition-colors ${
         active ? 'bg-white text-black border-white' : 'bg-transparent text-white/70 border-white/25 hover:border-white/60 hover:text-white'
       }`}
     >
@@ -70,28 +84,31 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
 
   return (
     <div className="space-y-5">
-      {/* Current shelf + filter chips */}
+      {/* Filter chips + a single combined shelf/status line */}
       <div className="space-y-3">
-        <div className="flex items-baseline gap-3">
-          <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">Current shelf</span>
-          <span className="font-mono text-xs uppercase tracking-widest">{filter ?? allLabel}</span>
-        </div>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter the library by register">
           {chip(allLabel, filter === null, () => setFilter(null))}
           {tags.map(t => chip(t, filter === t, () => setFilter(prev => (prev === t ? null : t))))}
         </div>
-        <p className="font-mono text-micro uppercase tracking-wide opacity-muted" role="status" aria-live="polite">
-          {status}
+        <p className="font-mono text-micro uppercase tracking-wide opacity-secondary" role="status" aria-live="polite">
+          <span className="opacity-70">Current shelf · {filter ?? allLabel}</span> — {status}
         </p>
       </div>
 
       {/* Archive-record cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {visible.map((doc) => (
-          <div key={doc.id} className="border border-white/15 bg-black/20 p-5 md:p-6 flex flex-col">
+          <div
+            key={doc.id}
+            // 2px top accent in the card's primary register color — scannable
+            // variety + a visual tie to the register grammar (inline style, same
+            // pattern as the VisualLanguages register dots).
+            style={{ borderTopColor: accentFor(doc.registers), borderTopWidth: '2px' }}
+            className="border border-white/15 bg-black/20 p-5 md:p-6 flex flex-col"
+          >
             {/* Metadata row */}
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{doc.type}</span>
+              <span className="font-mono text-micro uppercase tracking-widest opacity-secondary">{doc.type}</span>
               <span className="opacity-30">·</span>
               {doc.registers.map((r) => (
                 <span key={r} className="font-mono text-micro uppercase tracking-wide border border-white/20 px-1.5 py-0.5 opacity-secondary">
@@ -105,14 +122,16 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
 
             <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4">{doc.description}</p>
 
-            <div className="border-l-2 border-white/20 pl-3 mb-5">
-              <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-1">Why it matters</div>
-              <p className="font-sans text-sm opacity-secondary leading-relaxed">{doc.why}</p>
-            </div>
+            {/* "Why it matters" note — label dropped; the indent + italic mark it
+                as a secondary annotation distinct from the description above. */}
+            <p className="font-sans italic text-sm opacity-muted leading-relaxed border-l-2 border-white/20 pl-3 mb-5">
+              {doc.why}
+            </p>
 
-            {/* CTA at bottom — suppressed when the file isn't published yet. */}
-            <div className="mt-auto">
-              {doc.href && (
+            {/* Footer always filled: live CTA, or an archival catalog line when
+                the document isn't published yet (never a broken/empty button). */}
+            <div className="mt-auto pt-1">
+              {doc.href ? (
                 <a
                   href={assetHref(doc.href)}
                   target="_blank"
@@ -122,6 +141,10 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
                 >
                   {doc.ctaLabel} -&gt;
                 </a>
+              ) : (
+                <span className="font-mono text-micro uppercase tracking-widest opacity-muted">
+                  {pendingNote}
+                </span>
               )}
             </div>
           </div>

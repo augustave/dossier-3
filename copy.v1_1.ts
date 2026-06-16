@@ -17,7 +17,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.4.4",
+    version: "3.4.5",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -332,6 +332,9 @@ export const CT_DOSSIER_COPY_V120 = {
       shelfLogic:
         "Each text anchors a different part of the practice: pressure, memory, signal, brand, systems, or identity.",
       filterAllLabel: "ALL",
+      // Footer line for cards whose document isn't published yet — archival
+      // cataloguing, not a "coming soon" teaser. Keeps every card's footer filled.
+      pendingNote: "Indexed · not yet public.",
       cards: [
         {
           id: "design-under-fire",
