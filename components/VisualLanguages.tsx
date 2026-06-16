@@ -68,20 +68,28 @@ interface LanguageCardProps {
   accent: string;
   tagColor: (name: string) => string;
   dimmed: boolean;
+  highlight: string | null;
 }
 
-const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor, dimmed }) => {
+const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor, dimmed, highlight }) => {
   const [open, setOpen] = useState(false);
   const specId = `vl-spec-${lang.id}`;
 
   return (
     <div
-      // 2px top accent in the primary register color — scannable variety + a
-      // visual tie to the register grammar (same pattern as DoctrineLibrary).
-      style={{ borderTopColor: accent, borderTopWidth: '2px' }}
-      className={`border border-white/15 bg-black/20 p-5 md:p-6 transition-opacity duration-300 ${
-        dimmed ? 'opacity-30' : 'opacity-100'
-      }`}
+      // 2px top accent in the primary register color (scannable variety + a tie
+      // to the register grammar). When a register filter is active, matching
+      // cards also get an inset ring in the active register's color — a positive
+      // highlight, not just dimming the rest.
+      style={{
+        borderTopColor: accent,
+        borderTopWidth: '2px',
+        // Inline opacity (not a Tailwind class): the dynamic `opacity-30` class
+        // wasn't being emitted, so the filter dim never applied. Inline is robust.
+        opacity: dimmed ? 0.3 : 1,
+        boxShadow: highlight ? `inset 0 0 0 1px ${highlight}` : undefined,
+      }}
+      className="border border-white/15 bg-black/20 p-5 md:p-6 transition-opacity duration-300"
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 md:gap-4 mb-1">
@@ -226,6 +234,7 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
           accent={colorFor(lang.registers[0])}
           tagColor={colorFor}
           dimmed={!usesActive(lang)}
+          highlight={active !== null && usesActive(lang) ? colorFor(active) : null}
         />
       ))}
 
