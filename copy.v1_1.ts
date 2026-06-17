@@ -18,7 +18,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.5.1",
+    version: "3.5.2",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -34,8 +34,8 @@ export const CT_DOSSIER_COPY_V120 = {
       prompt: "WHAT SHAPES THE WORK",
       hero: "Most creative work begins with preference. Mine begins with excavation.",
       body: [
-        "The goal isn't to find what's trending. It's to find what continues to hold. Art movements. Religious architecture. Military doctrine. Industrial design. Institutional memory. Each one is a record of people solving hard problems under real constraint, and the work starts there — not because the past should be repeated, but because the past shows which forms survive.",
-        "I sometimes call the process Anthropological Moodboarding: sourcing from deep historical and cultural strata instead of the live trend cycle. What comes out is direction that feels familiar without feeling derivative.",
+        "The goal isn't to find what's trending. It's to find what holds. Art movements. Religious architecture. Military doctrine. Industrial design. Institutional memory. Each is a record of people solving hard problems under real constraint. I start there — not to repeat the past, but because it shows which forms survive.",
+        "I call this Anthropological Moodboarding: sourcing from deep historical and cultural strata, not the live trend cycle. What comes out feels familiar without feeling derivative.",
         "Less trend. More lineage.",
       ].join("\n\n"),
       beliefsTitle: "WORKING BELIEFS",
@@ -59,9 +59,9 @@ export const CT_DOSSIER_COPY_V120 = {
       title: "SEEING",
       prompt: "HOW I LOOK AT THINGS",
       hero:
-        "Different disciplines describe the same problem in different words. The work sits in the overlap.",
+        "Different disciplines name the same problem differently. I work in the overlap.",
       intro:
-        "A military campaign. A cathedral. A software platform. A city. A brand. Each is an attempt to create coherence under constraint. Three lenses come back again and again.",
+        "A military campaign. A cathedral. A software platform. A city. A brand. Each tries to make coherence under constraint. Three lenses I keep returning to.",
       lensesTitle: "THREE LENSES",
       lenses: [
         {
@@ -70,7 +70,7 @@ export const CT_DOSSIER_COPY_V120 = {
           person: "Michael Levin",
           question: "What lets parts become a coherent whole?",
           body:
-            "The interest isn't biology — it's coordination. How complexity organizes itself without losing its identity.",
+            "I'm not after biology — I'm after coordination: how complexity organizes itself without losing its identity.",
         },
         {
           code: "02",
@@ -104,7 +104,7 @@ export const CT_DOSSIER_COPY_V120 = {
       hero: "Taste becomes useful when it can repeat without becoming generic.",
       body: [
         "A visual language is not a moodboard. It's a rule system for how a thing should look, speak, behave, refuse, and survive translation.",
-        "The systems below are authored visual languages. Each carries its own palette, typography, component logic, interaction vocabulary, and source of authority. The registers sit underneath them: Monastery, Forge, Oracle. Not as themes. As grammar.",
+        "I author these as visual languages — each with its own palette, type, component logic, interaction vocabulary, and source of authority. The registers underneath: Monastery, Forge, Oracle. Not themes. Grammar.",
       ].join("\n\n"),
 
       // CTA hrefs: relative paths under public/library/ (the component prepends
@@ -147,7 +147,7 @@ export const CT_DOSSIER_COPY_V120 = {
           context: "Defense-technology communication",
           registers: ["Forge", "Oracle", "Monastery"],
           shortCopy:
-            "A production-grade visual system for making invisible structure visible under pressure. DEADLIGHT governs defense-technology communication across presentations, product visualization, mark systems, gallery and exhibition, collage R&D, and tactical-interface subsystems. It isn't a mood — it's a rulebook. Material registers, type registers, color protocol, content functions, production categories, R&D practice, mark systems, gallery rules, and scope boundaries all resolve into one visual grammar.",
+            "A production-grade visual system for making invisible structure visible under pressure. DEADLIGHT governs defense-technology communication — presentations, product visualization, mark systems, exhibition, collage R&D, tactical interfaces. Not a mood. A rulebook, where every register and protocol resolves into one visual grammar.",
           governingRules: [
             "Controlled occlusion", "Material is meaning", "Color is functional",
             "Scale is accountability", "The system survives density",
@@ -234,10 +234,10 @@ export const CT_DOSSIER_COPY_V120 = {
       prompt: "ADJACENT PRACTICES",
       hero: "No practice develops in isolation.",
       intro:
-        "The map shows neighboring territories — practices that share an interest in craft, technology, identity, publishing, and design. The point isn't comparison. It's orientation. Different practices optimize for different things: some for speed, some for experimentation, some for permanence. This one sits closest to where durable craft, systems thinking, visual direction, and AI-native production meet.",
+        "The map plots neighboring practices — craft, technology, identity, publishing, design. Not a ranking; an orientation. Some optimize for speed, some for experimentation, some for permanence. I sit where durable craft, systems thinking, visual direction, and AI-native production meet.",
       chartTitle: "A MAP OF NEIGHBORING PRACTICES",
       chartCaption:
-        "Closest to the corner where durable work and AI-native production meet — a quiet part of the map.",
+        "The corner where durable work meets AI-native production — a quiet part of the map.",
       fieldPositionAxes: {
         xLeft: "CRAFT-NATIVE",
         xRight: "AI-NATIVE",
@@ -280,28 +280,28 @@ export const CT_DOSSIER_COPY_V120 = {
     doctrine: {
       title: "DOCTRINE",
       prompt: "WHAT THE WORK OBEYS AND REFUSES",
-      hero: "The work isn't held together by style. It's held together by rules.",
+      hero: "My work isn't held together by style. It's held together by rules.",
       intro:
-        "A doctrine is the set of things a practice obeys when taste, pressure, and execution start to conflict. It defines what the work is allowed to become — and what it must refuse.",
+        "A doctrine is what I obey when taste, pressure, and execution start to conflict. It sets what the work can become — and what it refuses.",
       layersTitle: "DIRECTION · FORM · TRUST",
       layers: [
         {
           code: "01",
           title: "DIRECTION",
           body:
-            "What should people understand? What should they remember? What should they believe? The visual and narrative system begins here — deciding what matters before anything is built.",
+            "What should people understand? Remember? Believe? The system begins here: deciding what matters before anything is built.",
         },
         {
           code: "02",
           title: "FORM",
           body:
-            "Once the direction is clear, it needs a body: interfaces, diagrams, motion studies, documents, prototypes, working software. Form is what lets a person inspect the idea instead of only imagining it.",
+            "Once direction is clear, it needs a body: interfaces, diagrams, motion, prototypes, working software. Form lets people inspect the idea instead of imagining it.",
         },
         {
           code: "03",
           title: "TRUST",
           body:
-            "Trust isn't made by aesthetics. It's made when the form keeps its promise. The goal isn't persuasion; it's clarity strong enough that people can decide.",
+            "Trust isn't made by aesthetics. It's made when the form keeps its promise. Not persuasion — clarity strong enough to decide on.",
         },
       ],
       rulesTitle: "WORKING DOCTRINE",
@@ -329,7 +329,7 @@ export const CT_DOSSIER_COPY_V120 = {
       prompt: "WHERE THE THINKING LIVES",
       hero: "The work has a written layer.",
       intro:
-        "Essays, rulebooks, white papers, and doctrine documents are where the practice names its own laws before those laws become visual systems. They answer the recurring questions: What survives pressure? What deserves to be preserved? What becomes visible only when the system is under stress? What should a brand stay faithful to while everything around it changes?",
+        "Essays, rulebooks, white papers — where I name the laws before they become visual systems. Each answers a recurring question: what survives pressure, what deserves to be preserved, what shows only under stress, what a brand must stay faithful to as everything changes.",
       shelfLogic:
         "Each text anchors a different part of the practice: pressure, memory, signal, brand, systems, or identity.",
       filterAllLabel: "ALL",
@@ -478,9 +478,9 @@ export const CT_DOSSIER_COPY_V120 = {
       title: "PORTFOLIOS",
       prompt: "WHERE THE WORK LIVES",
       hero:
-        "The dossier describes the practice. The work lives elsewhere — one site per expression of the practice.",
+        "This dossier describes how I work. The built work lives elsewhere — one site per expression of the practice.",
       intro:
-        "Each site stands alone. None of them needs to explain the whole system. That's this page's job.",
+        "Each site stands alone. None of them has to explain the whole system. That's what I do here.",
       portfolioSites: [
         {
           domain: "artdirector.rocks",
@@ -502,7 +502,7 @@ export const CT_DOSSIER_COPY_V120 = {
         },
       ],
       outcomeLine:
-        "The proof is distributed across the sites. This page explains why the work keeps returning to the same questions.",
+        "The proof is spread across the sites. Here I explain why I keep returning to the same questions.",
 
       // --- Preserved for restoration only (see HANDOFF.md §3). Not rendered. ---
       _archivedWedges: [

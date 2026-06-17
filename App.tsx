@@ -231,7 +231,7 @@ const App: React.FC = () => {
                 <span className="font-bold">This is not a portfolio.</span> The built work lives elsewhere.
               </p>
               <p className="font-sans text-base md:text-lg leading-relaxed pt-2.5">
-                This dossier documents the practice behind it: where references come from, how visual languages take shape, and why certain forms keep surviving after fashion moves on.
+                This documents the practice behind it: where my references come from, how the visual languages form, and why some outlast fashion.
               </p>
             </div>
 
@@ -242,7 +242,7 @@ const App: React.FC = () => {
                 <span className="font-bold">Useful when the capability is real, but the language has not caught up.</span>
               </p>
               <p className="font-sans text-base md:text-lg leading-relaxed mt-2.5">
-                I help complex products, technical teams, and emerging categories become legible through visual language, doctrine, and inspectable form.
+                I make complex products and emerging categories legible — through visual language, doctrine, and inspectable form.
               </p>
               <p className="font-mono text-micro uppercase tracking-[0.2em] text-black/45 mt-4">
                 For teams building complex systems that need direction, language, and form.
