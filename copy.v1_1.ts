@@ -18,7 +18,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.5.2",
+    version: "3.5.3",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -123,7 +123,7 @@ export const CT_DOSSIER_COPY_V120 = {
           context: "Intelligence-style geospatial products",
           registers: ["Forge", "Oracle"],
           shortCopy:
-            "A visual operating language for intelligence-style geospatial products. Built around physical substrate, tactical illumination, dense data, and dossier-like interaction — it treats the interface as a handled object: tabs, stacks, bands, coordinates, cards, layers, and temporal evidence.",
+            "A visual operating language for intelligence-style geospatial products — physical substrate, tactical illumination, dense data, and dossier-like interaction that treats the interface as a handled object.",
           governingRules: ["Physical constraints", "Utilitarian canvas", "Tactical illumination"],
           includes: [
             "Substrate palette", "Tactical markers", "Heatmap ramp", "Typography rules",
@@ -174,7 +174,7 @@ export const CT_DOSSIER_COPY_V120 = {
           context: "Personal brand / art direction / cognitive identity",
           registers: ["Monastery", "Forge"],
           shortCopy:
-            "A brand architecture system for turning biography, taste, pressure, memory, and recurring symbols into a coherent identity. IAA is where the practice turns back on itself and becomes identity. It doesn't ask what style I like — it asks what keeps appearing across the work, and what that pattern reveals.",
+            "A brand architecture system that turns biography, taste, pressure, and memory into a coherent identity. IAA is where the practice turns back on itself: it doesn't ask what style I like — it asks what keeps appearing across the work, and what that reveals.",
           governingRules: ["Mass over swagger", "Lineage over trend", "Constraint as input", "Taste with a load rating"],
           includes: [
             "Brand architecture", "Voice principles", "Taste doctrine",
@@ -329,7 +329,7 @@ export const CT_DOSSIER_COPY_V120 = {
       prompt: "WHERE THE THINKING LIVES",
       hero: "The work has a written layer.",
       intro:
-        "Essays, rulebooks, white papers — where I name the laws before they become visual systems. Each answers a recurring question: what survives pressure, what deserves to be preserved, what shows only under stress, what a brand must stay faithful to as everything changes.",
+        "Essays, rulebooks, white papers — where I name the laws before they become visual systems. Each answers a recurring question: what survives pressure, what deserves preserving, what shows only under stress, what a brand keeps as everything changes.",
       shelfLogic:
         "Each text anchors a different part of the practice: pressure, memory, signal, brand, systems, or identity.",
       filterAllLabel: "ALL",
