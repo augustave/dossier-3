@@ -15,7 +15,7 @@ export const COLORS = {
  * Content modules for the CT Dossier — taste-led spine (V3.2).
  * Display index === narrative order (no more index/key mismatch).
  *   00 MANIFEST (overlay)  01 TASTE  02 SEEING  03 VISUAL LANGUAGES
- *   04 NEIGHBORHOOD  05 DOCTRINE  06 DOCTRINE LIBRARY  07 PORTFOLIOS  08 ENGAGEMENT
+ *   04 NEIGHBORHOOD  05 DOCTRINE  06 DOCTRINE LIBRARY  07 PORTFOLIOS  08 OPERATING BIOGRAPHY
  */
 export const CONTENT_MODULES: ModuleData[] = [
   {
@@ -372,40 +372,27 @@ export const CONTENT_MODULES: ModuleData[] = [
     ),
   },
 
-  // 08 — ENGAGEMENT MODELS. When people call (replaced the Role Matrix).
+  // 08 — OPERATING BIOGRAPHY (V3.5.1, replaced Engagement Models). Text-led,
+  // first person — the human root of the practice. No cards.
   {
-    id: ModuleType.ENGAGEMENT,
+    id: ModuleType.BIOGRAPHY,
     index: "08",
-    title: COPY.modules.engagement.title,
-    promptText: COPY.modules.engagement.prompt,
+    title: COPY.modules.biography.title,
+    promptText: COPY.modules.biography.prompt,
     themeColor: 'black',
-    responseText: COPY.modules.engagement.hero,
+    responseText: COPY.modules.biography.opening,
     responseDisplay: (
       <div className="space-y-8">
         <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.engagement.hero}
+          {COPY.modules.biography.opening}
         </p>
-        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
-          {COPY.modules.engagement.intro}
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {COPY.modules.engagement.models.map((m, idx) => (
-            <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
-              <div className="flex items-baseline gap-3 mb-3">
-                <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{m.code}</span>
-                <span className="font-mono text-sm uppercase tracking-wider">{m.title}</span>
-              </div>
-              <p className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{m.body}</p>
-            </div>
+        <div className="font-sans text-base md:text-lg opacity-secondary leading-relaxed max-w-[820px] space-y-4">
+          {COPY.modules.biography.body.map((para, i) => (
+            <p key={i}>{para}</p>
           ))}
         </div>
-
-        <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-white/10 pt-4">
-          {COPY.modules.engagement.short}
-        </p>
-        <p className="font-mono text-xs uppercase tracking-wide opacity-muted leading-relaxed max-w-2xl">
-          {COPY.modules.engagement.sendable}
+        <p className="font-serif text-lg md:text-2xl italic opacity-secondary border-t border-white/10 pt-6 max-w-3xl">
+          {COPY.modules.biography.close}
         </p>
       </div>
     ),
@@ -478,7 +465,7 @@ export const INQUIRY_QUESTIONS: Record<string, string[]> = {
     "How do you keep what operators need to hear and what reviewers need to see in the same artifact?"
   ],
   "Engagement Fit": [
-    "Which of the four engagement situations best matches where we are right now?",
+    "What kind of situation is the best moment to bring you in?",
     "Where can you accelerate a team immediately without a long onboarding runway?",
     "What does a strong first month of work look like for you?"
   ],

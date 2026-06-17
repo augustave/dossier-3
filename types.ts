@@ -9,7 +9,7 @@ export enum ModuleType {
   DOCTRINE = 'DOCTRINE',
   DOCTRINE_LIBRARY = 'DOCTRINE_LIBRARY',
   PORTFOLIOS = 'PORTFOLIOS',
-  ENGAGEMENT = 'ENGAGEMENT'
+  BIOGRAPHY = 'BIOGRAPHY'
 }
 
 /** Evidence link item for module sidebar. Reserved for future use. */

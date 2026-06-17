@@ -5,19 +5,20 @@
    "creative technologist" capability inventory to a taste-led practice
    dossier. Primary subject is taste; technology is supporting evidence.
    Section spine, in render order:
-     01 TASTE        — where the work is sourced
-     02 SEEING       — the cognitive lenses (was WORLD MODEL)
+     01 TASTE            — where the work is sourced
+     02 SEEING           — the cognitive lenses (was WORLD MODEL)
      03 VISUAL LANGUAGES — how taste becomes authored systems (language cards + register grammar)
-     04 NEIGHBORHOOD — adjacent practices (holds the old FIELD POSITION chart)
-     05 DOCTRINE     — what the work obeys and refuses (was PRACTICE / CREATIVE TECHNOLOGIST + OPERATING METHOD)
-     06 PORTFOLIOS   — where the built work lives
-     07 ENGAGEMENT   — when people call (replaced the ROLE MATRIX simulator)
+     04 NEIGHBORHOOD     — adjacent practices (holds the old FIELD POSITION chart)
+     05 DOCTRINE         — what the work obeys and refuses (was PRACTICE)
+     06 DOCTRINE LIBRARY — the written source texts behind the practice
+     07 PORTFOLIOS       — where the built work lives
+     08 OPERATING BIOGRAPHY — the human root of the practice (V3.5.1, was ENGAGEMENT MODELS)
    Voice: calmer than the v2 Meservey register — declarative, first person
    where it's natural, no self-mythologizing, no recruiter/role language. */
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.5.0",
+    version: "3.5.1",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -644,38 +645,27 @@ export const CT_DOSSIER_COPY_V120 = {
       ],
     },
 
-    // 08 — ENGAGEMENT MODELS. Replaces the ROLE MATRIX simulator. Human
-    // explanation of when people call, not a consulting framework or fit engine.
-    engagement: {
-      title: "ENGAGEMENT MODELS",
-      prompt: "WHEN PEOPLE USUALLY CALL",
-      hero: "Most engagements start in one of four situations.",
-      intro: "These are the situations where the practice becomes useful.",
-      models: [
-        {
-          code: "01",
-          title: "CATEGORY FORMATION",
-          body: "The thing is real, but people don't yet have a category for it. Useful when a team needs language, framing, and visual order before the market understands what it's looking at.",
-        },
-        {
-          code: "02",
-          title: "MEANING TRANSLATION",
-          body: "The product works, but the story doesn't. Useful when technical capability needs to become legible to buyers, partners, operators, investors, or the public.",
-        },
-        {
-          code: "03",
-          title: "VISUAL LANGUAGE",
-          body: "The system functions, but the identity is fragmented. Useful when a product, company, or body of work needs a coherent visual grammar across surfaces.",
-        },
-        {
-          code: "04",
-          title: "INSPECTABLE FORM",
-          body: "The idea needs a body. Useful when the team needs an artifact people can inspect, not just a deck people can believe.",
-        },
+    // 08 — OPERATING BIOGRAPHY (V3.5.1, replaced ENGAGEMENT MODELS). First-person
+    // authored testimony — the human root of the practice, not a service menu.
+    biography: {
+      title: "OPERATING BIOGRAPHY",
+      prompt: "WHO CARRIES THE PRACTICE",
+      opening: "I learned to read surfaces before I had language for what I was reading.",
+      body: [
+        "Before design, there was photography: light, framing, atmosphere, timing, and the strange way an image can tell the truth without explaining itself.",
+        "Before product language, there was service: rooms, pacing, pressure, hospitality, and the discipline of noticing what people need before they ask for it.",
+        "Fashion taught me that signal has grammar.",
+        "Food taught me that sequence matters.",
+        "Restaurants taught me that pressure reveals the real system.",
+        "Languages taught me that meaning changes shape when it crosses a border.",
+        "Design gave those instincts structure.",
+        "Machine intelligence gave them a new terrain.",
+        "The practice comes from that crossing. Image and service. Taste and pressure. Memory and systems. The visible thing and the thing underneath it.",
+        "That is why the work keeps returning to visual language, doctrine, source texts, and inspectable form.",
+        "I am not trying to make complex things simple.",
+        "I am trying to make them legible without making them smaller.",
       ],
-      shortTitle: "SHORT VERSION",
-      short: "Bring me in when direction, explanation, and execution need to stay connected.",
-      sendable: "Send this when a team has built something serious but still lacks the visual language to make it understood.",
+      close: "Bring me in when the thing is real, but the language around it has not caught up.",
     },
   },
 };
