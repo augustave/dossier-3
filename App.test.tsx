@@ -50,8 +50,12 @@ describe('CT Dossier: recruiter-facing layout and IA', () => {
     expect(screen.getAllByText(/CT DOSSIER/i).length).toBeGreaterThanOrEqual(1);
     // Version label is wired to COPY.meta.version (QA fix 2026-06-12) — assert
     // against the source of truth, not a literal, so this never goes stale.
-    const expected = new RegExp(`v${COPY.meta.version.replace(/\./g, '\\.')} \\+ NO API`, 'i');
-    expect(screen.getByText(expected)).toBeInTheDocument();
+    // Version now appears in both the header chrome and the footer colophon.
+    const expected = new RegExp(`v${COPY.meta.version.replace(/\./g, '\\.')} · NO API`, 'i');
+    expect(screen.getAllByText(expected).length).toBeGreaterThanOrEqual(1);
+    // Colophon (V3.5.0): CORRESPONDENCE label + the closing doctrine line.
+    expect(screen.getByText(/CORRESPONDENCE/i)).toBeInTheDocument();
+    expect(screen.getByText(/The conversation is where fit is tested/i)).toBeInTheDocument();
   });
 
   it('leads with the taste thesis and the art-director role line', () => {
@@ -59,7 +63,8 @@ describe('CT Dossier: recruiter-facing layout and IA', () => {
     // V3 reposition: taste is the subject; the recruiter "Target Roles" block is gone.
     // (The phrase also appears in the Taste beliefs list, so scope to the hero heading.)
     expect(screen.getByRole('heading', { name: /sourcing discipline/i })).toBeInTheDocument();
-    expect(screen.getByText(/Art Director · Design Engineer/i)).toBeInTheDocument();
+    // Role line appears in the hero and again in the footer colophon.
+    expect(screen.getAllByText(/Art Director · Design Engineer/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.queryByText(/Target Roles/i)).not.toBeInTheDocument();
   });
 

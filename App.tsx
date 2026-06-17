@@ -213,7 +213,7 @@ const App: React.FC = () => {
                 Cover label → thesis → role line → intro → built-work row →
                 reading lens, on the shared grid with deliberate vertical rhythm. */}
             <p className="font-mono text-xs uppercase tracking-[0.25em] text-black/45 mb-7 md:mb-9">
-              Practice Front Matter
+              PRACTICE FRONT MATTER
             </p>
 
             <h1 className="font-serif text-3xl md:text-[2.85rem] lg:text-5xl leading-[1.12] max-w-3xl">
@@ -222,6 +222,9 @@ const App: React.FC = () => {
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-black/50 mt-6">
               Ebenz Augustave · Art Director · Design Engineer
             </p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-black/40 mt-2">
+              Visual language for complex systems.
+            </p>
 
             <div className="mt-12 max-w-[800px] space-y-1.5">
               <p className="font-sans text-base md:text-lg leading-relaxed">
@@ -229,6 +232,20 @@ const App: React.FC = () => {
               </p>
               <p className="font-sans text-base md:text-lg leading-relaxed pt-2.5">
                 This dossier documents the practice behind it: where references come from, how visual languages take shape, and why certain forms keep surviving after fashion moves on.
+              </p>
+            </div>
+
+            {/* Recruitment thesis — a field note, not a banner. Names who the
+                practice is for, before the built-work row. */}
+            <div className="mt-10 max-w-[800px] border-l-2 border-black/30 pl-5">
+              <p className="font-sans text-base md:text-lg leading-relaxed">
+                <span className="font-bold">Useful when the capability is real, but the language has not caught up.</span>
+              </p>
+              <p className="font-sans text-base md:text-lg leading-relaxed mt-2.5">
+                I help complex products, technical teams, and emerging categories become legible through visual language, doctrine, and inspectable form.
+              </p>
+              <p className="font-mono text-micro uppercase tracking-[0.2em] text-black/45 mt-4">
+                For teams building complex systems that need direction, language, and form.
               </p>
             </div>
 
@@ -305,42 +322,62 @@ const App: React.FC = () => {
         ))}
 
 
-        {/* Footer Restored per PRD v1.0.2.
-            Direct-contact block added 2026-06-10: the dossier's job is to convert
-            a warm visitor into a reply, so the bottom of the page now carries a
-            real, always-live destination (plain email + LinkedIn) — not only the
-            composer. See contact.ts for the single source of truth. */}
+        {/* Footer — dossier colophon (V3.5.0). Three columns (Identity /
+            Correspondence / Actions) on the shared grid + a full-width closing
+            doctrine line. Contact paths come from contact.ts. */}
         <footer className="w-full py-12 md:py-24 bg-white text-black border-t border-black/10 mt-12">
-           <div className="container mx-auto px-4 md:px-8 max-w-6xl flex flex-col md:flex-row justify-between items-start gap-10">
-              <div>
-                <h3 className="font-sans font-bold tracking-tightest text-xl mb-2">CT DOSSIER</h3>
-                <p className="font-mono text-xs opacity-50">{SITE_VERSION} + NO API</p>
-              </div>
+           <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+                {/* Identity */}
+                <div className="space-y-1">
+                  <h3 className="font-sans font-bold tracking-tightest text-xl">CT DOSSIER</h3>
+                  <p className="font-sans font-bold text-sm">EBENZ AUGUSTAVE</p>
+                  <p className="font-mono text-xs uppercase tracking-widest opacity-60">Art Director · Design Engineer</p>
+                  <p className="font-mono text-xs opacity-50 pt-2">{SITE_VERSION} · NO API</p>
+                  <p className="font-mono text-micro uppercase tracking-wide opacity-50">Practice dossier / visual-language archive</p>
+                  <p className="font-sans text-xs italic opacity-50 pt-1 max-w-xs leading-relaxed">Versioned because the practice is still being refined in public.</p>
+                </div>
 
-              {/* Direct contact — always visible, no composer required. */}
-              <div className="flex flex-col gap-3">
-                <span className="font-mono text-xs uppercase tracking-widest opacity-50">Direct</span>
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
-                >
-                  {CONTACT_EMAIL}
-                </a>
-                {hasLinkedIn && (
+                {/* Correspondence */}
+                <div className="flex flex-col gap-3">
+                  <span className="font-mono text-xs uppercase tracking-widest opacity-50">CORRESPONDENCE</span>
                   <a
-                    href={CONTACT.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    aria-label="Email Ebenz Augustave"
                     className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
                   >
-                    LinkedIn -&gt;
+                    {CONTACT_EMAIL}
                   </a>
-                )}
+                  {hasLinkedIn && (
+                    <a
+                      href={CONTACT.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Ebenz Augustave on LinkedIn"
+                      className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
+                    >
+                      LinkedIn -&gt;
+                    </a>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col gap-3">
+                  <span className="font-mono text-xs uppercase tracking-widest opacity-50">ACTIONS</span>
+                  <div className="flex flex-col items-start gap-2 font-mono text-sm uppercase tracking-widest">
+                    <button onClick={() => setIsIndexOpen(true)} aria-label="Open dossier index" className="hover:underline">Index</button>
+                    <button onClick={() => handleInquiryRequest("Footer Contact")} aria-label="Compose inquiry" className="hover:underline">Compose Inquiry</button>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex gap-8 font-mono text-xs uppercase tracking-widest">
-                 <button onClick={() => setIsIndexOpen(true)} className="hover:underline">Index</button>
-                 <button onClick={() => handleInquiryRequest("Footer Contact")} className="hover:underline">Compose Inquiry</button>
+              {/* Closing doctrine line */}
+              <div className="mt-12 pt-8 border-t border-black/10">
+                <p className="font-serif text-lg md:text-2xl leading-relaxed">
+                  The dossier is the doctrine.<br/>
+                  The portfolio sites are the evidence.<br/>
+                  The conversation is where fit is tested.
+                </p>
               </div>
            </div>
         </footer>

@@ -17,7 +17,7 @@
 
 export const CT_DOSSIER_COPY_V120 = {
   meta: {
-    version: "3.4.9",
+    version: "3.5.0",
     voice: "taste-led, calm, declarative; first person where natural; reduce operator/mission/system jargon; increase taste/direction/culture/history/form/craft (CT-PRD-MARY-01)",
     rule: "taste is the subject, technology is evidence; museum-catalogue restraint over dashboard energy; show a point of view before showing the ability to build; enemies are categories not people; mass over swagger",
   },
@@ -650,6 +650,7 @@ export const CT_DOSSIER_COPY_V120 = {
       title: "ENGAGEMENT MODELS",
       prompt: "WHEN PEOPLE USUALLY CALL",
       hero: "Most engagements start in one of four situations.",
+      intro: "These are the situations where the practice becomes useful.",
       models: [
         {
           code: "01",
@@ -673,7 +674,8 @@ export const CT_DOSSIER_COPY_V120 = {
         },
       ],
       shortTitle: "SHORT VERSION",
-      short: "Useful when direction, explanation, and execution need to stay connected.",
+      short: "Bring me in when direction, explanation, and execution need to stay connected.",
+      sendable: "Send this when a team has built something serious but still lacks the visual language to make it understood.",
     },
   },
 };

@@ -385,6 +385,9 @@ export const CONTENT_MODULES: ModuleData[] = [
         <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
           {COPY.modules.engagement.hero}
         </p>
+        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
+          {COPY.modules.engagement.intro}
+        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {COPY.modules.engagement.models.map((m, idx) => (
@@ -400,6 +403,9 @@ export const CONTENT_MODULES: ModuleData[] = [
 
         <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-white/10 pt-4">
           {COPY.modules.engagement.short}
+        </p>
+        <p className="font-mono text-xs uppercase tracking-wide opacity-muted leading-relaxed max-w-2xl">
+          {COPY.modules.engagement.sendable}
         </p>
       </div>
     ),
