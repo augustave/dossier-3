@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Fold } from './Fold';
 
 /**
  * Visual Languages (Module 03).
@@ -130,9 +131,12 @@ const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor, dim
         {open ? 'Hide spec ↑' : 'Full spec ↓'}
       </button>
 
-      {/* Spec — governing rules + trimmed inline includes/refuses (≤6). */}
-      {open && (
-        <div id={specId} className="mt-4 pt-4 border-t border-white/10 space-y-4">
+      {/* Spec — folds via the shared <Fold> primitive (was a bare mount):
+          now stays in the DOM and goes inert when closed, like every other fold.
+          Spacing/crease live on an inner child so they collapse to nothing when
+          folded (padding/border on .fold__inner itself would leave a sliver). */}
+      <Fold open={open} id={specId}>
+        <div className="mt-4 pt-4 border-t space-y-4" style={{ borderColor: 'var(--fold-crease)' }}>
           <div className="flex flex-wrap gap-1.5">
             {lang.governingRules.map((g) => (
               <span key={g} className="font-mono text-micro uppercase tracking-wide border border-white/20 px-2 py-1 opacity-secondary">
@@ -151,7 +155,7 @@ const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor, dim
             </p>
           </div>
         </div>
-      )}
+      </Fold>
 
       {/* Source of authority + optional CTAs — always visible at the foot. */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mt-5 pt-4 border-t border-white/10">

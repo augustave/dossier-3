@@ -28,7 +28,7 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex flex-col transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      className={`fixed inset-0 z-50 flex flex-col transition-all duration-[var(--fold-duration)] ease-[var(--fold-ease)] ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
     >
       {/* Backdrop */}
       <div 
@@ -37,7 +37,7 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
       />
 
       {/* Content Container */}
-      <div className={`relative w-full max-w-6xl mx-auto px-4 md:px-8 h-full flex flex-col justify-center transition-transform duration-500 delay-100 ${isOpen ? 'translate-y-0' : 'translate-y-8'}`}>
+      <div className={`relative w-full max-w-6xl mx-auto px-4 md:px-8 h-full flex flex-col justify-center transition-transform duration-[var(--fold-duration)] ease-[var(--fold-ease)] delay-100 ${isOpen ? 'translate-y-0' : 'translate-y-8'}`}>
         
         {/* Header (Close Button) */}
         <div className="absolute top-4 right-4 md:top-8 md:right-8">

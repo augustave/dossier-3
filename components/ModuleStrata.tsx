@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { ModuleData, ModuleType } from '../types';
 import { COLORS } from '../constants';
 import { CollapsibleDrawer } from './CollapsibleDrawer';
+import { Fold } from './Fold';
 import { useClipboard } from '../hooks/useClipboard';
 import { ChevronDownIcon, FingerprintIcon, LinkIcon, CheckIcon } from './icons';
 
@@ -9,10 +10,20 @@ interface ModuleStrataProps {
   module: ModuleData;
   isOpen: boolean;
   onToggle: () => void;
+  /** Position in the rendered stack (0 = top sheet). */
+  stackIndex: number;
+  /** Total bands rendered, for the z-index cascade. */
+  stackCount: number;
 }
 
-export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onToggle }) => {
+export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onToggle, stackIndex, stackCount }) => {
   const themeClass = COLORS[module.themeColor];
+
+  // Paper-stack z-index: earlier bands sit HIGHER so each sheet's drop shadow
+  // draws over the (opaque) band below instead of being painted over by it.
+  // The open band lifts above the whole stack. All values stay < the fixed
+  // header (z-40) and the overlays (z-50+).
+  const zIndex = isOpen ? stackCount + 10 : stackCount - stackIndex;
   const containerRef = useRef<HTMLElement>(null);
   const { copy, copied: linkCopied } = useClipboard();
   const panelId = `module-panel-${module.index}`;
@@ -80,7 +91,14 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
       id={`module-${module.index}`}
       aria-label={`Module ${module.index}: ${module.title}`}
       // PRD v1.0.2: scroll-margin-top added for fixed header offset
-      className={`relative w-full border-b border-black/10 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${themeClass} ${isOpen ? 'py-12 md:py-24' : 'py-8 md:py-12'} cursor-pointer group scroll-mt-[100px]`}
+      // EVERY band reads as a sheet of paper with a full-width pure-black
+      // elevation drop shadow UNDERNEATH it — always, even closed (the
+      // persistent stack). The OPEN band lifts higher: a deeper shadow below
+      // plus a faint one above. `zIndex` (set via style) makes earlier sheets
+      // sit above the next so each shadow draws over the opaque band below.
+      // Elevation shadow, not a colour gradient — matte, on-doctrine.
+      style={{ zIndex }}
+      className={`relative w-full border-b border-black/10 transition-[padding,box-shadow] duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${themeClass} ${isOpen ? 'py-12 md:py-24 shadow-[0_34px_64px_rgba(0,0,0,0.30),0_-14px_36px_rgba(0,0,0,0.12)]' : 'py-8 md:py-12 shadow-[0_16px_34px_rgba(0,0,0,0.13)]'} cursor-pointer group scroll-mt-[100px]`}
       onClick={(e) => {
         const target = e.target as Element;
         if (target.closest('a') || target.closest('button')) return;
@@ -146,17 +164,13 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
         )}
 
         {/* Primary Content (Prompt + Response) - Visible when Open */}
-        <div
-          id={panelId}
-          // When collapsed the panel is `inert`: kept in the DOM for the fold
-          // animation, but removed from the tab order and the accessibility tree
-          // so screen readers and keyboard users don't reach a folded module's
-          // chart, filter chips, or CTA links. Mirrors aria-expanded=false.
-          inert={!isOpen}
-          className={`overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isOpen ? 'max-h-[5000px] opacity-100 mt-8' : 'max-h-0 opacity-0 mt-0'}`}
-        >
-          
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 pt-8 border-t border-current/20">
+        {/* Primary content panel — folds via the shared <Fold> primitive.
+            Inert when collapsed: kept in the DOM for the fold animation but
+            removed from tab order + a11y tree (mirrors aria-expanded=false).
+            `large` selects the 700ms strata duration. */}
+        <Fold open={isOpen} large id={panelId}>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 mt-8 pt-8 border-t" style={{ borderColor: 'var(--fold-crease)' }}>
             
             {/* Content column — full width (the evidence sidebar was removed in V3.1). */}
             <div className="md:col-span-12">
@@ -202,7 +216,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
               </div>
           </div>
 
-        </div>
+        </Fold>
       </div>
     </section>
   );

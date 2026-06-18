@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Fold } from './Fold';
 
 interface CollapsibleDrawerProps {
   title: string;
@@ -19,9 +20,11 @@ export const CollapsibleDrawer: React.FC<CollapsibleDrawerProps> = ({ title, chi
                 <span className="group-hover/drawer:underline underline-offset-4">{title}</span>
                 <span className="ml-auto opacity-50">{isOpen ? '[-]' : '[+]'}</span>
             </button>
-            <div className={`transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${isOpen ? 'max-h-[2000px] opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
-                {children}
-            </div>
+            <Fold open={isOpen}>
+                {/* mt-4 on an inner child, not .fold__inner, so it collapses
+                    to nothing when folded (no leftover margin sliver). */}
+                <div className="mt-4">{children}</div>
+            </Fold>
         </div>
     );
 };

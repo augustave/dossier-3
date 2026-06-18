@@ -117,6 +117,21 @@ const App: React.FC = () => {
       .filter((m): m is (typeof RENDERED_MODULES)[number] => m !== undefined);
   }, [selectedAudience]);
 
+  // Reversibility invariant: never leave the interface "open" on a module the
+  // current lens has hidden. If the lens changes and the open module drops out
+  // of the visible set, reconcile to the first visible module — so a path back
+  // to it always exists, without relying on the user remembering "Study all".
+  useEffect(() => {
+    if (openModuleIndex && !visibleModules.some(m => m.index === openModuleIndex)) {
+      const next = visibleModules[0]?.index ?? null;
+      setOpenModuleIndex(next);
+      try {
+        if (next) window.location.hash = `module-${next}`;
+        else history.replaceState("", document.title, window.location.pathname + window.location.search);
+      } catch (e) {}
+    }
+  }, [visibleModules, openModuleIndex]);
+
   // Handle initialization (Deep Link > Default Module 01)
   useEffect(() => {
     const hash = window.location.hash;
@@ -140,6 +155,26 @@ const App: React.FC = () => {
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  // Flat state reachable from anywhere: Escape walks one step back toward the
+  // neutral overview. Priority: inquiry → index → folded module. Repeated
+  // Escape from any state provably lands on the flat sheet. The inquiry panel
+  // owns its own Escape close, so we defer to it and never double-handle.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (isInquiryOpen) return; // InquiryPanel handles its own Escape
+      if (isIndexOpen) { setIsIndexOpen(false); return; }
+      if (openModuleIndex) {
+        setOpenModuleIndex(null);
+        try {
+          history.pushState("", document.title, window.location.pathname + window.location.search);
+        } catch (e) {}
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isInquiryOpen, isIndexOpen, openModuleIndex]);
 
   const handleToggle = (index: string) => {
     if (openModuleIndex === index) {
@@ -311,13 +346,17 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        {/* Render visible modules (filtered by selected audience if any). */}
-        {visibleModules.map((module) => (
+        {/* Render visible modules (filtered by selected audience if any).
+            stackIndex/stackCount drive the paper-stack z-index: earlier bands
+            sit higher so each sheet's drop shadow draws over the one below. */}
+        {visibleModules.map((module, i) => (
           <ModuleStrata
             key={module.id}
             module={module}
             isOpen={openModuleIndex === module.index}
             onToggle={() => handleToggle(module.index)}
+            stackIndex={i}
+            stackCount={visibleModules.length}
           />
         ))}
 

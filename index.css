@@ -51,6 +51,13 @@
   --opacity-muted: 0.60;
   --opacity-subtle: 0.40;
   --opacity-ghost: 0.10;
+
+  /* Fold law — one grammar for every collapse surface. Centralizes the
+     de-facto curve/durations that were scattered as per-component magic. */
+  --fold-ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --fold-duration: 500ms;     /* micro folds: drawer, spec */
+  --fold-duration-lg: 700ms;  /* module strata panel */
+  --fold-crease: var(--hairline); /* the seam reuses the existing hairline */
 }
 
 /* Per-stratum overrides */
@@ -107,6 +114,113 @@
 .animate-grid-enter {
   animation: grid-enter 360ms cubic-bezier(0.25, 1, 0.5, 1);
   transform-origin: center top;
+}
+
+/* Fold primitive — collapses to EXACT content height (grid-template-rows
+   0fr→1fr), so the crease lands at the true content edge: no max-height
+   guess, "there is no approximately-foldable". The reduced-motion block
+   below zeroes the durations, making folds instant for those users. */
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--fold-duration) var(--fold-ease),
+    opacity var(--fold-duration) var(--fold-ease);
+}
+.fold[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.fold--lg {
+  transition-duration: var(--fold-duration-lg);
+}
+.fold > .fold__inner {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ============================================================
+   FOLD CUE — 2D ONLY. No 3D (no perspective / rotateX / transform-style /
+   will-change): those promote a compositor layer that FREEZES the subtree
+   under software rendering and blanked the panel. Everything here is
+   translateY + opacity, so it composites everywhere.
+
+   The PAPER ELEVATION — the drop shadow that lifts an open tab — is NOT
+   here. It lives as a box-shadow on the module <section> in ModuleStrata,
+   so it sits UNDERNEATH the whole paper, full width (an elevation shadow,
+   not a colour gradient inside the content). This block only carries the
+   two in-content fold cues:
+     1. THE DROP — the body settles down from the crease on open.
+     2. THE CREASE — a crisp 1px matte hairline at the top seam (theme-aware
+        --fold-crease; pure black on dark strata), held at rest when open.
+
+   Matte by construction — no glow, specular, sheen, or light/tinted stop.
+   ============================================================ */
+
+/* Mild-overshoot ease so the drop carries weight without bounce. */
+:root {
+  --fold-ease-drop: cubic-bezier(0.22, 1.06, 0.36, 1);
+}
+
+/* 1. THE DROP — the body settles down from the crease on open. 2D translate
+   only (composites everywhere); reverts to translateY(0) at rest. */
+.fold[data-open='true'] > .fold__inner {
+  animation: fold-drop var(--fold-duration) var(--fold-ease-drop);
+}
+.fold--lg[data-open='true'] > .fold__inner {
+  animation-duration: var(--fold-duration-lg);
+}
+@keyframes fold-drop {
+  from { transform: translateY(-26px); }
+  to   { transform: translateY(0); }
+}
+
+/* 2. THE CREASE (resting seam line) — matte 1px hairline, theme-aware via
+   --fold-crease; holds at rest on an open module, fades in on open. This is
+   only the fold's top seam — the ELEVATION drop shadow that lifts the whole
+   paper lives on the module <section> (ModuleStrata), underneath, full width. */
+.fold > .fold__inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--fold-crease);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.fold[data-open='true'] > .fold__inner::before {
+  opacity: 1;
+  animation: fold-crease-in var(--fold-duration) var(--fold-ease);
+}
+@keyframes fold-crease-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Dark strata: the seam hairline goes PURE BLACK (not the white --hairline
+   that --fold-crease resolves to on dark panels) — strict matte, zero light on
+   near-black surfaces. The white --fold-crease stays in use for visible
+   content-separator borders elsewhere; only this seam line is overridden. */
+.theme-dark .fold > .fold__inner::before,
+.theme-blue .fold > .fold__inner::before,
+.theme-brown .fold > .fold__inner::before {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* Reduced motion: kill the drop + crease animations; the seam holds static. */
+@media (prefers-reduced-motion: reduce) {
+  .fold[data-open='true'] > .fold__inner,
+  .fold > .fold__inner::before {
+    animation: none !important;
+  }
+  .fold[data-open='true'] > .fold__inner::before {
+    opacity: 1 !important;
+  }
 }
 
 @supports not (-webkit-text-stroke: 1px #000) {
