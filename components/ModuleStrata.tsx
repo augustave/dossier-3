@@ -33,11 +33,11 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
   const isDarkBand = module.themeColor !== 'cream';
   const shadowClass = isOpen
     ? (isDarkBand
-        ? 'shadow-[0_34px_64px_rgba(0,0,0,0.30),0_-14px_36px_rgba(0,0,0,0.12),inset_0_6px_9px_-5px_rgba(255,255,255,0.13)]'
-        : 'shadow-[0_34px_64px_rgba(0,0,0,0.30),0_-14px_36px_rgba(0,0,0,0.12)]')
+        ? 'shadow-[0_34px_32px_rgba(0,0,0,0.15),0_-14px_18px_rgba(0,0,0,0.06),inset_0_6px_9px_-5px_rgba(255,255,255,0.13)]'
+        : 'shadow-[0_34px_32px_rgba(0,0,0,0.15),0_-14px_18px_rgba(0,0,0,0.06)]')
     : (isDarkBand
-        ? 'shadow-[0_16px_34px_rgba(0,0,0,0.13),inset_0_6px_9px_-5px_rgba(255,255,255,0.13)]'
-        : 'shadow-[0_16px_34px_rgba(0,0,0,0.13)]');
+        ? 'shadow-[0_16px_17px_rgba(0,0,0,0.065),inset_0_6px_9px_-5px_rgba(255,255,255,0.13)]'
+        : 'shadow-[0_16px_17px_rgba(0,0,0,0.065)]');
 
   const containerRef = useRef<HTMLElement>(null);
   const { copy, copied: linkCopied } = useClipboard();
