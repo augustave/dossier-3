@@ -3,6 +3,7 @@ import { ModuleData, ModuleType } from '../types';
 import { COLORS } from '../constants';
 import { CollapsibleDrawer } from './CollapsibleDrawer';
 import { Fold } from './Fold';
+import { PleatFold } from './PleatFold';
 import { useClipboard } from '../hooks/useClipboard';
 import { ChevronDownIcon, FingerprintIcon, LinkIcon, CheckIcon } from './icons';
 
@@ -189,7 +190,11 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
             
             {/* Content column — full width (the evidence sidebar was removed in V3.1). */}
             <div className="md:col-span-12">
-              
+
+              {/* Content rows unfold as an origami pleat accordion — alternating
+                  mountain/valley creases rotateX flat as the module opens. */}
+              <PleatFold open={isOpen}>
+
               {/* Prompt Block */}
               <div className="mb-6">
                 <span className="font-mono text-micro uppercase tracking-widest block mb-2" style={{ color: 'var(--text-muted)' }}>
@@ -228,6 +233,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
                    </CollapsibleDrawer>
                 )}
 
+              </PleatFold>
               </div>
           </div>
 

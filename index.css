@@ -223,6 +223,46 @@
   }
 }
 
+/* ============================================================
+   PLEAT ACCORDION — an open module's content rows unfold like an origami
+   accordion. Each row is a PLEAT with an alternating mountain / valley crease:
+   odd rows hinge about the TOP edge (mountain), even rows about the BOTTOM
+   edge (valley), so the stack zig-zags. Folded the pleats stand up + fade;
+   open they rotate flat into readable rows. Continuous, exactly reversible.
+
+   3D (rotateX + perspective) — runs on real GPUs (the live site). The
+   reduced-motion path below drops the rotation to a plain fade, so content is
+   never left tilted or hidden.
+   ============================================================ */
+.pleatfold {
+  perspective: 1200px;
+  perspective-origin: 50% 0;
+}
+.pleat {
+  transform-origin: top center;          /* mountain — hinge at the top edge */
+  transform: rotateX(42deg);
+  opacity: 0;
+  transition:
+    transform var(--fold-duration-lg) var(--fold-ease),
+    opacity var(--fold-duration-lg) var(--fold-ease);
+  backface-visibility: hidden;
+}
+.pleat:nth-child(even) {                  /* valley — hinge at the bottom edge */
+  transform-origin: bottom center;
+  transform: rotateX(-42deg);
+}
+.pleatfold[data-open='true'] .pleat {
+  transform: rotateX(0deg);              /* lies flat — the readable row */
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pleat {
+    transform: none !important;
+    transition: opacity 0.01ms !important;
+  }
+  .pleatfold[data-open='true'] .pleat { opacity: 1 !important; }
+}
+
 @supports not (-webkit-text-stroke: 1px #000) {
   .module-index {
     -webkit-text-stroke: 0;
