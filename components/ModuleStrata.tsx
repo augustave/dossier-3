@@ -7,6 +7,25 @@ import { PleatFold } from './PleatFold';
 import { useClipboard } from '../hooks/useClipboard';
 import { ChevronDownIcon, FingerprintIcon, LinkIcon, CheckIcon } from './icons';
 
+// Unwrap the response into pleat rows. If it's a single wrapper element with
+// several children (e.g. <div className="space-y-8">…</div>) or a Fragment,
+// return those children as the rows + the wrapper's className, so its spacing
+// (space-y-*) keeps applying once the children become pleats. A single
+// component / string stays one row — safe, it keeps its own layout.
+const unwrapResponse = (node: React.ReactNode): { className: string; rows: React.ReactNode[] } => {
+  const arr = React.Children.toArray(node);
+  const only = arr[0];
+  if (arr.length === 1 && React.isValidElement(only)) {
+    if (only.type === React.Fragment) {
+      return { className: '', rows: React.Children.toArray((only.props as { children?: React.ReactNode }).children) };
+    }
+    const props = only.props as { className?: string; children?: React.ReactNode };
+    const kids = React.Children.toArray(props.children);
+    if (kids.length > 1) return { className: props.className ?? '', rows: kids };
+  }
+  return { className: '', rows: arr };
+};
+
 interface ModuleStrataProps {
   module: ModuleData;
   isOpen: boolean;
@@ -40,6 +59,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
         ? 'shadow-[0_16px_17px_rgba(0,0,0,0.065),inset_0_6px_9px_-5px_rgba(255,255,255,0.13)]'
         : 'shadow-[0_16px_17px_rgba(0,0,0,0.065)]');
 
+  const resp = unwrapResponse(module.responseDisplay);
   const containerRef = useRef<HTMLElement>(null);
   const { copy, copied: linkCopied } = useClipboard();
   const panelId = `module-panel-${module.index}`;
@@ -191,11 +211,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
             {/* Content column — full width (the evidence sidebar was removed in V3.1). */}
             <div className="md:col-span-12">
 
-              {/* Content rows unfold as an origami pleat accordion — alternating
-                  mountain/valley creases rotateX flat as the module opens. */}
-              <PleatFold open={isOpen}>
-
-              {/* Prompt Block */}
+              {/* Prompt block — chrome (the 'summary' line), not pleated. */}
               <div className="mb-6">
                 <span className="font-mono text-micro uppercase tracking-widest block mb-2" style={{ color: 'var(--text-muted)' }}>
                   Prompt
@@ -205,14 +221,20 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
                 </div>
               </div>
 
-              {/* Response Block */}
-              <div className="mb-12">
-                 <span className="font-mono text-micro uppercase tracking-widest block mb-2" style={{ color: 'var(--text-muted)' }}>
+              {/* Response label — chrome. */}
+              <div className="mb-3">
+                <span className="font-mono text-micro uppercase tracking-widest block" style={{ color: 'var(--text-muted)' }}>
                   Response
                 </span>
-                <div className="font-serif text-xl md:text-3xl leading-relaxed" style={{ color: 'var(--text-primary)' }}>
-                  {module.responseDisplay}
-                </div>
+              </div>
+              {/* Response — the origami PLEAT ACCORDION. The response wrapper is
+                  unwrapped into its rows; each becomes a mountain/valley pleat.
+                  The wrapper's spacing (space-y-*) + the serif base ride along
+                  via className, so typography + rhythm are unchanged. */}
+              <div className="mb-12" style={{ color: 'var(--text-primary)' }}>
+                <PleatFold open={isOpen} className={`font-serif text-xl md:text-3xl leading-relaxed${resp.className ? ` ${resp.className}` : ''}`}>
+                  {resp.rows}
+                </PleatFold>
               </div>
 
 
@@ -233,7 +255,6 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
                    </CollapsibleDrawer>
                 )}
 
-              </PleatFold>
               </div>
           </div>
 

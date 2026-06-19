@@ -3,6 +3,9 @@ import React from 'react';
 interface PleatFoldProps {
   /** When true the accordion is unfolded flat (open); false folds it up. */
   open: boolean;
+  /** Extra classes on the container — carries the unwrapped wrapper's spacing
+   *  (space-y-*) + base typography so the pleats keep their original layout. */
+  className?: string;
   children: React.ReactNode;
 }
 
@@ -20,11 +23,11 @@ interface PleatFoldProps {
  * reduced-motion / no-3D path (see `.pleat` @media in index.css) drops the
  * rotation to a plain fade, so content is never left tilted or hidden.
  */
-export const PleatFold: React.FC<PleatFoldProps> = ({ open, children }) => {
+export const PleatFold: React.FC<PleatFoldProps> = ({ open, className, children }) => {
   const rows = React.Children.toArray(children).filter(Boolean);
   const n = rows.length;
   return (
-    <div className="pleatfold" data-open={open}>
+    <div className={`pleatfold${className ? ` ${className}` : ''}`} data-open={open}>
       {rows.map((row, i) => (
         <div
           key={i}
