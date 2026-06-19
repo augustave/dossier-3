@@ -234,25 +234,31 @@
    reduced-motion path below drops the rotation to a plain fade, so content is
    never left tilted or hidden.
    ============================================================ */
+:root {
+  /* Steep creases + a near-edge-on perspective = dramatic origami. The ease
+     overshoots slightly so each pleat SNAPS flat (a touch past, then settles). */
+  --pleat-ease: cubic-bezier(0.34, 1.36, 0.42, 1);
+  --pleat-duration: 820ms;
+}
 .pleatfold {
-  perspective: 1200px;
+  perspective: 820px;                    /* short = strong foreshortening / depth */
   perspective-origin: 50% 0;
 }
 .pleat {
   transform-origin: top center;          /* mountain — hinge at the top edge */
-  transform: rotateX(42deg);
+  transform: rotateX(76deg);             /* stands up steeply when folded */
   opacity: 0;
   transition:
-    transform var(--fold-duration-lg) var(--fold-ease),
-    opacity var(--fold-duration-lg) var(--fold-ease);
+    transform var(--pleat-duration) var(--pleat-ease),
+    opacity var(--pleat-duration) var(--fold-ease);
   backface-visibility: hidden;
 }
 .pleat:nth-child(even) {                  /* valley — hinge at the bottom edge */
   transform-origin: bottom center;
-  transform: rotateX(-42deg);
+  transform: rotateX(-76deg);
 }
 .pleatfold[data-open='true'] .pleat {
-  transform: rotateX(0deg);              /* lies flat — the readable row */
+  transform: rotateX(0deg);              /* snaps flat — the readable row */
   opacity: 1;
 }
 @media (prefers-reduced-motion: reduce) {

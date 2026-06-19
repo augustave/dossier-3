@@ -30,7 +30,7 @@ export const PleatFold: React.FC<PleatFoldProps> = ({ open, children }) => {
           key={i}
           className="pleat"
           // Cascade the creases: open runs top→bottom, close folds bottom→top.
-          style={{ transitionDelay: `${(open ? i : n - 1 - i) * 70}ms` }}
+          style={{ transitionDelay: `${(open ? i : n - 1 - i) * 130}ms` }}
         >
           {row}
         </div>
