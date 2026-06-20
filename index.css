@@ -164,17 +164,45 @@
   --fold-ease-drop: cubic-bezier(0.22, 1.06, 0.36, 1);
 }
 
-/* 1. THE DROP — the body settles down from the crease on open. 2D translate
-   only (composites everywhere); reverts to translateY(0) at rest. */
-.fold[data-open='true'] > .fold__inner {
+/* 1. THE DROP — SMALL folds (drawer / spec) settle down from the crease on
+   open. 2D translate only; reverts to translateY(0) at rest. The MODULE panel
+   (.fold--lg) uses the paper-lift ceremony below instead. */
+.fold:not(.fold--lg)[data-open='true'] > .fold__inner {
   animation: fold-drop var(--fold-duration) var(--fold-ease-drop);
-}
-.fold--lg[data-open='true'] > .fold__inner {
-  animation-duration: var(--fold-duration-lg);
 }
 @keyframes fold-drop {
   from { transform: translateY(-26px); }
   to   { transform: translateY(0); }
+}
+
+/* ============================================================
+   MODULE CEREMONY — PAPER-LIFT RELEASE (no parent rotation). The module reads
+   as a dossier page UNFOLDING: .fold__inner starts pressed down + slightly
+   compressed with a tight inset paper-lift shadow, then releases flat. It LEADS
+   the child pleats (520ms vs the 620ms reveal) so the surface breaks first,
+   then the staggered rows settle. The 8deg "feel" comes from translateY +
+   scaleY + the shadow swell + the rows' own rotateX — NEVER from rotating the
+   parent (a 3D context on .fold froze the panel under software rendering).
+   2.5D only → composites everywhere, no nested-3D / double-rotation, post-layout
+   over the 0fr→1fr grid → ZERO layout shift; inert/aria untouched. Driven
+   entirely by @keyframes (no residual base transform) → no close-snap. */
+.fold--lg > .fold__inner {
+  transform-origin: 50% 0;   /* grow downward into the reveal */
+}
+.fold--lg[data-open='true'] > .fold__inner {
+  animation: fold-release var(--fold-release-duration) var(--fold-release-ease);
+}
+@keyframes fold-release {
+  0% {
+    transform: translateY(calc(-1 * var(--fold-release-lift))) scaleY(var(--fold-release-squash));
+    box-shadow: inset 0 10px 14px -10px rgba(0, 0, 0, var(--fold-shadow-opacity));
+  }
+  40% { box-shadow: inset 0 18px 24px -12px rgba(0, 0, 0, var(--fold-shadow-opacity)); }
+  72% { box-shadow: inset 0 16px 22px -12px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.85)); }
+  100% {
+    transform: translateY(0) scaleY(1);              /* rest: flat + readable */
+    box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0);      /* settles matte-flat */
+  }
 }
 
 /* 2. THE CREASE (resting seam line) — matte 1px hairline, theme-aware via
@@ -212,11 +240,16 @@
   background: rgba(0, 0, 0, 0.55);
 }
 
-/* Reduced motion: kill the drop + crease animations; the seam holds static. */
+/* Reduced motion: kill the drop / crease / ceremony animations; module rests
+   flat + shadow-free, the seam holds static. */
 @media (prefers-reduced-motion: reduce) {
   .fold[data-open='true'] > .fold__inner,
   .fold > .fold__inner::before {
     animation: none !important;
+  }
+  .fold--lg[data-open='true'] > .fold__inner {
+    transform: none !important;
+    box-shadow: none !important;
   }
   .fold[data-open='true'] > .fold__inner::before {
     opacity: 1 !important;
@@ -235,22 +268,30 @@
    never left tilted or hidden.
    ============================================================ */
 :root {
-  /* Fold-intensity scale (V3.5.4) — restrained, structural, NOT theatrical.
-     One disciplined surface reconfiguring, not cards doing tricks. Angle is
-     chosen per content type via --pleat-angle. */
+  /* Fold-intensity scale (PRD V — CONTROLLED DRAMA). Felt but matte, not a
+     gimmick; per content type via --pleat-angle. HARD CAP 10deg. */
   --fold-intensity-none: 0deg;
-  --fold-intensity-low: 1.25deg;          /* archive cards (06) */
-  --fold-intensity-medium: 2deg;          /* specimen cards (03) */
-  --fold-intensity-high: 4deg;            /* prose rows */
-  --pleat-angle: var(--fold-intensity-medium);  /* default; overridden per context */
-  --pleat-ease: cubic-bezier(0.22, 0.61, 0.36, 1);  /* gentle ease-out, no overshoot */
-  --pleat-duration: 600ms;
-  /* Quiet crease/seam cue — a hairline, never a decorative border. */
+  --fold-intensity-archive: 2deg;        /* 06 archive cards */
+  --fold-intensity-specimen: 3deg;       /* 03 specimen cards */
+  --fold-intensity-prose: 5deg;          /* prose rows */
+  --fold-intensity-module: 8deg;         /* module-ceremony "feel" (non-rotational; see ceremony) */
+  --pleat-angle: var(--fold-intensity-specimen);  /* default; overridden per context */
+  --pleat-stagger: 36ms;                 /* default = specimen; per-context below */
+  --pleat-ease: cubic-bezier(0.22, 1, 0.36, 1);   /* controlled ease-out, no overshoot */
+  --pleat-duration: 620ms;
+  --pleat-perspective: 1400px;
+  /* Quiet crease/seam + paper depth — hairlines, never decorative borders. */
   --fold-crease-opacity: 0.16;
   --fold-crease-width: 1px;
+  --fold-shadow-opacity: 0.18;           /* archive/module paper-lift, pure black */
+  /* Module-ceremony release knobs (lift, NOT rotation). */
+  --fold-release-lift: 18px;             /* pressed-down travel at start */
+  --fold-release-squash: 0.985;          /* slight vertical compression, returns to 1 */
+  --fold-release-duration: 520ms;        /* leads the reveal → surface-first */
+  --fold-release-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 .pleatfold {
-  perspective: 1600px;                   /* soft — small angles need no drama */
+  perspective: var(--pleat-perspective);
   perspective-origin: 50% 0;
 }
 .pleat {
@@ -289,9 +330,9 @@
 .fold[data-open='true'] .pleat::before { opacity: var(--fold-crease-opacity); }
 .pleatfold--archive .pleat::before { display: none; }
 
-/* Per-content fold intensity. */
-.pleatfold--prose   { --pleat-angle: var(--fold-intensity-high); }
-.pleatfold--archive { --pleat-angle: var(--fold-intensity-low); }
+/* Per-content fold intensity + stagger token (PleatFold reads --pleat-stagger). */
+.pleatfold--prose   { --pleat-angle: var(--fold-intensity-prose);   --pleat-stagger: 42ms; }
+.pleatfold--archive { --pleat-angle: var(--fold-intensity-archive); --pleat-stagger: 28ms; }
 
 /* Archive (06): UNIFORM direction — no mountain/valley alternation. Each card
    folds quietly IN PLACE at a low angle; the 2-col grid stays stable, so the
@@ -308,6 +349,42 @@
   }
   .fold[data-open='true'] .pleat { opacity: 1 !important; }
   .pleat::before { display: none !important; }
+}
+
+/* ============================================================
+   MODULE 06 — ARCHIVE PAPER-LIFT. A matte pure-black edge-shadow on each
+   archive .pleat so 2deg never reads dead: a quiet resting lift, deeper when
+   open (paper off the shelf). Stable 2-col grid; box-shadow is non-layout →
+   ZERO shift, no rotation change, no flail. Paper not material — no glow,
+   specular, or tint. Micro-alternation DECLINED (uniform direction kept). */
+.pleatfold--archive .pleat {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.45));
+  transition:
+    transform var(--pleat-duration) var(--pleat-ease),
+    opacity var(--pleat-duration) var(--fold-ease),
+    box-shadow var(--pleat-duration) var(--fold-ease);
+}
+.fold[data-open='true'] .pleatfold--archive .pleat {
+  box-shadow:
+    0 6px 10px -4px rgba(0, 0, 0, var(--fold-shadow-opacity)),
+    0 1px 2px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.5));
+}
+/* Dark strata: keep pure-black (no white edge), a touch deeper so it reads on
+   near-black surfaces. */
+.theme-dark  .pleatfold--archive .pleat,
+.theme-blue  .pleatfold--archive .pleat,
+.theme-brown .pleatfold--archive .pleat {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.55));
+}
+.theme-dark  .fold[data-open='true'] .pleatfold--archive .pleat,
+.theme-blue  .fold[data-open='true'] .pleatfold--archive .pleat,
+.theme-brown .fold[data-open='true'] .pleatfold--archive .pleat {
+  box-shadow:
+    0 6px 10px -4px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 1.1)),
+    0 1px 2px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.6));
+}
+@media (prefers-reduced-motion: reduce) {
+  .pleatfold--archive .pleat { transition: box-shadow 0.01ms !important; }
 }
 
 @supports not (-webkit-text-stroke: 1px #000) {

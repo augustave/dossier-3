@@ -102,7 +102,7 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
             key={doc.id}
             // 2px top accent + a low, uniform-direction pleat so each archive
             // card folds quietly IN PLACE — stable grid, no cross-column zigzag.
-            style={{ borderTopColor: accentFor(doc.registers), borderTopWidth: '2px', transitionDelay: `${i * 35}ms` }}
+            style={{ borderTopColor: accentFor(doc.registers), borderTopWidth: '2px', transitionDelay: `calc(var(--pleat-stagger) * ${i})` }}
             className="pleat border border-white/15 bg-black/20 p-5 md:p-6 flex flex-col"
           >
             {/* Metadata row */}

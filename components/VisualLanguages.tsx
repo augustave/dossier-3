@@ -234,7 +234,7 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
           mountain/valley), unfolding flat when the module opens. */}
       <div className="pleatfold space-y-5">
         {languages.map((lang, i) => (
-          <div key={lang.id} className="pleat" style={{ transitionDelay: `${i * 50}ms` }}>
+          <div key={lang.id} className="pleat" style={{ transitionDelay: `calc(var(--pleat-stagger) * ${i})` }}>
             <LanguageCard
               lang={lang}
               accent={colorFor(lang.registers[0])}
