@@ -96,13 +96,13 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
       </div>
 
       {/* Archive-record cards */}
-      <div className="pleatfold grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="pleatfold pleatfold--archive grid grid-cols-1 md:grid-cols-2 gap-4">
         {visible.map((doc, i) => (
           <div
             key={doc.id}
-            // 2px top accent + origami pleat (mountain/valley) so each archive
-            // card folds flat as a row when the module opens.
-            style={{ borderTopColor: accentFor(doc.registers), borderTopWidth: '2px', transitionDelay: `${i * 80}ms` }}
+            // 2px top accent + a low, uniform-direction pleat so each archive
+            // card folds quietly IN PLACE — stable grid, no cross-column zigzag.
+            style={{ borderTopColor: accentFor(doc.registers), borderTopWidth: '2px', transitionDelay: `${i * 35}ms` }}
             className="pleat border border-white/15 bg-black/20 p-5 md:p-6 flex flex-col"
           >
             {/* Metadata row */}

@@ -243,7 +243,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
                 {selfPleating ? (
                   resp.rows[0]
                 ) : (
-                  <PleatFold open={isOpen} className={resp.className}>
+                  <PleatFold open={isOpen} className={`pleatfold--prose${resp.className ? ` ${resp.className}` : ''}`}>
                     {resp.rows}
                   </PleatFold>
                 )}

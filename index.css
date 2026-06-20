@@ -235,18 +235,28 @@
    never left tilted or hidden.
    ============================================================ */
 :root {
-  /* Steep creases + a near-edge-on perspective = dramatic origami. The ease
-     overshoots slightly so each pleat SNAPS flat (a touch past, then settles). */
-  --pleat-ease: cubic-bezier(0.34, 1.36, 0.42, 1);
-  --pleat-duration: 820ms;
+  /* Fold-intensity scale (V3.5.4) — restrained, structural, NOT theatrical.
+     One disciplined surface reconfiguring, not cards doing tricks. Angle is
+     chosen per content type via --pleat-angle. */
+  --fold-intensity-none: 0deg;
+  --fold-intensity-low: 1.25deg;          /* archive cards (06) */
+  --fold-intensity-medium: 2deg;          /* specimen cards (03) */
+  --fold-intensity-high: 4deg;            /* prose rows */
+  --pleat-angle: var(--fold-intensity-medium);  /* default; overridden per context */
+  --pleat-ease: cubic-bezier(0.22, 0.61, 0.36, 1);  /* gentle ease-out, no overshoot */
+  --pleat-duration: 600ms;
+  /* Quiet crease/seam cue — a hairline, never a decorative border. */
+  --fold-crease-opacity: 0.16;
+  --fold-crease-width: 1px;
 }
 .pleatfold {
-  perspective: 820px;                    /* short = strong foreshortening / depth */
+  perspective: 1600px;                   /* soft — small angles need no drama */
   perspective-origin: 50% 0;
 }
 .pleat {
+  position: relative;                    /* for the ::before crease */
   transform-origin: top center;          /* mountain — hinge at the top edge */
-  transform: rotateX(76deg);             /* stands up steeply when folded */
+  transform: rotateX(var(--pleat-angle));
   opacity: 0;
   transition:
     transform var(--pleat-duration) var(--pleat-ease),
@@ -255,18 +265,49 @@
 }
 .pleat:nth-child(even) {                  /* valley — hinge at the bottom edge */
   transform-origin: bottom center;
-  transform: rotateX(-76deg);
+  transform: rotateX(calc(-1 * var(--pleat-angle)));
 }
 .fold[data-open='true'] .pleat {
-  transform: rotateX(0deg);              /* snaps flat — the readable row */
+  transform: rotateX(0deg);              /* lies flat — the readable row */
   opacity: 1;
 }
+
+/* Quiet crease seam between pleated rows. Prose + specimen only; archive cards
+   already carry a register-colour top accent, so a second seam = noise. Fades
+   in with the row; stays quieter than the orange section divider. */
+.pleat::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: var(--fold-crease-width);
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--pleat-duration) var(--fold-ease);
+}
+.fold[data-open='true'] .pleat::before { opacity: var(--fold-crease-opacity); }
+.pleatfold--archive .pleat::before { display: none; }
+
+/* Per-content fold intensity. */
+.pleatfold--prose   { --pleat-angle: var(--fold-intensity-high); }
+.pleatfold--archive { --pleat-angle: var(--fold-intensity-low); }
+
+/* Archive (06): UNIFORM direction — no mountain/valley alternation. Each card
+   folds quietly IN PLACE at a low angle; the 2-col grid stays stable, so the
+   shelf never zig-zags / flails across columns. */
+.pleatfold--archive .pleat:nth-child(even) {
+  transform-origin: top center;
+  transform: rotateX(var(--pleat-angle));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pleat {
     transform: none !important;
     transition: opacity 0.01ms !important;
   }
   .fold[data-open='true'] .pleat { opacity: 1 !important; }
+  .pleat::before { display: none !important; }
 }
 
 @supports not (-webkit-text-stroke: 1px #000) {

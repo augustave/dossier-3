@@ -33,7 +33,8 @@ export const PleatFold: React.FC<PleatFoldProps> = ({ open, className, children 
           key={i}
           className="pleat"
           // Cascade the creases: open runs top→bottom, close folds bottom→top.
-          style={{ transitionDelay: `${(open ? i : n - 1 - i) * 130}ms` }}
+          // Restrained (V3.5.4) — a quiet sequence, not a theatrical wave.
+          style={{ transitionDelay: `${(open ? i : n - 1 - i) * 50}ms` }}
         >
           {row}
         </div>
