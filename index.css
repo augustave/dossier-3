@@ -243,6 +243,18 @@
 .pleatfold--archive  { --pleat-angle: var(--pleat-angle-archive);  --pleat-perspective: var(--pleat-perspective-archive);  --pleat-stagger: var(--pleat-stagger-archive); }
 .pleatfold--chart    { --pleat-angle: var(--pleat-angle-chart);    --pleat-perspective: var(--pleat-perspective-chart);    --pleat-stagger: var(--pleat-stagger-chart); }
 
+/* 04 chart — a single ROW at the chart layer (30deg, ONE plane). The chart sits
+   inside the shared prose .pleatfold (with two 60deg text rows above it). PleatFold
+   wraps each row in its own .pleat, so the chart wrapper (.pleat-chart) is a CHILD
+   of its .pleat — target that .pleat via :has() and reset --pleat-angle on it (NOT
+   on the .pleatfold, which would drop the prose rows to 30deg too). Overriding the
+   variable covers BOTH the mountain base rule and the even/valley calc(*-1) rule,
+   so it is hinge-agnostic. The base reduced-motion .pleat rule already zeroes it. */
+.pleat:has(> .pleat-chart) {
+  --pleat-angle: var(--pleat-angle-chart);
+  --pleat-stagger: var(--pleat-stagger-chart);
+}
+
 /* PER-ROW ORIGAMI FOLD — the signature event. Each row stands up at its layer's
    angle when closed and SNAPS flat (rotateX 0) when open, staggered via the
    inline transitionDelay each row carries. ONLY rotation in the system → no

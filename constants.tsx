@@ -162,7 +162,7 @@ export const CONTENT_MODULES: ModuleData[] = [
           {COPY.modules.neighborhood.intro}
         </p>
 
-        <div className="mt-4 pt-8 border-t border-white/20">
+        <div className="pleat-chart mt-4 pt-8 border-t border-white/20">
           <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
             {COPY.modules.neighborhood.chartTitle}
           </h4>
