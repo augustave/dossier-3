@@ -213,7 +213,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
             `large` selects the 700ms strata duration. */}
         <Fold open={isOpen} large id={panelId}>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 mt-8 pt-8 border-t" style={{ borderColor: 'var(--fold-crease)' }}>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 mt-8 pt-8">
             
             {/* Content column — full width (the evidence sidebar was removed in V3.1). */}
             <div className="md:col-span-12">

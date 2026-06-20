@@ -205,54 +205,19 @@
   }
 }
 
-/* 2. THE CREASE (resting seam line) — matte 1px hairline, theme-aware via
-   --fold-crease; holds at rest on an open module, fades in on open. This is
-   only the fold's top seam — the ELEVATION drop shadow that lifts the whole
-   paper lives on the module <section> (ModuleStrata), underneath, full width. */
-.fold > .fold__inner::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--fold-crease);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 2;
-}
-.fold[data-open='true'] > .fold__inner::before {
-  opacity: 1;
-  animation: fold-crease-in var(--fold-duration) var(--fold-ease);
-}
-@keyframes fold-crease-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
+/* Crease seam REMOVED — the fold's top-seam hairline read as a stray black line
+   under the header. The fold rotation + the paper-lift release shadow + the
+   section paper-stack carry the depth; no hairline needed. */
 
-/* Dark strata: the seam hairline goes PURE BLACK (not the white --hairline
-   that --fold-crease resolves to on dark panels) — strict matte, zero light on
-   near-black surfaces. The white --fold-crease stays in use for visible
-   content-separator borders elsewhere; only this seam line is overridden. */
-.theme-dark .fold > .fold__inner::before,
-.theme-blue .fold > .fold__inner::before,
-.theme-brown .fold > .fold__inner::before {
-  background: rgba(0, 0, 0, 0.55);
-}
-
-/* Reduced motion: kill the drop / crease / ceremony animations; module rests
-   flat + shadow-free, the seam holds static. */
+/* Reduced motion: kill the drop / ceremony animations; module rests flat +
+   shadow-free. */
 @media (prefers-reduced-motion: reduce) {
-  .fold[data-open='true'] > .fold__inner,
-  .fold > .fold__inner::before {
+  .fold[data-open='true'] > .fold__inner {
     animation: none !important;
   }
   .fold--lg[data-open='true'] > .fold__inner {
     transform: none !important;
     box-shadow: none !important;
-  }
-  .fold[data-open='true'] > .fold__inner::before {
-    opacity: 1 !important;
   }
 }
 
@@ -313,22 +278,8 @@
   opacity: 1;
 }
 
-/* Quiet crease seam between pleated rows. Prose + specimen only; archive cards
-   already carry a register-colour top accent, so a second seam = noise. Fades
-   in with the row; stays quieter than the orange section divider. */
-.pleat::before {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: var(--fold-crease-width);
-  background: currentColor;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--pleat-duration) var(--fold-ease);
-}
-.fold[data-open='true'] .pleat::before { opacity: var(--fold-crease-opacity); }
-.pleatfold--archive .pleat::before { display: none; }
+/* Per-row crease hairline REMOVED — read as stray black lines on the cards/rows
+   under the header. The pleat rotation carries the fold; no seam line needed. */
 
 /* Per-content fold intensity + stagger token (PleatFold reads --pleat-stagger). */
 .pleatfold--prose   { --pleat-angle: var(--fold-intensity-prose);   --pleat-stagger: 42ms; }
@@ -348,7 +299,6 @@
     transition: opacity 0.01ms !important;
   }
   .fold[data-open='true'] .pleat { opacity: 1 !important; }
-  .pleat::before { display: none !important; }
 }
 
 /* ============================================================
