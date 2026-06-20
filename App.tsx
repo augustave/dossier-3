@@ -301,10 +301,11 @@ const App: React.FC = () => {
       </main>
 
       {/* Manifest Overlay */}
-      <ManifestOverlay 
+      <ManifestOverlay
         isOpen={isIndexOpen}
         onClose={() => setIsIndexOpen(false)}
         onNavigate={handleIndexNavigate}
+        activeIndex={openModuleIndex}
       />
 
       {/* Slide-over Panel */}

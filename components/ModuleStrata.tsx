@@ -195,17 +195,6 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
           </div>
         </div>
 
-        {/* PRD v1.0.2: Band Preview Mode (Visible when Collapsed) */}
-        {!isOpen && (
-            <div className="hidden md:grid grid-cols-12 gap-8 mt-6 items-start opacity-100 transition-opacity duration-500">
-                <div className="col-span-12 border-l-2 pl-6" style={{ borderColor: 'var(--hairline)' }}>
-                    <p className="font-mono text-sm md:text-base uppercase tracking-wide leading-relaxed" style={{ color: 'var(--text-primary)' }}>
-                        {module.promptText}
-                    </p>
-                </div>
-            </div>
-        )}
-
         {/* Primary Content (Prompt + Response) - Visible when Open */}
         {/* Primary content panel — folds via the shared <Fold> primitive.
             Inert when collapsed: kept in the DOM for the fold animation but

@@ -8,9 +8,11 @@ interface ManifestOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (index: string) => void;
+  /** Currently open module index (e.g. "03"), or null if all folded. */
+  activeIndex: string | null;
 }
 
-export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClose, onNavigate }) => {
+export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClose, onNavigate, activeIndex }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -56,28 +58,48 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
           <p className="font-serif text-2xl md:text-3xl opacity-secondary mt-2">{COPY.indexEpigraph}</p>
         </div>
 
-        {/* Module list — narrative order, ascending 01–08. */}
+        {/* Module list — narrative order, ascending 00–08. Active module highlighted. */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
           {CONTENT_MODULES
             .filter(m => m.id !== ModuleType.MANIFEST)
             .sort((a, b) => a.index.localeCompare(b.index))
-            .map((m) => (
-             <div
-               key={m.index}
-               data-testid="manifest-item"
-               data-index={m.index}
-               onClick={() => onNavigate(m.index)}
-               className="group/item flex items-baseline gap-4 cursor-pointer border-b border-black/10 pb-4 hover:pl-4 transition-all duration-300"
-             >
-               <span className="font-mono text-3xl md:text-4xl font-bold opacity-subtle group-hover/item:opacity-primary group-hover/item:text-strata-blue transition-all">
-                 {m.index}
-               </span>
-               <span className="font-sans text-xl md:text-2xl font-bold uppercase tracking-tight">
-                 {m.title}
-               </span>
-               <ArrowRightIcon className="ml-auto w-5 h-5 opacity-0 group-hover/item:opacity-primary transition-opacity" />
-             </div>
-          ))}
+            .map((m) => {
+              const isActive = m.index === activeIndex;
+              return (
+                <div
+                  key={m.index}
+                  data-testid="manifest-item"
+                  data-index={m.index}
+                  onClick={() => onNavigate(m.index)}
+                  className={`group/item flex items-baseline gap-4 cursor-pointer border-b pb-4 transition-all duration-300 ${
+                    isActive
+                      ? 'border-strata-blue/40 pl-4'
+                      : 'border-black/10 hover:pl-4'
+                  }`}
+                >
+                  <span className={`font-mono text-3xl md:text-4xl font-bold transition-all ${
+                    isActive
+                      ? 'text-strata-blue opacity-100'
+                      : 'opacity-subtle group-hover/item:opacity-primary group-hover/item:text-strata-blue'
+                  }`}>
+                    {m.index}
+                  </span>
+                  <span className={`font-sans text-xl md:text-2xl font-bold uppercase tracking-tight transition-opacity ${
+                    isActive ? 'opacity-100' : 'opacity-secondary group-hover/item:opacity-100'
+                  }`}>
+                    {m.title}
+                  </span>
+                  {isActive && (
+                    <span className="ml-auto font-mono text-micro uppercase tracking-widest text-strata-blue opacity-70 self-center">
+                      OPEN
+                    </span>
+                  )}
+                  {!isActive && (
+                    <ArrowRightIcon className="ml-auto w-5 h-5 opacity-0 group-hover/item:opacity-primary transition-opacity" />
+                  )}
+                </div>
+              );
+            })}
         </div>
 
         <div className="mt-12 font-mono text-xs opacity-subtle max-w-md">
