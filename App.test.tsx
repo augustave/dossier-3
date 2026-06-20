@@ -16,12 +16,15 @@ describe('CT Dossier: recruiter-facing layout and IA', () => {
     window.location.hash = '';
   });
 
-  it('defaults to module 01 when no hash is present', async () => {
+  it('starts fully folded when no hash is present', async () => {
     render(<App />);
 
+    // Dossier opens closed. No auto-hash, no module expanded.
     await waitFor(() => {
-      expect(window.location.hash).toBe('#module-01');
+      expect(window.location.hash).toBe('');
     });
+    expect(getModuleToggle('module-00')?.getAttribute('aria-expanded')).toBe('false');
+    expect(getModuleToggle('module-01')?.getAttribute('aria-expanded')).toBe('false');
   });
 
   it('honors an initial #module-03 hash on mount', async () => {
@@ -81,18 +84,18 @@ describe('Manifest overlay', () => {
     window.location.hash = '';
   });
 
-  it('opens from the INDEX button and renders the module order (01–08)', async () => {
+  it('opens from the INDEX button and renders the module order (00–08)', async () => {
     render(<App />);
-    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
 
     const items = await screen.findAllByTestId('manifest-item');
     const order = items.map(el => el.getAttribute('data-index'));
-    expect(order).toEqual(['01', '02', '03', '04', '05', '06', '07', '08']);
+    expect(order).toEqual(['00', '01', '02', '03', '04', '05', '06', '07', '08']);
   });
 
   it('closes when the Close Index button is clicked', async () => {
     render(<App />);
-    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
 
     const closeBtn = await screen.findByRole('button', { name: /Close Index/i });
     fireEvent.click(closeBtn);

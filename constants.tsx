@@ -4,6 +4,21 @@ import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
 import { VisualLanguages } from './components/VisualLanguages';
 import { DoctrineLibrary } from './components/DoctrineLibrary';
 
+export type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
+
+export interface Audience {
+  id: AudienceId;
+  label: string;
+  modules: string[];
+}
+
+export const AUDIENCES: Audience[] = [
+  { id: 'hiring', label: 'HIRING MANAGER', modules: ['01', '04', '07'] },
+  { id: 'client', label: 'CLIENT',         modules: ['01', '03', '08'] },
+  { id: 'collab', label: 'COLLABORATOR',   modules: ['02', '03', '05'] },
+  { id: 'acad',   label: 'ACADEMIC',       modules: ['02', '06', '04'] }
+];
+
 export const COLORS = {
   blue: 'bg-strata-blue text-white border-white/20 theme-blue',
   cream: 'bg-strata-cream text-strata-black border-strata-black/20',
@@ -18,6 +33,20 @@ export const COLORS = {
  *   04 NEIGHBORHOOD  05 DOCTRINE  06 DOCTRINE LIBRARY  07 PORTFOLIOS  08 OPERATING BIOGRAPHY
  */
 export const CONTENT_MODULES: ModuleData[] = [
+  // 00 FRONT MATTER — the dossier cover. Folded by default; opening teaches the
+  // interaction grammar. responseDisplay is injected dynamically in App.tsx
+  // (it carries audience-lens state). Null here is safe — ManifestOverlay only
+  // reads index/title; ModuleStrata receives the real ReactNode at render time.
+  {
+    id: ModuleType.FRONT_MATTER,
+    index: "00",
+    title: "FRONT MATTER",
+    promptText: "PRACTICE FRONT MATTER",
+    themeColor: 'cream',
+    responseText: "Taste is not preference. Taste is a sourcing discipline.",
+    responseDisplay: null,
+  },
+
   {
     id: ModuleType.MANIFEST,
     index: "00",

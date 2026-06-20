@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 
 export enum ModuleType {
   MANIFEST = 'MANIFEST',
+  FRONT_MATTER = 'FRONT_MATTER',
   TASTE = 'TASTE',
   SEEING = 'SEEING',
   VISUAL_LANGUAGES = 'VISUAL_LANGUAGES',
