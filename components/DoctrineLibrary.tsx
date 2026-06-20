@@ -96,15 +96,14 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabe
       </div>
 
       {/* Archive-record cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {visible.map((doc) => (
+      <div className="pleatfold grid grid-cols-1 md:grid-cols-2 gap-4">
+        {visible.map((doc, i) => (
           <div
             key={doc.id}
-            // 2px top accent in the card's primary register color — scannable
-            // variety + a visual tie to the register grammar (inline style, same
-            // pattern as the VisualLanguages register dots).
-            style={{ borderTopColor: accentFor(doc.registers), borderTopWidth: '2px' }}
-            className="border border-white/15 bg-black/20 p-5 md:p-6 flex flex-col"
+            // 2px top accent + origami pleat (mountain/valley) so each archive
+            // card folds flat as a row when the module opens.
+            style={{ borderTopColor: accentFor(doc.registers), borderTopWidth: '2px', transitionDelay: `${i * 80}ms` }}
+            className="pleat border border-white/15 bg-black/20 p-5 md:p-6 flex flex-col"
           >
             {/* Metadata row */}
             <div className="flex flex-wrap items-center gap-2 mb-3">

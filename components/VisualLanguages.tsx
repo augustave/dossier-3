@@ -230,17 +230,21 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
         </div>
       </div>
 
-      {/* Language specimen cards */}
-      {languages.map((lang) => (
-        <LanguageCard
-          key={lang.id}
-          lang={lang}
-          accent={colorFor(lang.registers[0])}
-          tagColor={colorFor}
-          dimmed={!usesActive(lang)}
-          highlight={active !== null && usesActive(lang) ? colorFor(active) : null}
-        />
-      ))}
+      {/* Language specimen cards — each an origami pleat row (alternating
+          mountain/valley), unfolding flat when the module opens. */}
+      <div className="pleatfold space-y-5">
+        {languages.map((lang, i) => (
+          <div key={lang.id} className="pleat" style={{ transitionDelay: `${i * 90}ms` }}>
+            <LanguageCard
+              lang={lang}
+              accent={colorFor(lang.registers[0])}
+              tagColor={colorFor}
+              dimmed={!usesActive(lang)}
+              highlight={active !== null && usesActive(lang) ? colorFor(active) : null}
+            />
+          </div>
+        ))}
+      </div>
 
       {/* Register grammar — read-only exposition; the "grammar underneath" the
           languages. Filtering lives in the chip strip above. */}

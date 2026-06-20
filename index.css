@@ -257,7 +257,7 @@
   transform-origin: bottom center;
   transform: rotateX(-76deg);
 }
-.pleatfold[data-open='true'] .pleat {
+.fold[data-open='true'] .pleat {
   transform: rotateX(0deg);              /* snaps flat — the readable row */
   opacity: 1;
 }
@@ -266,7 +266,7 @@
     transform: none !important;
     transition: opacity 0.01ms !important;
   }
-  .pleatfold[data-open='true'] .pleat { opacity: 1 !important; }
+  .fold[data-open='true'] .pleat { opacity: 1 !important; }
 }
 
 @supports not (-webkit-text-stroke: 1px #000) {

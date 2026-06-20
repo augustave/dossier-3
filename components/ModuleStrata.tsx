@@ -60,6 +60,13 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
         : 'shadow-[0_16px_17px_rgba(0,0,0,0.065)]');
 
   const resp = unwrapResponse(module.responseDisplay);
+  // A response that is a single custom component (Visual Languages, Doctrine
+  // Library) pleats its OWN rows internally — render it bare so we don't wrap
+  // it in one big rotating block (which would double-rotate its inner pleats).
+  const selfPleating =
+    resp.rows.length === 1 &&
+    React.isValidElement(resp.rows[0]) &&
+    typeof (resp.rows[0] as React.ReactElement).type === 'function';
   const containerRef = useRef<HTMLElement>(null);
   const { copy, copied: linkCopied } = useClipboard();
   const panelId = `module-panel-${module.index}`;
@@ -230,11 +237,16 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
               {/* Response — the origami PLEAT ACCORDION. The response wrapper is
                   unwrapped into its rows; each becomes a mountain/valley pleat.
                   The wrapper's spacing (space-y-*) + the serif base ride along
-                  via className, so typography + rhythm are unchanged. */}
-              <div className="mb-12" style={{ color: 'var(--text-primary)' }}>
-                <PleatFold open={isOpen} className={`font-serif text-xl md:text-3xl leading-relaxed${resp.className ? ` ${resp.className}` : ''}`}>
-                  {resp.rows}
-                </PleatFold>
+                  via className, so typography + rhythm are unchanged. A single
+                  self-pleating component renders bare (it folds its own cards). */}
+              <div className="mb-12 font-serif text-xl md:text-3xl leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                {selfPleating ? (
+                  resp.rows[0]
+                ) : (
+                  <PleatFold open={isOpen} className={resp.className}>
+                    {resp.rows}
+                  </PleatFold>
+                )}
               </div>
 
 
