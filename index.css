@@ -134,8 +134,6 @@
 }
 .fold--lg {
   transition-duration: var(--fold-duration-lg);
-  perspective: var(--fold-module-perspective);  /* macro page-hinge depth */
-  perspective-origin: 50% 0;
 }
 .fold > .fold__inner {
   position: relative;
@@ -177,52 +175,15 @@
   to   { transform: translateY(0); }
 }
 
-/* ============================================================
-   MODULE CEREMONY — THE PAGE HINGE (the macro drama). The whole module panel
-   visibly FOLDS OPEN like a dossier page: .fold__inner hinges at its TOP edge
-   from a strong tilt (rotateX --fold-module-angle) down to flat, foreshortened
-   by the perspective on .fold--lg, with a leading inset paper-shadow pooling at
-   the seam. This is the signature event; the CARDS inside stay calm (settle
-   only, NO own rotation) so there is no nested/double-rotation and no flail.
+/* The clipped panel-rotation ceremony was REMOVED — a rotateX on the whole
+   .fold__inner peaks while the grid height is ~0, so it never renders ("feels
+   the same"). The drama lives in the PER-ROW pleat cascade below; the section
+   paper-stack shadow (ModuleStrata) supplies non-rotational depth. */
 
-   Real-GPU 3D (the preview tool freezes it at frame 0 — verify in a browser).
-   The rows' rotation was REMOVED, so this is the ONLY rotation: the page tilts
-   as one plane. Driven entirely by @keyframes (no residual base transform) →
-   open rests flat + readable, close collapses flat via the grid reveal (no
-   snap). Grid-height reveal + inert/aria untouched. */
-.fold--lg > .fold__inner {
-  transform-origin: 50% 0;   /* hinge at the top edge — page lays down into the reveal */
-}
-.fold--lg[data-open='true'] > .fold__inner {
-  animation: fold-release var(--fold-release-duration) var(--fold-release-ease);
-}
-@keyframes fold-release {
-  from {
-    transform: rotateX(var(--fold-module-angle));   /* page tilted back, hinged at top */
-    box-shadow: inset 0 18px 28px -12px rgba(0, 0, 0, var(--fold-shadow-opacity));
-  }
-  62% {
-    box-shadow: inset 0 12px 22px -12px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.8));
-  }
-  to {
-    transform: rotateX(0deg);                        /* laid flat — readable */
-    box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0);
-  }
-}
-
-/* Crease seam REMOVED — the fold's top-seam hairline read as a stray black line
-   under the header. The fold rotation + the paper-lift release shadow + the
-   section paper-stack carry the depth; no hairline needed. */
-
-/* Reduced motion: kill the drop / ceremony animations; module rests flat +
-   shadow-free. */
+/* Reduced motion: kill the small-fold drop. */
 @media (prefers-reduced-motion: reduce) {
   .fold[data-open='true'] > .fold__inner {
     animation: none !important;
-  }
-  .fold--lg[data-open='true'] > .fold__inner {
-    transform: none !important;
-    box-shadow: none !important;
   }
 }
 
@@ -238,52 +199,84 @@
    never left tilted or hidden.
    ============================================================ */
 :root {
-  /* Fold-intensity scale (PRD V — CONTROLLED DRAMA). Felt but matte, not a
-     gimmick; per content type via --pleat-angle. HARD CAP 10deg. */
-  --fold-intensity-none: 0deg;
-  --fold-intensity-archive: 2deg;        /* 06 archive cards */
-  --fold-intensity-specimen: 3deg;       /* 03 specimen cards */
-  --fold-intensity-prose: 5deg;          /* prose rows */
-  --fold-intensity-module: 8deg;         /* module-ceremony "feel" (non-rotational; see ceremony) */
-  --pleat-angle: var(--fold-intensity-specimen);  /* default; overridden per context */
-  --pleat-stagger: 36ms;                 /* default = specimen; per-context below */
-  --pleat-ease: cubic-bezier(0.22, 1, 0.36, 1);   /* controlled ease-out, no overshoot */
-  --pleat-duration: 620ms;
-  --pleat-perspective: 1400px;
-  /* Quiet crease/seam + paper depth — hairlines, never decorative borders. */
-  --fold-crease-opacity: 0.16;
-  --fold-crease-width: 1px;
-  --fold-shadow-opacity: 0.18;           /* archive paper-lift + ceremony seam, pure black */
-  /* MODULE CEREMONY — the macro fold. The SECTION visibly hinges open like a
-     dossier page (rotateX at the top edge). This is where the drama lives;
-     cards stay calm. Tune --fold-module-angle for more/less drama (<=10deg cap
-     is for CARDS, not the module shell — the shell is the signature event). */
-  --fold-module-angle: 30deg;            /* page-hinge tilt — the visible event */
-  --fold-module-perspective: 1100px;     /* tight = the page reads as 3D */
-  --fold-release-duration: 660ms;        /* a deliberate page-open ceremony */
-  --fold-release-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* PLEAT ENGINE — the per-row fold IS the ceremony (restored from the
+     "beginning"). Each content ROW stands up about its own edge when folded and
+     SNAPS flat when open, staggered top→bottom. This is the ONLY rotation in the
+     system (no panel rotateX → no clip, no double-rotation). Strong row angles
+     carry the drama (the gut "way better at 76deg" overrides the old cap);
+     archive stays restrained-but-real. */
+  --pleat-ease: cubic-bezier(0.34, 1.36, 0.42, 1);   /* slight overshoot → each row SNAPS flat */
+  --pleat-duration: 820ms;                            /* the deliberate, ceremonial sweep */
+
+  /* Per-context FOLD ANGLE (standing tilt when closed; resolves to 0 at rest). */
+  --pleat-angle-prose:    60deg;   /* 01/05/08 prose rows — headline drama, mountain/valley */
+  --pleat-angle-specimen: 48deg;   /* 03 specimen cards — strong, a touch under prose */
+  --pleat-angle-archive:  22deg;   /* 06 archive — restrained-but-REAL, UNIFORM direction */
+  --pleat-angle-chart:    30deg;   /* 04 chart — ONE plane, single pleat */
+
+  /* Per-context PERSPECTIVE (tight = strong foreshorten). */
+  --pleat-perspective-prose:     820px;
+  --pleat-perspective-specimen:  880px;
+  --pleat-perspective-archive:  1100px;
+  --pleat-perspective-chart:    1200px;
+
+  /* Per-context STAGGER cadence (inline transitionDelay on each row). */
+  --pleat-stagger-prose:    42ms;
+  --pleat-stagger-specimen: 36ms;
+  --pleat-stagger-archive:  28ms;
+  --pleat-stagger-chart:     0ms;
+
+  --fold-ease: cubic-bezier(0.25, 1, 0.5, 1);        /* opacity-fade curve, no overshoot */
+
+  /* Active DEFAULTS — a bare .pleatfold (03 Visual Languages) resolves to the
+     SPECIMEN layer; per-variant classes override below. */
+  --pleat-angle:       var(--pleat-angle-specimen);
+  --pleat-perspective: var(--pleat-perspective-specimen);
+  --pleat-stagger:     var(--pleat-stagger-specimen);
+
+  --fold-shadow-opacity: 0.18;                        /* archive paper-lift, pure black */
 }
-/* Cards/rows ride the module page — CALM. No own rotation (so no double-rotation
-   with the macro page-hinge, and no cross-column flail in 06): each row just
-   SETTLES — a small translateY + fade, staggered AFTER the ceremony leads. */
+
+/* Per-context binding — each modifier sets its own angle / perspective / stagger. */
+.pleatfold--prose    { --pleat-angle: var(--pleat-angle-prose);    --pleat-perspective: var(--pleat-perspective-prose);    --pleat-stagger: var(--pleat-stagger-prose); }
+.pleatfold--specimen { --pleat-angle: var(--pleat-angle-specimen); --pleat-perspective: var(--pleat-perspective-specimen); --pleat-stagger: var(--pleat-stagger-specimen); }
+.pleatfold--archive  { --pleat-angle: var(--pleat-angle-archive);  --pleat-perspective: var(--pleat-perspective-archive);  --pleat-stagger: var(--pleat-stagger-archive); }
+.pleatfold--chart    { --pleat-angle: var(--pleat-angle-chart);    --pleat-perspective: var(--pleat-perspective-chart);    --pleat-stagger: var(--pleat-stagger-chart); }
+
+/* PER-ROW ORIGAMI FOLD — the signature event. Each row stands up at its layer's
+   angle when closed and SNAPS flat (rotateX 0) when open, staggered via the
+   inline transitionDelay each row carries. ONLY rotation in the system → no
+   panel clip, no double-rotation. Mountain (odd) hinges at the top edge; valley
+   (even) at the bottom → the stack zig-zags. Rests flat → fully readable.
+   Real-GPU 3D (preview freezes at frame 0 — verify in a browser). */
+.pleatfold {
+  perspective: var(--pleat-perspective);
+  perspective-origin: 50% 0;
+}
 .pleat {
+  transform-origin: top center;                       /* mountain — top-edge hinge */
+  transform: rotateX(var(--pleat-angle));
   opacity: 0;
-  transform: translateY(10px);
   transition:
     transform var(--pleat-duration) var(--pleat-ease),
-    opacity var(--pleat-duration) var(--fold-ease);
+    opacity   var(--pleat-duration) var(--fold-ease);
+  backface-visibility: hidden;
 }
+.pleat:nth-child(even) {                              /* valley — bottom-edge hinge */
+  transform-origin: bottom center;
+  transform: rotateX(calc(var(--pleat-angle) * -1));
+}
+/* OPEN — keyed on the ancestor .fold's data-open (the bare specimen/archive
+   .pleatfold hosts carry no data-open of their own, so this reaches every path). */
 .fold[data-open='true'] .pleat {
+  transform: rotateX(0deg);
   opacity: 1;
-  transform: translateY(0);
 }
-
-/* Per-content stagger cadence (PleatFold + cards read --pleat-stagger). */
-.pleatfold--prose   { --pleat-stagger: 42ms; }
-.pleatfold--archive { --pleat-stagger: 28ms; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pleat {
+  .pleatfold { perspective: none; }
+  .pleat,
+  .pleat:nth-child(even) {
     transform: none !important;
     transition: opacity 0.01ms !important;
   }
@@ -291,25 +284,31 @@
 }
 
 /* ============================================================
-   MODULE 06 — ARCHIVE PAPER-LIFT. A matte pure-black edge-shadow on each
-   archive .pleat so 2deg never reads dead: a quiet resting lift, deeper when
-   open (paper off the shelf). Stable 2-col grid; box-shadow is non-layout →
-   ZERO shift, no rotation change, no flail. Paper not material — no glow,
-   specular, or tint. Micro-alternation DECLINED (uniform direction kept). */
+   MODULE 06 — DOCTRINE LIBRARY ARCHIVE. UNIFORM-DIRECTION fold: every archive
+   card is a MOUNTAIN (top-edge hinge) at a restrained 22deg, so NO cross-column
+   valley/mountain zigzag and NO layout shift — the 2-col grid tips as ONE calm
+   sheet. The :nth-child(even) VALLEY rule is neutralized here. A matte pure-black
+   paper-lift box-shadow (non-layout → zero grid shift) deepens on open. */
+.pleatfold--archive .pleat,
+.pleatfold--archive .pleat:nth-child(even) {
+  transform-origin: top center;
+  transform: rotateX(var(--pleat-angle-archive));
+}
+.fold[data-open='true'] .pleatfold--archive .pleat {
+  transform: rotateX(0deg);
+}
 .pleatfold--archive .pleat {
   box-shadow: 0 1px 2px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.45));
   transition:
-    transform var(--pleat-duration) var(--pleat-ease),
-    opacity var(--pleat-duration) var(--fold-ease),
+    transform  var(--pleat-duration) var(--pleat-ease),
+    opacity    var(--pleat-duration) var(--fold-ease),
     box-shadow var(--pleat-duration) var(--fold-ease);
 }
 .fold[data-open='true'] .pleatfold--archive .pleat {
   box-shadow:
     0 6px 10px -4px rgba(0, 0, 0, var(--fold-shadow-opacity)),
-    0 1px 2px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.5));
+    0 1px 2px        rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.5));
 }
-/* Dark strata: keep pure-black (no white edge), a touch deeper so it reads on
-   near-black surfaces. */
 .theme-dark  .pleatfold--archive .pleat,
 .theme-blue  .pleatfold--archive .pleat,
 .theme-brown .pleatfold--archive .pleat {
@@ -320,9 +319,11 @@
 .theme-brown .fold[data-open='true'] .pleatfold--archive .pleat {
   box-shadow:
     0 6px 10px -4px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 1.1)),
-    0 1px 2px rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.6));
+    0 1px 2px        rgba(0, 0, 0, calc(var(--fold-shadow-opacity) * 0.6));
 }
 @media (prefers-reduced-motion: reduce) {
+  .pleatfold--archive .pleat,
+  .pleatfold--archive .pleat:nth-child(even) { transform: none !important; }
   .pleatfold--archive .pleat { transition: box-shadow 0.01ms !important; }
 }
 

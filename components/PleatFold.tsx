@@ -28,18 +28,24 @@ export const PleatFold: React.FC<PleatFoldProps> = ({ open, className, children 
   const n = rows.length;
   return (
     <div className={`pleatfold${className ? ` ${className}` : ''}`} data-open={open}>
-      {rows.map((row, i) => (
-        <div
-          key={i}
-          className="pleat"
-          // Cascade the creases: open runs top→bottom, close folds bottom→top.
-          // Per-context cadence via --pleat-stagger (prose 42 / specimen 36 /
-          // archive 28 ms) so rows settle AFTER the module-ceremony release.
-          style={{ transitionDelay: `calc(var(--pleat-stagger, 36ms) * ${open ? i : n - 1 - i})` }}
-        >
-          {row}
-        </div>
-      ))}
+      {rows.map((row, i) => {
+        // A self-pleating component (Visual Languages, Doctrine Library) renders
+        // BARE — it folds its own cards via its own .pleatfold. Wrapping it in a
+        // .pleat would tilt the whole block AND its cards = double-rotation.
+        const isComponent =
+          React.isValidElement(row) && typeof (row as React.ReactElement).type === 'function';
+        if (isComponent) return <React.Fragment key={i}>{row}</React.Fragment>;
+        // Plain rows pleat, cascading via --pleat-stagger (open top→bottom).
+        return (
+          <div
+            key={i}
+            className="pleat"
+            style={{ transitionDelay: `calc(var(--pleat-stagger, 36ms) * ${open ? i : n - 1 - i})` }}
+          >
+            {row}
+          </div>
+        );
+      })}
     </div>
   );
 };

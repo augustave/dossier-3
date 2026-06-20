@@ -232,7 +232,7 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
 
       {/* Language specimen cards — each an origami pleat row (alternating
           mountain/valley), unfolding flat when the module opens. */}
-      <div className="pleatfold space-y-5">
+      <div className="pleatfold pleatfold--specimen space-y-5">
         {languages.map((lang, i) => (
           <div key={lang.id} className="pleat" style={{ transitionDelay: `calc(var(--pleat-stagger) * ${i})` }}>
             <LanguageCard
