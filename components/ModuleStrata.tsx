@@ -174,7 +174,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
               {module.index}
             </span>
             <h2 className="font-sans text-3xl md:text-5xl font-bold uppercase tracking-tightest leading-none">
-              <SplitFlap text={module.title} />
+              <SplitFlap text={module.title} open={isOpen} />
             </h2>
             <span id={linkStatusId} className="sr-only" role="status" aria-live="polite">
               {linkCopied ? 'Link copied to clipboard.' : ''}

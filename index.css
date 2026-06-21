@@ -363,6 +363,10 @@
   position: relative;
   display: inline-block;
   perspective: 260px;
+  /* Clip a wide spinning glyph (W/M) to its own slot so it can't overlap the
+     neighbour when the final char is narrow (I/L/1). rotateX only foreshortens
+     vertically, so this never clips the flap itself. */
+  overflow: hidden;
 }
 /* Reserve the final character's box → zero layout jitter while flipping. */
 .splitflap__cell::after {
@@ -376,16 +380,26 @@
   display: inline-block;
   transform-origin: center top;
   backface-visibility: hidden;
-  animation: splitflap-flip 90ms cubic-bezier(0.3, 0.72, 0.4, 1);
+  animation: splitflap-flip 108ms cubic-bezier(0.3, 0.72, 0.4, 1);
 }
 /* The locking flap lands a touch heavier than the spin flaps. */
 .splitflap__glyph.is-locked {
-  animation-duration: 140ms;
+  animation-duration: 168ms;
+}
+/* REVERSE play (band opening) — bottom-hinged flap, the opposite direction. */
+.splitflap__glyph--rev {
+  transform-origin: center bottom;
+  animation-name: splitflap-flip-rev;
 }
 @keyframes splitflap-flip {
   0%   { transform: rotateX(-90deg); opacity: 0; }
   55%  { opacity: 1; }
   100% { transform: rotateX(0deg);   opacity: 1; }
+}
+@keyframes splitflap-flip-rev {
+  0%   { transform: rotateX(90deg); opacity: 0; }
+  55%  { opacity: 1; }
+  100% { transform: rotateX(0deg);  opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .splitflap__glyph { animation: none !important; }
