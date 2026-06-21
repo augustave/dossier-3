@@ -1,19 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 // Split-flap (Solari departure-board) title reveal — TEST feature.
-// Each character flips through glyphs and locks to its final letter:
-//   • FORWARD cascade (left→right, top-hinged flap) fired once when the band
-//     scrolls into view.
-//   • REVERSE cascade (right→left, bottom-hinged flap) re-fired every time the
-//     band OPENS — the title re-boards in reverse "while the fold is engaging".
-// Cells reserve the FINAL glyph's width (CSS ::after), so the proportional title
-// never reflows while the flaps spin, and the settled state is exactly the
-// normal title. A generation token cancels any in-flight play so an overlapping
-// trigger (scroll-in then click) can never interleave timers.
+//
+// PHYSICS (recalculated for realism + haptics):
+//   • Each leaf FALLS under gravity (ease-in accelerate) and CLACKS into the stop
+//     with a small overshoot + settle bounce — not a symmetric fade.
+//   • A position runs a fast CYCLING phase, then HOMES into its target: it steps
+//     alphabetically through the last few glyphs (…X, Y, Z, target) while the
+//     cadence DECELERATES into the stop — the mechanical "settle".
+//   • Positions lock left→right (FORWARD, on scroll-in) or right→left (REVERSE,
+//     re-fired on every band open) — the title re-boards "while the fold engages".
+//   • A subtle haptic pulse fires as each letter locks (mobile; cascades L→R).
+//
+// Cells reserve the FINAL glyph's width (CSS ::after) so the proportional title
+// never reflows while flaps spin; the settled state is exactly the normal title.
+// A generation token cancels any in-flight play so overlapping triggers can't
+// interleave timers.
 
 const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const GLEN = GLYPHS.length;
 const NBSP = ' ';
-const randomGlyph = () => GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+const randomGlyph = () => GLYPHS[Math.floor(Math.random() * GLEN)];
+// k steps before `target` in the flap sequence (the homing approach).
+const glyphBefore = (target: string, k: number) => {
+  const idx = GLYPHS.indexOf(target);
+  if (idx < 0) return target;
+  return GLYPHS[(idx - k + GLEN * Math.ceil(k / GLEN + 1)) % GLEN];
+};
+
+// --- physics constants (ms) ---
+const STAGGER = 72;          // gap between adjacent positions locking (the cascade)
+const SPIN = 480;            // earliest position's run length (start → lock)
+const FLAP_MS = 72;          // mechanical step rate during the cycling phase
+// Decelerating gaps for the final homing flaps (growing = easing into the stop).
+const HOMING_GAPS = [88, 132, 190];
 
 type Direction = 'forward' | 'reverse';
 
@@ -28,12 +48,8 @@ interface SplitFlapProps {
   className?: string;
   /** Re-fires the cascade in REVERSE on each false→true edge (band opening). */
   open?: boolean;
-  /** ms between each character LOCKING (the cascade). 20% slower than the original. */
-  stagger?: number;
-  /** ms a character spends flipping before it locks. */
-  spin?: number;
-  /** ms between glyph changes while flipping. */
-  tick?: number;
+  /** Subtle vibration as each letter locks (mobile; ignored where unsupported). */
+  haptics?: boolean;
 }
 
 const finalCells = (finals: string[]): Cell[] =>
@@ -51,18 +67,15 @@ export const SplitFlap: React.FC<SplitFlapProps> = ({
   text,
   className = '',
   open = false,
-  stagger = 72,
-  spin = 432,
-  tick = 54,
+  haptics = true,
 }) => {
   const finals = Array.from(text);
-  // Initialise to the FINAL text — robust: readable before/without JS, SSR-safe.
   const [cells, setCells] = useState<Cell[]>(() => finalCells(finals));
   const [dir, setDir] = useState<Direction>('forward');
   const ref = useRef<HTMLSpanElement>(null);
-  const startedRef = useRef(false);   // forward cascade fires at most once
+  const startedRef = useRef(false);
   const prevOpenRef = useRef(open);
-  const genRef = useRef(0);           // generation token — invalidates stale timers
+  const genRef = useRef(0);
   const timersRef = useRef<number[]>([]);
 
   const clearTimers = () => {
@@ -73,13 +86,24 @@ export const SplitFlap: React.FC<SplitFlapProps> = ({
     timersRef.current = [];
   };
 
+  const buzz = (ms: number) => {
+    if (!haptics) return;
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate(ms);
+      }
+    } catch {
+      /* vibrate can throw on some platforms — ignore */
+    }
+  };
+
   const play = (direction: Direction) => {
     clearTimers();
     const gen = ++genRef.current;
     setDir(direction);
     const len = finals.length;
 
-    // Kick every non-space cell into the cycling state at once.
+    // Drop every non-space cell into the cycling state at once.
     setCells(prev =>
       finals.map((c, i) =>
         c === ' '
@@ -88,38 +112,57 @@ export const SplitFlap: React.FC<SplitFlapProps> = ({
       )
     );
 
+    const setCell = (i: number, ch: string, locked: boolean) =>
+      setCells(prev => {
+        const next = prev.slice();
+        next[i] = { ch, n: (next[i]?.n ?? 0) + 1, locked };
+        return next;
+      });
+
+    const homingDur = HOMING_GAPS.reduce((a, b) => a + b, 0);
+
     finals.forEach((target, i) => {
       if (target === ' ') return;
-      // forward: i locks in index order; reverse: rightmost locks first.
       const order = direction === 'reverse' ? len - 1 - i : i;
+      const lockAt = order * STAGGER + SPIN;
+      const homingStart = Math.max(0, lockAt - homingDur);
 
-      const intervalId = window.setInterval(() => {
-        if (genRef.current !== gen) return; // superseded by a newer play
+      // Cycling phase — fast random flaps until the homing window opens.
+      const cycleId = window.setInterval(() => {
+        if (genRef.current !== gen) return;
         setCells(prev => {
           if (prev[i]?.locked) return prev;
           const next = prev.slice();
           next[i] = { ch: randomGlyph(), n: next[i].n + 1, locked: false };
           return next;
         });
-      }, tick);
-      timersRef.current.push(intervalId);
+      }, FLAP_MS);
+      timersRef.current.push(cycleId);
 
-      const lockId = window.setTimeout(() => {
-        window.clearInterval(intervalId);
+      // Homing phase — stop cycling, step alphabetically into the target while
+      // the cadence decelerates, landing on the locking clack.
+      const homeId = window.setTimeout(() => {
+        window.clearInterval(cycleId);
         if (genRef.current !== gen) return;
-        setCells(prev => {
-          const next = prev.slice();
-          next[i] = { ch: target, n: next[i].n + 1, locked: true };
-          return next;
+        const steps = HOMING_GAPS.length;
+        let t = 0;
+        HOMING_GAPS.forEach((gap, k) => {
+          t += gap;
+          const isLock = k === steps - 1;
+          const ch = isLock ? target : glyphBefore(target, steps - 1 - k);
+          const id = window.setTimeout(() => {
+            if (genRef.current !== gen) return;
+            setCell(i, ch, isLock);
+            if (isLock) buzz(6);
+          }, t);
+          timersRef.current.push(id);
         });
-      }, order * stagger + spin);
-      timersRef.current.push(lockId);
+      }, homingStart);
+      timersRef.current.push(homeId);
     });
   };
 
-  // Re-sync to a new word: render it immediately, cancel any in-flight timers,
-  // and allow the forward cascade to replay when it next enters view. (Latent in
-  // this app — titles are constant — but keeps the component contract correct.)
+  // Re-sync to a new word (latent here — titles are constant — keeps the contract).
   useEffect(() => {
     clearTimers();
     genRef.current += 1;
@@ -161,7 +204,7 @@ export const SplitFlap: React.FC<SplitFlapProps> = ({
     const wasOpen = prevOpenRef.current;
     prevOpenRef.current = open;
     if (open && !wasOpen && canAnimate()) {
-      startedRef.current = true; // a manual open also counts as "revealed"
+      startedRef.current = true;
       play('reverse');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
