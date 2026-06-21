@@ -278,11 +278,21 @@
   transform-origin: bottom center;
   transform: rotateX(calc(var(--pleat-angle) * -1));
 }
-/* OPEN — keyed on the ancestor .fold's data-open (the bare specimen/archive
-   .pleatfold hosts carry no data-open of their own, so this reaches every path). */
+/* OPEN — split into two triggers on the ancestor .fold:
+   • OPACITY keys on data-open → content becomes visible the instant the panel
+     opens, NEVER gated on the rAF flip below (so a starved/late flip can never
+     leave a row blank). This rising opacity also PAINTS the still-tilted row,
+     which is what gives the rotate transition a real "from" baseline.
+   • ROTATE keys on data-pleat-open → Fold.tsx flips this one committed frame
+     AFTER data-open, so the now-painted row animates angle→flat on the FIRST
+     open instead of snapping.
+   Bare specimen/archive .pleatfold hosts carry no flag of their own, so these
+   ancestor selectors reach every path. */
 .fold[data-open='true'] .pleat {
-  transform: rotateX(0deg);
   opacity: 1;
+}
+.fold[data-pleat-open='true'] .pleat {
+  transform: rotateX(0deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -306,7 +316,7 @@
   transform-origin: top center;
   transform: rotateX(var(--pleat-angle-archive));
 }
-.fold[data-open='true'] .pleatfold--archive .pleat {
+.fold[data-pleat-open='true'] .pleatfold--archive .pleat {
   transform: rotateX(0deg);
 }
 .pleatfold--archive .pleat {
