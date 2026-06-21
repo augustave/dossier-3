@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { CONTENT_MODULES, AudienceId, AUDIENCES } from './constants';
 import { ModuleStrata } from './components/ModuleStrata';
 import { ManifestOverlay } from './components/ManifestOverlay';
@@ -51,10 +51,56 @@ const AUDIENCE_IDS = AUDIENCES.map(a => a.id);
 const isAudienceId = (s: string | null): s is AudienceId =>
   s !== null && (AUDIENCE_IDS as string[]).includes(s);
 
+// Fixed-masthead clearance — matches each section's scroll-mt-[100px].
+const MASTHEAD_OFFSET = 100;
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// V3.6.2 scroll-first choreography. Bring a module's header onstage BEFORE it
+// opens, so the pleat cascade always plays in view (short modules used to finish
+// folding off-screen while the viewport was still catching up).
+//
+// Scroll the module band to the masthead-safe position. Returns true only if a
+// scroll was actually needed — already-positioned modules open without waiting.
+const scrollModuleIntoView = (index: string): boolean => {
+  const el = document.getElementById(`module-${index}`);
+  if (!el) return false;
+  const delta = Math.abs(el.getBoundingClientRect().top - MASTHEAD_OFFSET);
+  if (delta <= 4) return false;
+  el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+  return true;
+};
+
+// Run cb once the programmatic scroll settles — native `scrollend` when present,
+// timeout fallback otherwise. A safety timeout always fires (scrollend never
+// arrives if the page didn't actually move). One-shot; no continuous listeners.
+const afterScrollSettle = (cb: () => void) => {
+  let done = false;
+  const finish = () => {
+    if (done) return;
+    done = true;
+    window.removeEventListener('scrollend', finish);
+    window.clearTimeout(safety);
+    // Call cb directly — scrollend/timeout already means the module is in view.
+    // (No requestAnimationFrame wrap: rAF can be starved in background tabs and
+    // must never be what decides whether the module opens at all.)
+    cb();
+  };
+  const hasScrollEnd = 'onscrollend' in window;
+  const safety = window.setTimeout(finish, hasScrollEnd ? 420 : 260);
+  if (hasScrollEnd) window.addEventListener('scrollend', finish, { once: true });
+};
+
 const App: React.FC = () => {
   const [openModuleIndex, setOpenModuleIndex] = useState<string | null>(null);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [selectedAudience, setSelectedAudience] = useState<AudienceId | null>(null);
+  // Latest scroll-first open request. A mutable ref (not state) so rapid clicks
+  // resolve to the LAST module — an in-flight settle callback bails if superseded.
+  const pendingRef = useRef<string | null>(null);
 
   // Read ?read= URL param on mount. Shareable views: ct-dossier/?read=hiring etc.
   useEffect(() => {
@@ -116,23 +162,31 @@ const App: React.FC = () => {
   // Deep-link init — open the target module if a #module-XX hash is present.
   // On root load with no hash: dossier starts fully folded (null). The first
   // user action is opening the file.
+  //
+  // V3.6.2: scroll the module into view FIRST, then open after the scroll frame
+  // lands so the fold is visible (not finished off-screen). Two rAFs let the
+  // browser's native anchor jump settle before we flip the open state.
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.startsWith('#module-')) {
+    const openFromHash = (initial: boolean) => {
+      const hash = window.location.hash;
+      if (!hash.startsWith('#module-')) return; // root: stay folded
       const index = hash.replace('#module-', '');
-      setOpenModuleIndex(index);
-    }
-    // else: no auto-open; stay null.
-
-    const handleHashChange = () => {
-      const currentHash = window.location.hash;
-      if (currentHash.startsWith('#module-')) {
-        const index = currentHash.replace('#module-', '');
-        setOpenModuleIndex(index);
+      const el = document.getElementById(`module-${index}`);
+      if (el) {
+        el.scrollIntoView({
+          behavior: initial || prefersReducedMotion() ? 'auto' : 'smooth',
+          block: 'start',
+        });
       }
+      requestAnimationFrame(() => requestAnimationFrame(() => setOpenModuleIndex(index)));
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+
+    openFromHash(true);
+    // Our own opens use replaceState (no hashchange) — this only fires on EXTERNAL
+    // hash changes (typed URL, back/forward), which still scroll-first then open.
+    const onHash = () => openFromHash(false);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
   // Flat state reachable from anywhere: Escape walks one step back toward the
@@ -153,30 +207,50 @@ const App: React.FC = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [isIndexOpen, openModuleIndex]);
 
+  // Write the module hash WITHOUT a native jump or hashchange (replaceState),
+  // so it never fights the smooth scroll or re-enters openFromHash.
+  const writeModuleHash = (index: string) => {
+    try {
+      history.replaceState(null, document.title, `${window.location.pathname}${window.location.search}#module-${index}`);
+    } catch (e) {}
+  };
+
+  // Scroll-first open: bring the module onstage, let the scroll settle, THEN flip
+  // it open so the pleat cascade plays in view. pendingRef guards rapid re-clicks
+  // — only the latest requested module actually opens.
+  const requestOpenModule = (index: string) => {
+    pendingRef.current = index;
+    const commit = () => {
+      if (pendingRef.current !== index) return; // superseded by a later request
+      pendingRef.current = null;
+      setOpenModuleIndex(index);
+      writeModuleHash(index);
+    };
+    const scrolled = scrollModuleIntoView(index);
+    // Scrolled with motion → open once the scroll settles. Already in view (or
+    // reduced motion, where the scroll is instant) → open now, in place.
+    if (scrolled && !prefersReducedMotion()) afterScrollSettle(commit);
+    else commit();
+  };
+
   const handleToggle = (index: string) => {
+    // Clicking the already-open module folds it immediately — no scroll-first.
     if (openModuleIndex === index) {
+      pendingRef.current = null;
       setOpenModuleIndex(null);
-      // clear hash without jump
       try {
         history.pushState("", document.title, window.location.pathname + window.location.search);
       } catch (e) {}
-    } else {
-      setOpenModuleIndex(index);
-       try {
-        window.location.hash = `module-${index}`;
-      } catch (e) {}
+      return;
     }
+    if (pendingRef.current === index) return; // dedupe an in-flight request
+    requestOpenModule(index);
   };
 
   const handleIndexNavigate = (index: string) => {
-      setIsIndexOpen(false);
-      // Small delay to allow overlay to close before scrolling/expanding
-      setTimeout(() => {
-          handleToggle(index);
-          // Ensure it's open if it wasn't
-          setOpenModuleIndex(index);
-          window.location.hash = `module-${index}`;
-      }, 300);
+    setIsIndexOpen(false);
+    // Let the overlay begin closing (it restores body scroll) before scroll-first.
+    window.setTimeout(() => requestOpenModule(index), 60);
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { ModuleData, ModuleType } from '../types';
 import { COLORS } from '../constants';
 import { CollapsibleDrawer } from './CollapsibleDrawer';
@@ -67,58 +67,13 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
     resp.rows.length === 1 &&
     React.isValidElement(resp.rows[0]) &&
     typeof (resp.rows[0] as React.ReactElement).type === 'function';
-  const containerRef = useRef<HTMLElement>(null);
   const { copy, copied: linkCopied } = useClipboard();
   const panelId = `module-panel-${module.index}`;
   const linkStatusId = `module-link-status-${module.index}`;
 
-  const prefersReducedMotion = () =>
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Snap to view when opened.
-  // We wait for the section's open transition to settle before scrolling so
-  // the scroll target is computed against the FINAL geometry, not the
-  // mid-animation geometry. Otherwise the band overshoots: scrollIntoView
-  // captures offsetTop while the section is still expanding, and the
-  // smooth-scroll lands above the actual band header.
-  useEffect(() => {
-    if (!isOpen || !containerRef.current) return;
-    const el = containerRef.current;
-    const HEADER_OFFSET = 100; // matches scroll-mt-[100px] / fixed header height
-    let cancelled = false;
-    let fallbackId: number | undefined;
-
-    const doScroll = () => {
-      if (cancelled || !containerRef.current) return;
-      const behavior: ScrollBehavior = prefersReducedMotion() ? 'auto' : 'smooth';
-      const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-      window.scrollTo({ top, behavior });
-    };
-
-    const onEnd = (e: TransitionEvent) => {
-      // Section transitions multiple props; latch onto padding-top so we fire once.
-      if (e.target !== el) return;
-      if (e.propertyName !== 'padding-top') return;
-      el.removeEventListener('transitionend', onEnd);
-      if (fallbackId) window.clearTimeout(fallbackId);
-      doScroll();
-    };
-
-    el.addEventListener('transitionend', onEnd);
-    // Fallback: if no transitionend fires (reduced motion, instant layout, etc.).
-    fallbackId = window.setTimeout(() => {
-      el.removeEventListener('transitionend', onEnd);
-      doScroll();
-    }, 750);
-
-    return () => {
-      cancelled = true;
-      el.removeEventListener('transitionend', onEnd);
-      if (fallbackId) window.clearTimeout(fallbackId);
-    };
-  }, [isOpen]);
+  // V3.6.2: scroll-on-open lives in App (scroll-first, BEFORE the band opens) so
+  // the pleat cascade always plays in view. ModuleStrata no longer self-scrolls
+  // (that ran AFTER the fold settled — short modules finished folding off-screen).
 
   const handleCopyLink = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -130,7 +85,6 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
 
   return (
     <section
-      ref={containerRef}
       id={`module-${module.index}`}
       aria-label={`Module ${module.index}: ${module.title}`}
       // PRD v1.0.2: scroll-margin-top added for fixed header offset
