@@ -6,6 +6,7 @@ import { Fold } from './Fold';
 import { PleatFold } from './PleatFold';
 import { useClipboard } from '../hooks/useClipboard';
 import { ChevronDownIcon, FingerprintIcon, LinkIcon, CheckIcon } from './icons';
+import { SplitFlap } from './SplitFlap';
 
 // Unwrap the response into pleat rows. If it's a single wrapper element with
 // several children (e.g. <div className="space-y-8">…</div>) or a Fragment,
@@ -173,7 +174,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
               {module.index}
             </span>
             <h2 className="font-sans text-3xl md:text-5xl font-bold uppercase tracking-tightest leading-none">
-              {module.title}
+              <SplitFlap text={module.title} />
             </h2>
             <span id={linkStatusId} className="sr-only" role="status" aria-live="polite">
               {linkCopied ? 'Link copied to clipboard.' : ''}
