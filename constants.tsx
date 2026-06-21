@@ -9,14 +9,23 @@ export type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
 export interface Audience {
   id: AudienceId;
   label: string;
+  /** Recommended reading path (module indices). V3.6.1: this HIGHLIGHTS a path
+      through the Index — it no longer filters/hides any module. Orientation aid,
+      not a filter. Includes 00 so the path always starts at the cover. */
   modules: string[];
+  /** Orientation helper line shown under the lens row when this lens is active. */
+  helper: string;
 }
 
 export const AUDIENCES: Audience[] = [
-  { id: 'hiring', label: 'HIRING MANAGER', modules: ['01', '04', '07'] },
-  { id: 'client', label: 'CLIENT',         modules: ['01', '03', '08'] },
-  { id: 'collab', label: 'COLLABORATOR',   modules: ['02', '03', '05'] },
-  { id: 'acad',   label: 'ACADEMIC',       modules: ['02', '06', '04'] }
+  { id: 'hiring', label: 'HIRING MANAGER', modules: ['00', '03', '07', '08'],
+    helper: 'Recommended path: visual language, built evidence, and biography.' },
+  { id: 'client', label: 'CLIENT',         modules: ['00', '01', '03', '05', '07'],
+    helper: 'Recommended path: taste, systems, doctrine, and built work.' },
+  { id: 'collab', label: 'COLLABORATOR',   modules: ['00', '02', '03', '04', '06'],
+    helper: 'Recommended path: lenses, registers, neighboring practices, and source texts.' },
+  { id: 'acad',   label: 'ACADEMIC',       modules: ['00', '01', '04', '05', '06'],
+    helper: 'Recommended path: sourcing discipline, neighborhood map, doctrine, and library.' }
 ];
 
 export const COLORS = {

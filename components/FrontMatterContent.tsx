@@ -24,6 +24,9 @@ export const FrontMatterContent: React.FC<FrontMatterContentProps> = ({
   onAudience,
   onClear,
 }) => {
+  const selectedLens = selectedAudience
+    ? AUDIENCES.find((a) => a.id === selectedAudience) ?? null
+    : null;
   return (
     <div className="pleatfold pleatfold--prose space-y-8">
 
@@ -127,6 +130,17 @@ export const FrontMatterContent: React.FC<FrontMatterContentProps> = ({
               );
             })}
           </div>
+          {/* Orientation helper — the lens recommends a reading path; it never
+              hides modules. Open the Index to see the path marked RECOMMENDED. */}
+          {selectedLens && (
+            <p
+              className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 mt-3 leading-relaxed"
+              aria-live="polite"
+            >
+              {selectedLens.helper}{' '}
+              <span className="text-black/40">Open the Index to follow it.</span>
+            </p>
+          )}
         </div>
       </div>
 

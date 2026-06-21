@@ -110,32 +110,36 @@ describe('Manifest overlay', () => {
   });
 });
 
-describe('Inquiry dialog (via App)', () => {
+describe('Conversation CTA (V3.6.1 mailto unify)', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
     window.location.hash = '';
   });
 
-  it('opens the inquiry dialog, focuses the close button, and closes on Escape', async () => {
+  it('REQUEST CONVERSATION is a prefilled mailto link, not a modal', () => {
     render(<App />);
-    fireEvent.click(screen.getAllByText(/REQUEST CONVERSATION/i)[0]);
+    // No inquiry dialog mounts anymore — the CTA is a direct mailto.
+    expect(screen.queryByRole('dialog', { name: /Inquiry/i })).not.toBeInTheDocument();
 
-    const dialog = await screen.findByRole('dialog', { name: /Inquiry/i });
-    const closeButton = within(dialog).getByRole('button', { name: /Close inquiry panel/i });
-    // Contact-path fix (2026-06-10): email falls back to the hardcoded CONTACT
-    // constant when no env override is set, so the button is always live.
-    const emailButton = within(dialog).getByRole('button', { name: /EMAIL DRAFT/i });
+    const cta = screen.getByText(/REQUEST CONVERSATION/i).closest('a');
+    expect(cta).not.toBeNull();
+    const href = cta!.getAttribute('href') ?? '';
+    expect(href).toMatch(/^mailto:ebenz\.aug@gmail\.com\?subject=/);
+    expect(href).toContain('Conversation%20Request');
+    expect(cta).toHaveAttribute('aria-label', expect.stringMatching(/request a conversation/i));
+  });
 
-    await waitFor(() => {
-      expect(closeButton).toHaveFocus();
-    });
-    expect(emailButton).toBeEnabled();
+  it('footer Compose Inquiry opens the same conversation mailto', () => {
+    render(<App />);
+    const compose = screen.getByText(/Compose Inquiry/i).closest('a');
+    expect(compose).not.toBeNull();
+    expect(compose!.getAttribute('href')).toMatch(/^mailto:ebenz\.aug@gmail\.com\?subject=/);
+  });
 
-    fireEvent.keyDown(dialog, { key: 'Escape' });
-
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog', { name: /Inquiry/i })).not.toBeInTheDocument();
-    });
+  it('footer email link points at the contact address', () => {
+    render(<App />);
+    const email = screen.getByText(/^ebenz\.aug@gmail\.com$/i).closest('a');
+    expect(email!.getAttribute('href')).toMatch(/^mailto:ebenz\.aug@gmail\.com/);
   });
 });
 
@@ -217,7 +221,10 @@ describe('Inquiry dialog (component, contactEmail branches)', () => {
   });
 });
 
-describe('Faceted audience entry', () => {
+describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
+  // Every module index that must always remain on the page — the lens never hides.
+  const ALL = ['00', '01', '02', '03', '04', '05', '06', '07', '08'];
+
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
     window.location.hash = '';
@@ -227,7 +234,7 @@ describe('Faceted audience entry', () => {
     } catch (e) {}
   });
 
-  it('reads ?read=hiring on mount, activates pill, filters to modules 01/04/07', async () => {
+  it('reads ?read=hiring on mount, activates the pill, and shows the helper path', async () => {
     window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
@@ -236,18 +243,13 @@ describe('Faceted audience entry', () => {
       expect(pill.getAttribute('aria-pressed')).toBe('true');
     });
 
-    // Hiring audience: 01, 04, 07 present; the rest collapsed out.
-    expect(getModuleToggle('module-01')).not.toBeNull();
-    expect(getModuleToggle('module-04')).not.toBeNull();
-    expect(getModuleToggle('module-07')).not.toBeNull();
-    expect(getModuleToggle('module-02')).toBeNull();
-    expect(getModuleToggle('module-03')).toBeNull();
-    expect(getModuleToggle('module-05')).toBeNull();
-    expect(getModuleToggle('module-06')).toBeNull();
-    expect(getModuleToggle('module-08')).toBeNull();
+    // Orientation aid — every module stays present, nothing collapses out.
+    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    // Helper copy for the hiring lens appears.
+    expect(screen.getByText(/visual language, built evidence, and biography/i)).toBeInTheDocument();
   });
 
-  it('clicking a pill writes ?read= to the URL and filters the module list', async () => {
+  it('clicking a pill writes ?read= to the URL and keeps every module visible', async () => {
     render(<App />);
 
     const pill = await screen.findByRole('button', { name: /^CLIENT$/i });
@@ -256,19 +258,11 @@ describe('Faceted audience entry', () => {
     await waitFor(() => {
       expect(window.location.search).toContain('read=client');
     });
-
-    // Client audience: 01, 03, 08 present; the rest collapsed out.
-    expect(getModuleToggle('module-01')).not.toBeNull();
-    expect(getModuleToggle('module-03')).not.toBeNull();
-    expect(getModuleToggle('module-08')).not.toBeNull();
-    expect(getModuleToggle('module-02')).toBeNull();
-    expect(getModuleToggle('module-04')).toBeNull();
-    expect(getModuleToggle('module-05')).toBeNull();
-    expect(getModuleToggle('module-06')).toBeNull();
-    expect(getModuleToggle('module-07')).toBeNull();
+    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    expect(screen.getByText(/taste, systems, doctrine, and built work/i)).toBeInTheDocument();
   });
 
-  it('clicking the active pill toggles it off and restores all seven modules', async () => {
+  it('clicking the active pill toggles it off and clears the helper', async () => {
     window.history.replaceState(null, '', '?read=acad');
     render(<App />);
 
@@ -283,18 +277,10 @@ describe('Faceted audience entry', () => {
       expect(pill.getAttribute('aria-pressed')).toBe('false');
     });
     expect(window.location.search).not.toContain('read=');
-    // All eight modules are present after clearing.
-    expect(getModuleToggle('module-01')).not.toBeNull();
-    expect(getModuleToggle('module-02')).not.toBeNull();
-    expect(getModuleToggle('module-03')).not.toBeNull();
-    expect(getModuleToggle('module-04')).not.toBeNull();
-    expect(getModuleToggle('module-05')).not.toBeNull();
-    expect(getModuleToggle('module-06')).not.toBeNull();
-    expect(getModuleToggle('module-07')).not.toBeNull();
-    expect(getModuleToggle('module-08')).not.toBeNull();
+    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
   });
 
-  it('Show all button clears the active audience and restores all seven modules', async () => {
+  it('Show all button clears the active lens', async () => {
     window.history.replaceState(null, '', '?read=collab');
     render(<App />);
 
@@ -304,9 +290,29 @@ describe('Faceted audience entry', () => {
     await waitFor(() => {
       expect(window.location.search).not.toContain('read=');
     });
-    expect(getModuleToggle('module-01')).not.toBeNull();
-    expect(getModuleToggle('module-04')).not.toBeNull();
-    expect(getModuleToggle('module-06')).not.toBeNull();
+    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+  });
+
+  it('marks the lens path RECOMMENDED in the Index without hiding anything', async () => {
+    window.history.replaceState(null, '', '?read=hiring');
+    render(<App />);
+
+    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    const items = await screen.findAllByTestId('manifest-item');
+
+    // Hiring path is 00,03,07,08 — each carries a Recommended marker.
+    const recd = ['00', '03', '07', '08'];
+    items.forEach(row => {
+      const idx = row.getAttribute('data-index')!;
+      const marker = within(row).queryByText(/^recommended$/i);
+      if (recd.includes(idx)) {
+        expect(marker).toBeInTheDocument();
+      } else {
+        expect(marker).not.toBeInTheDocument();
+      }
+    });
+    // Index still lists all nine modules — orientation, not a filter.
+    expect(items).toHaveLength(9);
   });
 });
 

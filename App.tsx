@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { CONTENT_MODULES, AudienceId, AUDIENCES } from './constants';
 import { ModuleStrata } from './components/ModuleStrata';
-import { InquiryPanel } from './components/InquiryPanel';
 import { ManifestOverlay } from './components/ManifestOverlay';
 import { FrontMatterContent } from './components/FrontMatterContent';
 import { ModuleType } from './types';
@@ -17,6 +16,26 @@ const SITE_VERSION = `v${COPY.meta.version}`;
 // fall back to the hardcoded CONTACT constant so the email path is NEVER disabled
 // (the old env-only path silently broke when the variable wasn't configured).
 const CONTACT_EMAIL = (import.meta.env.VITE_CONTACT_EMAIL?.trim() || CONTACT.email);
+
+// V3.6.1: every conversation CTA resolves to ONE prefilled mailto — no modal,
+// no form service. Subject + body are URL-encoded once so masthead and footer
+// open the identical draft (the dossier's single conversation entry point).
+const CONVERSATION_SUBJECT = 'CT DOSSIER — Conversation Request';
+const CONVERSATION_BODY = [
+  'Hi Ebenz,',
+  '',
+  'I saw CT DOSSIER and wanted to discuss fit around:',
+  '',
+  'Project / company:',
+  'What is real:',
+  'Where the language has not caught up:',
+  'Timeline:',
+  '',
+].join('\n');
+const CONVERSATION_MAILTO =
+  `mailto:${CONTACT_EMAIL}` +
+  `?subject=${encodeURIComponent(CONVERSATION_SUBJECT)}` +
+  `&body=${encodeURIComponent(CONVERSATION_BODY)}`;
 
 // Modules rendered on the main page (Manifest is handled via the overlay),
 // sorted once at module-load time since CONTENT_MODULES is static.
@@ -34,9 +53,7 @@ const isAudienceId = (s: string | null): s is AudienceId =>
 
 const App: React.FC = () => {
   const [openModuleIndex, setOpenModuleIndex] = useState<string | null>(null);
-  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
-  const [inquiryContext, setInquiryContext] = useState<string>("");
   const [selectedAudience, setSelectedAudience] = useState<AudienceId | null>(null);
 
   // Read ?read= URL param on mount. Shareable views: ct-dossier/?read=hiring etc.
@@ -84,30 +101,17 @@ const App: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [selectedAudience]);
 
-  // Modules currently visible. Module 00 (dossier cover) always appears first;
-  // audience lens only filters modules 01–08.
-  const front00 = RENDERED_MODULES.find(m => m.index === '00');
-  const visibleModules = useMemo(() => {
-    if (!selectedAudience) return RENDERED_MODULES;
-    const audience = AUDIENCES.find(a => a.id === selectedAudience);
-    if (!audience) return RENDERED_MODULES;
-    const filtered = audience.modules
-      .map(idx => RENDERED_MODULES.find(m => m.index === idx))
-      .filter((m): m is (typeof RENDERED_MODULES)[number] => m !== undefined);
-    return front00 ? [front00, ...filtered] : filtered;
-  }, [selectedAudience]);
+  // V3.6.1: the Reading Lens is an ORIENTATION AID, not a filter. Every module
+  // stays on the page in narrative order, always. The lens only drives (a) the
+  // helper line in module 00 and (b) the RECOMMENDED markers in the Index.
+  const visibleModules = RENDERED_MODULES;
 
-  // Reversibility invariant: if lens changes and the open module is now hidden,
-  // fold everything back to the closed overview (null). The user picks what to
-  // open next — no auto-open.
-  useEffect(() => {
-    if (openModuleIndex && !visibleModules.some(m => m.index === openModuleIndex)) {
-      setOpenModuleIndex(null);
-      try {
-        history.replaceState("", document.title, window.location.pathname + window.location.search);
-      } catch (e) {}
-    }
-  }, [visibleModules, openModuleIndex]);
+  // Recommended reading path for the active lens — module indices the Index marks
+  // as RECOMMENDED. Empty when no lens is selected. Never hides anything.
+  const recommendedIndices = useMemo(
+    () => (selectedAudience ? AUDIENCES.find(a => a.id === selectedAudience)?.modules ?? [] : []),
+    [selectedAudience]
+  );
 
   // Deep-link init — open the target module if a #module-XX hash is present.
   // On root load with no hash: dossier starts fully folded (null). The first
@@ -132,13 +136,11 @@ const App: React.FC = () => {
   }, []);
 
   // Flat state reachable from anywhere: Escape walks one step back toward the
-  // neutral overview. Priority: inquiry → index → folded module. Repeated
-  // Escape from any state provably lands on the flat sheet. The inquiry panel
-  // owns its own Escape close, so we defer to it and never double-handle.
+  // neutral overview. Priority: index → folded module. Repeated Escape from any
+  // state provably lands on the flat sheet.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (isInquiryOpen) return; // InquiryPanel handles its own Escape
       if (isIndexOpen) { setIsIndexOpen(false); return; }
       if (openModuleIndex) {
         setOpenModuleIndex(null);
@@ -149,7 +151,7 @@ const App: React.FC = () => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isInquiryOpen, isIndexOpen, openModuleIndex]);
+  }, [isIndexOpen, openModuleIndex]);
 
   const handleToggle = (index: string) => {
     if (openModuleIndex === index) {
@@ -177,11 +179,6 @@ const App: React.FC = () => {
       }, 300);
   };
 
-  const handleInquiryRequest = (context: string) => {
-    setInquiryContext(context);
-    setIsInquiryOpen(true);
-  };
-
   return (
     <div className="min-h-screen w-full relative">
       
@@ -196,12 +193,13 @@ const App: React.FC = () => {
 
          <div className="flex flex-col items-end gap-2 pointer-events-auto">
              <div className="flex items-center gap-3">
-               <button
-                  onClick={() => handleInquiryRequest("General Inquiry")}
-                  className="hidden md:block font-mono text-xs uppercase tracking-widest border border-black/40 px-3 py-1 hover:bg-black hover:text-white hover:border-black transition-colors text-black"
+               <a
+                  href={CONVERSATION_MAILTO}
+                  aria-label="Request a conversation — opens a prefilled email"
+                  className="hidden md:inline-block font-mono text-xs uppercase tracking-widest border border-black/40 px-3 py-1 hover:bg-black hover:text-white hover:border-black transition-colors text-black"
                >
                   REQUEST CONVERSATION -&gt;
-               </button>
+               </a>
                <button
                   onClick={() => setIsIndexOpen(true)}
                   className="font-mono text-xs uppercase tracking-widest border border-black/40 px-3 py-1 hover:bg-black hover:text-white hover:border-black transition-colors text-black"
@@ -283,7 +281,7 @@ const App: React.FC = () => {
                   <span className="font-mono text-xs uppercase tracking-widest opacity-50">ACTIONS</span>
                   <div className="flex flex-col items-start gap-2 font-mono text-sm uppercase tracking-widest">
                     <button onClick={() => setIsIndexOpen(true)} aria-label="Open dossier index" className="hover:underline">Index</button>
-                    <button onClick={() => handleInquiryRequest("Footer Contact")} aria-label="Compose inquiry" className="hover:underline">Compose Inquiry</button>
+                    <a href={CONVERSATION_MAILTO} aria-label="Compose an inquiry — opens a prefilled email" className="hover:underline">Compose Inquiry</a>
                   </div>
                 </div>
               </div>
@@ -306,14 +304,7 @@ const App: React.FC = () => {
         onClose={() => setIsIndexOpen(false)}
         onNavigate={handleIndexNavigate}
         activeIndex={openModuleIndex}
-      />
-
-      {/* Slide-over Panel */}
-      <InquiryPanel 
-        isOpen={isInquiryOpen} 
-        onClose={() => setIsInquiryOpen(false)}
-        context={inquiryContext}
-        contactEmail={CONTACT_EMAIL}
+        recommendedIndices={recommendedIndices}
       />
     </div>
   );
