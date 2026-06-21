@@ -74,24 +74,35 @@ const scrollModuleIntoView = (index: string): boolean => {
   return true;
 };
 
-// Run cb once the programmatic scroll settles — native `scrollend` when present,
-// timeout fallback otherwise. A safety timeout always fires (scrollend never
-// arrives if the page didn't actually move). One-shot; no continuous listeners.
-const afterScrollSettle = (cb: () => void) => {
+// Run cb once the scroll that brings module `index` to the masthead offset has
+// settled. `scrollend` fires for ANY scroll, so we only accept it once the TARGET
+// module is actually at rest near the offset (or the page is clamped at the
+// bottom and can't get closer) — this ignores a cross-module / re-anchor scroll
+// that would otherwise commit the open while the viewport sits elsewhere. A
+// generous timeout backstops the no-scroll / no-scrollend case (cb is idempotent
+// via `done`); with scrollend present the real event normally wins first. No rAF
+// wrap — rAF can be starved in background tabs and must never gate the open.
+const afterScrollSettle = (index: string, cb: () => void) => {
   let done = false;
+  const atRest = () => {
+    const el = document.getElementById(`module-${index}`);
+    if (!el) return true;
+    const near = Math.abs(el.getBoundingClientRect().top - MASTHEAD_OFFSET) <= 8;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const clamped = window.scrollY >= maxScroll - 2; // bottom of page — can't get closer
+    return near || clamped;
+  };
   const finish = () => {
     if (done) return;
     done = true;
-    window.removeEventListener('scrollend', finish);
+    window.removeEventListener('scrollend', onScrollEnd);
     window.clearTimeout(safety);
-    // Call cb directly — scrollend/timeout already means the module is in view.
-    // (No requestAnimationFrame wrap: rAF can be starved in background tabs and
-    // must never be what decides whether the module opens at all.)
     cb();
   };
+  const onScrollEnd = () => { if (atRest()) finish(); };
   const hasScrollEnd = 'onscrollend' in window;
-  const safety = window.setTimeout(finish, hasScrollEnd ? 420 : 260);
-  if (hasScrollEnd) window.addEventListener('scrollend', finish, { once: true });
+  const safety = window.setTimeout(finish, hasScrollEnd ? 1000 : 500);
+  if (hasScrollEnd) window.addEventListener('scrollend', onScrollEnd);
 };
 
 const App: React.FC = () => {
@@ -167,26 +178,26 @@ const App: React.FC = () => {
   // lands so the fold is visible (not finished off-screen). Two rAFs let the
   // browser's native anchor jump settle before we flip the open state.
   useEffect(() => {
-    const openFromHash = (initial: boolean) => {
-      const hash = window.location.hash;
-      if (!hash.startsWith('#module-')) return; // root: stay folded
+    // Cold load: jump instantly to the hash module (no smooth travel to outrun),
+    // then open after the native anchor jump lands (two rAFs).
+    const hash = window.location.hash;
+    if (hash.startsWith('#module-')) {
       const index = hash.replace('#module-', '');
       const el = document.getElementById(`module-${index}`);
-      if (el) {
-        el.scrollIntoView({
-          behavior: initial || prefersReducedMotion() ? 'auto' : 'smooth',
-          block: 'start',
-        });
-      }
+      if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
       requestAnimationFrame(() => requestAnimationFrame(() => setOpenModuleIndex(index)));
+    }
+    // Our own opens use replaceState (no hashchange). This fires only on EXTERNAL
+    // hash changes (typed URL, back/forward) — route them through the SAME
+    // scroll-first + settle path as a click so the fold never plays mid-scroll.
+    const onHash = () => {
+      const h = window.location.hash;
+      if (!h.startsWith('#module-')) return;
+      requestOpenModule(h.replace('#module-', ''));
     };
-
-    openFromHash(true);
-    // Our own opens use replaceState (no hashchange) — this only fires on EXTERNAL
-    // hash changes (typed URL, back/forward), which still scroll-first then open.
-    const onHash = () => openFromHash(false);
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Flat state reachable from anywhere: Escape walks one step back toward the
@@ -229,7 +240,7 @@ const App: React.FC = () => {
     const scrolled = scrollModuleIntoView(index);
     // Scrolled with motion → open once the scroll settles. Already in view (or
     // reduced motion, where the scroll is instant) → open now, in place.
-    if (scrolled && !prefersReducedMotion()) afterScrollSettle(commit);
+    if (scrolled && !prefersReducedMotion()) afterScrollSettle(index, commit);
     else commit();
   };
 

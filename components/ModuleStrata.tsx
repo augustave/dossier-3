@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ModuleData, ModuleType } from '../types';
 import { COLORS } from '../constants';
 import { CollapsibleDrawer } from './CollapsibleDrawer';
@@ -67,13 +67,75 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
     resp.rows.length === 1 &&
     React.isValidElement(resp.rows[0]) &&
     typeof (resp.rows[0] as React.ReactElement).type === 'function';
+  const containerRef = useRef<HTMLElement>(null);
   const { copy, copied: linkCopied } = useClipboard();
   const panelId = `module-panel-${module.index}`;
   const linkStatusId = `module-link-status-${module.index}`;
 
-  // V3.6.2: scroll-on-open lives in App (scroll-first, BEFORE the band opens) so
-  // the pleat cascade always plays in view. ModuleStrata no longer self-scrolls
-  // (that ran AFTER the fold settled — short modules finished folding off-screen).
+  const prefersReducedMotion = () =>
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // V3.6.2 choreography has TWO scrolls:
+  //   1. App scroll-first (BEFORE open) — brings the band onstage so the pleat
+  //      cascade plays in view, never off-screen.
+  //   2. THIS post-fold RE-ANCHOR — once the fold has settled, pull the band's
+  //      TOP back to the masthead-safe position. The open can shift the document
+  //      mid-animation (most often a PREVIOUSLY-OPEN module COLLAPSING above this
+  //      one), which leaves the freshly-opened card sitting "down". Re-anchoring
+  //      against the FINAL geometry lands the user at the top of the card:
+  //      "click → fold → back up to the top of the card."
+  // Latch on the section's padding-top transitionend (the band finished growing →
+  // layout is final), with a timeout fallback. Only runs on open, never on close.
+  useEffect(() => {
+    if (!isOpen || !containerRef.current) return;
+    const el = containerRef.current;
+    const HEADER_OFFSET = 100; // matches scroll-mt-[100px] / fixed masthead height
+    const reduced = prefersReducedMotion();
+    let cancelled = false;
+    let userScrolled = false;
+    let fallbackId: number | undefined;
+
+    // If the user grabs the scroll during the fold window, DON'T yank them back.
+    const markUser = () => { userScrolled = true; };
+    window.addEventListener('wheel', markUser, { passive: true });
+    window.addEventListener('touchmove', markUser, { passive: true });
+
+    const teardown = () => {
+      el.removeEventListener('transitionend', onEnd);
+      window.removeEventListener('wheel', markUser);
+      window.removeEventListener('touchmove', markUser);
+      if (fallbackId) window.clearTimeout(fallbackId);
+    };
+
+    const reanchor = () => {
+      teardown();
+      if (cancelled || userScrolled || !containerRef.current) return;
+      const rectTop = el.getBoundingClientRect().top;
+      // Already at the top — scroll anchoring held the card while a module above
+      // collapsed, or scroll-first already nailed it. Skip the needless second
+      // scroll so the flagship case is one motion, not a settle-then-slide jump.
+      if (Math.abs(rectTop - HEADER_OFFSET) <= 4) return;
+      window.scrollTo({ top: rectTop + window.scrollY - HEADER_OFFSET, behavior: reduced ? 'auto' : 'smooth' });
+    };
+
+    function onEnd(e: TransitionEvent) {
+      // Section transitions padding + box-shadow; latch padding-top so we fire
+      // once, and only for THIS section (not a bubbled child transition).
+      if (e.target !== el || e.propertyName !== 'padding-top') return;
+      reanchor();
+    }
+
+    el.addEventListener('transitionend', onEnd);
+    // Fallback when no transitionend fires (reduced motion, interrupted layout).
+    fallbackId = window.setTimeout(reanchor, reduced ? 80 : 900);
+
+    return () => {
+      cancelled = true;
+      teardown();
+    };
+  }, [isOpen]);
 
   const handleCopyLink = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -85,6 +147,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
 
   return (
     <section
+      ref={containerRef}
       id={`module-${module.index}`}
       aria-label={`Module ${module.index}: ${module.title}`}
       // PRD v1.0.2: scroll-margin-top added for fixed header offset
