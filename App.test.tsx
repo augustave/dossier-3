@@ -279,89 +279,49 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     } catch (e) {}
   });
 
-  it('reads ?read=hiring on mount and collapses to the route stamp (V3.6.6)', async () => {
+  it('reads ?read=hiring on mount and shows the route stamp ONLY (V3.6.7)', async () => {
     window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
     const strip = await screen.findByTestId('reading-lens-strip');
-    // Collapsed: route stamp (path + helper) shown, the four choices hidden.
     expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 03 → 07 → 08');
     expect(within(strip).getByText(/visual language, built evidence, and biography/i)).toBeInTheDocument();
+    // Route STAMP only — no tabs, no Change lens, no Study all, no Start Path.
     expect(within(strip).queryByRole('button', { name: 'Set reading lens: CLIENT' })).toBeNull();
-    expect(within(strip).getByRole('button', { name: /Change reading lens/i })).toBeInTheDocument();
+    expect(within(strip).queryByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeNull();
+    expect(within(strip).queryByRole('button', { name: /Change reading lens/i })).toBeNull();
+    expect(within(strip).queryByRole('button', { name: /Clear reading lens/i })).toBeNull();
+    expect(screen.queryByTestId('start-path')).toBeNull();
 
     // Nothing hidden, nothing auto-opened.
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
     expect(document.querySelector('#module-00 .fold')?.getAttribute('data-open')).toBe('false');
   });
 
-  it('clicking a pill writes ?read= to the URL and keeps every module visible', async () => {
+  it('with no lens shows the picker; selecting one writes ?read= and removes the picker', async () => {
     render(<App />);
 
-    const pill = await screen.findByRole('button', { name: /^CLIENT$/i });
-    fireEvent.click(pill);
+    const strip = await screen.findByTestId('reading-lens-strip');
+    expect(within(strip).getByText(/select a reading lens/i)).toBeInTheDocument();
+    const client = within(strip).getByRole('button', { name: 'Set reading lens: CLIENT' });
+    fireEvent.click(client);
 
     await waitFor(() => {
       expect(window.location.search).toContain('read=client');
     });
-    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
-    expect(within(screen.getByTestId('reading-lens-strip')).getByText(/taste, systems, doctrine, and built work/i)).toBeInTheDocument();
-  });
-
-  it('CHANGE LENS reveals the choices again and selecting one updates the route + ?read=', async () => {
-    window.history.replaceState(null, '', '?read=acad');
-    render(<App />);
-
-    const strip = await screen.findByTestId('reading-lens-strip');
-    // Collapsed on academic, choices hidden.
-    await waitFor(() => {
-      expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 01 → 04 → 05 → 06');
-    });
-    expect(within(strip).queryByRole('button', { name: 'Set reading lens: COLLABORATOR' })).toBeNull();
-    expect(document.querySelector('#module-00 .fold')?.getAttribute('data-open')).toBe('false');
-
-    // CHANGE LENS → the four choices return; pick a different one.
-    fireEvent.click(within(strip).getByRole('button', { name: /Change reading lens/i }));
-    const collab = await within(strip).findByRole('button', { name: 'Set reading lens: COLLABORATOR' });
-    fireEvent.click(collab);
-
-    await waitFor(() => {
-      expect(window.location.search).toContain('read=collab');
-    });
-    // Re-collapsed to the new route, choices hidden again.
-    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
-    expect(within(strip).getByText(/lenses, registers, neighboring practices, and source texts/i)).toBeInTheDocument();
+    // Stamp only — the picker is gone (not merely hidden).
+    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
     expect(within(strip).queryByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeNull();
-  });
-
-  it('STUDY ALL clears the active lens and restores the neutral prompt', async () => {
-    window.history.replaceState(null, '', '?read=acad');
-    render(<App />);
-
-    const strip = await screen.findByTestId('reading-lens-strip');
-    const studyAll = await within(strip).findByRole('button', { name: /Clear reading lens/i });
-    fireEvent.click(studyAll);
-
-    await waitFor(() => {
-      expect(window.location.search).not.toContain('read=');
-    });
-    // Neutral prompt + the four choices return.
-    expect(within(strip).getByText(/choose a reading lens/i)).toBeInTheDocument();
-    expect(within(strip).getByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeInTheDocument();
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
   });
 
-  it('Show all button clears the active lens', async () => {
-    window.history.replaceState(null, '', '?read=collab');
+  it('renders the Reading Lens / Reading Path block exactly once (no module-00 duplicate)', async () => {
+    window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
-    const showAll = await screen.findByRole('button', { name: /Show all modules/i });
-    fireEvent.click(showAll);
-
-    await waitFor(() => {
-      expect(window.location.search).not.toContain('read=');
-    });
-    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    await screen.findByTestId('reading-lens-strip');
+    expect(screen.getAllByTestId('reading-lens-path')).toHaveLength(1);
+    expect(screen.getAllByText(/Reading path · HIRING MANAGER/i)).toHaveLength(1);
   });
 
   it('marks the lens path RECOMMENDED in the Index without hiding anything', async () => {
