@@ -54,6 +54,19 @@ const isAudienceId = (s: string | null): s is AudienceId =>
 // Fixed-masthead clearance — matches each section's scroll-mt-[100px].
 const MASTHEAD_OFFSET = 100;
 
+// V3.6.4 — own the scroll position. Default 'auto' makes the browser RESTORE the
+// prior scroll on refresh, which read as the dossier "saving memory" and staying
+// mid-stack. Set at module load (before React mounts) so there's no restore flash;
+// the root effect then resets to top. openModuleIndex is never persisted.
+if (typeof history !== 'undefined' && 'scrollRestoration' in history) {
+  try { history.scrollRestoration = 'manual'; } catch (e) {}
+}
+
+// Reading-stack delayed close: when switching modules, the previously-open module
+// is held OPEN this long after the target opens (≈ its fold settling), so its
+// collapse never steals the vertical stage while the target scrolls + folds.
+const CLOSE_DELAY = 900;
+
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   typeof window.matchMedia === 'function' &&
@@ -107,11 +120,27 @@ const afterScrollSettle = (index: string, cb: () => void) => {
 
 const App: React.FC = () => {
   const [openModuleIndex, setOpenModuleIndex] = useState<string | null>(null);
+  // Previous module held OPEN transiently during a switch (delayed close) so it
+  // doesn't collapse and steal vertical space while the target scrolls + folds.
+  const [keepOpenIndex, setKeepOpenIndex] = useState<string | null>(null);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [selectedAudience, setSelectedAudience] = useState<AudienceId | null>(null);
   // Latest scroll-first open request. A mutable ref (not state) so rapid clicks
   // resolve to the LAST module — an in-flight settle callback bails if superseded.
   const pendingRef = useRef<string | null>(null);
+  // Mirror of openModuleIndex readable inside async callbacks (settle/timeout).
+  const openRef = useRef<string | null>(null);
+  // Pending delayed-close timer (clears the held-open previous module).
+  const closeTimerRef = useRef<number | null>(null);
+
+  useEffect(() => { openRef.current = openModuleIndex; }, [openModuleIndex]);
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
 
   // Read ?read= URL param on mount. Shareable views: ct-dossier/?read=hiring etc.
   useEffect(() => {
@@ -186,6 +215,11 @@ const App: React.FC = () => {
       const el = document.getElementById(`module-${index}`);
       if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
       requestAnimationFrame(() => requestAnimationFrame(() => setOpenModuleIndex(index)));
+    } else {
+      // V3.6.4 root reset: no #module hash → start at the TOP, fully folded,
+      // regardless of any restored scroll or ?read= lens. The dossier opens as
+      // a fresh file, never resuming the prior scroll/module on refresh.
+      try { window.scrollTo(0, 0); } catch (e) {}
     }
     // Our own opens use replaceState (no hashchange). This fires only on EXTERNAL
     // hash changes (typed URL, back/forward) — route them through the SAME
@@ -208,7 +242,10 @@ const App: React.FC = () => {
       if (e.key !== 'Escape') return;
       if (isIndexOpen) { setIsIndexOpen(false); return; }
       if (openModuleIndex) {
+        clearCloseTimer();
+        setKeepOpenIndex(null);
         setOpenModuleIndex(null);
+        openRef.current = null;
         try {
           history.pushState("", document.title, window.location.pathname + window.location.search);
         } catch (e) {}
@@ -234,7 +271,24 @@ const App: React.FC = () => {
     const commit = () => {
       if (pendingRef.current !== index) return; // superseded by a later request
       pendingRef.current = null;
+      // Reading-stack: hold the PREVIOUS module open through the target's open +
+      // fold so its collapse can't remove the stage above the target mid-motion.
+      // Collapse it only after the target is stable (CLOSE_DELAY). The eventual
+      // collapse happens above the viewport and the browser's scroll anchoring
+      // keeps the target pinned — no jump.
+      clearCloseTimer();
+      const prev = openRef.current;
+      if (prev && prev !== index) {
+        setKeepOpenIndex(prev);
+        closeTimerRef.current = window.setTimeout(() => {
+          closeTimerRef.current = null;
+          setKeepOpenIndex(cur => (cur === prev ? null : cur));
+        }, CLOSE_DELAY);
+      } else {
+        setKeepOpenIndex(null);
+      }
       setOpenModuleIndex(index);
+      openRef.current = index;
       writeModuleHash(index);
     };
     const scrolled = scrollModuleIntoView(index);
@@ -248,7 +302,10 @@ const App: React.FC = () => {
     // Clicking the already-open module folds it immediately — no scroll-first.
     if (openModuleIndex === index) {
       pendingRef.current = null;
+      clearCloseTimer();
+      setKeepOpenIndex(null);
       setOpenModuleIndex(null);
+      openRef.current = null;
       try {
         history.pushState("", document.title, window.location.pathname + window.location.search);
       } catch (e) {}
@@ -313,7 +370,9 @@ const App: React.FC = () => {
             <ModuleStrata
               key={m.id}
               module={m}
-              isOpen={openModuleIndex === m.index}
+              // Open if it's the active module OR the previous one still held open
+              // during a delayed-close switch (reading-stack: space preserved).
+              isOpen={openModuleIndex === m.index || keepOpenIndex === m.index}
               onToggle={() => handleToggle(m.index)}
               stackIndex={i}
               stackCount={visibleModules.length}

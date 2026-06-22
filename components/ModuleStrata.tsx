@@ -46,19 +46,24 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
   // header (z-40) and the overlays (z-50+).
   const zIndex = isOpen ? stackCount + 10 : stackCount - stackIndex;
 
-  // Elevation shadow per band. Light (cream) bands lift via the pure-black drop
-  // shadow alone. Dark / white-text bands (blue, black, clay) ALSO get a faint
-  // matte ambient highlight at the sheet's TOP edge (inset) — the lit edge of a
-  // lifted sheet — so the lift reads where a black-on-near-black shadow can't.
+  // Elevation shadow per band. Dark / white-text bands (blue, black, clay) keep
+  // the full paper-lift drop shadow + a faint matte ambient highlight at the
+  // sheet's TOP edge (inset) — the lit edge of a lifted sheet.
+  //
+  // V3.6.4: CREAM bands flatten. The old wide soft drop (0 16/34px, 17/32px blur)
+  // cast onto the cream band BELOW it (cream-over-cream: 00 → 01) read as a
+  // top-down "SaaS hero" gradient. Cream now uses a TIGHT, subtle paper-depth so
+  // the band-to-band transition is the crisp matte hairline seam (border-b),
+  // not a soft gradient. Dark-band lift is unchanged.
   // Literal class strings (not interpolated) so Tailwind's JIT emits them.
   const isDarkBand = module.themeColor !== 'cream';
   const shadowClass = isOpen
     ? (isDarkBand
         ? 'shadow-[0_34px_32px_rgba(0,0,0,0.15),0_-14px_18px_rgba(0,0,0,0.06),inset_0_6px_9px_-5px_rgba(255,255,255,0.13)]'
-        : 'shadow-[0_34px_32px_rgba(0,0,0,0.15),0_-14px_18px_rgba(0,0,0,0.06)]')
+        : 'shadow-[0_3px_8px_-2px_rgba(0,0,0,0.08)]')
     : (isDarkBand
         ? 'shadow-[0_16px_17px_rgba(0,0,0,0.065),inset_0_6px_9px_-5px_rgba(255,255,255,0.13)]'
-        : 'shadow-[0_16px_17px_rgba(0,0,0,0.065)]');
+        : 'shadow-[0_1px_2px_rgba(0,0,0,0.05)]');
 
   const resp = unwrapResponse(module.responseDisplay);
   // A response that is a single custom component (Visual Languages, Doctrine
