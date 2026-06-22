@@ -91,18 +91,20 @@ const scrollModuleIntoView = (index: string): boolean => {
 // settled. `scrollend` fires for ANY scroll, so we only accept it once the TARGET
 // module is actually at rest near the offset (or the page is clamped at the
 // bottom and can't get closer) — this ignores a cross-module / re-anchor scroll
-// that would otherwise commit the open while the viewport sits elsewhere. A
-// generous timeout backstops the no-scroll / no-scrollend case (cb is idempotent
-// via `done`); with scrollend present the real event normally wins first. No rAF
-// wrap — rAF can be starved in background tabs and must never gate the open.
+// that would otherwise commit the open while the viewport sits elsewhere. Some
+// browser surfaces do not expose `scrollend`; for those, use a short-lived
+// geometry probe instead of a blind fixed delay, then hard-stop so a broken
+// scroll implementation cannot strand the open forever. No rAF wrap — rAF can
+// be starved in background tabs and must never gate the open.
 const afterScrollSettle = (index: string, cb: () => void) => {
   let done = false;
+  let probeTimer: number | undefined;
   const atRest = () => {
     const el = document.getElementById(`module-${index}`);
     if (!el) return true;
     const near = Math.abs(el.getBoundingClientRect().top - MASTHEAD_OFFSET) <= 8;
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    const clamped = window.scrollY >= maxScroll - 2; // bottom of page — can't get closer
+    const clamped = maxScroll > 0 && window.scrollY >= maxScroll - 2; // bottom of page — can't get closer
     return near || clamped;
   };
   const finish = () => {
@@ -110,12 +112,19 @@ const afterScrollSettle = (index: string, cb: () => void) => {
     done = true;
     window.removeEventListener('scrollend', onScrollEnd);
     window.clearTimeout(safety);
+    if (probeTimer) window.clearTimeout(probeTimer);
     cb();
   };
   const onScrollEnd = () => { if (atRest()) finish(); };
   const hasScrollEnd = 'onscrollend' in window;
-  const safety = window.setTimeout(finish, hasScrollEnd ? 1000 : 500);
+  const probe = () => {
+    if (done) return;
+    if (atRest()) finish();
+    else probeTimer = window.setTimeout(probe, 80);
+  };
+  const safety = window.setTimeout(finish, hasScrollEnd ? 1400 : 1800);
   if (hasScrollEnd) window.addEventListener('scrollend', onScrollEnd);
+  probeTimer = window.setTimeout(probe, 80);
 };
 
 // Time to wait out the held module's collapse (≈ --fold-duration-lg) before the
@@ -126,13 +135,13 @@ const COLLAPSE_SETTLE = 760;
 // target, the target's header can scroll above the masthead (browser scroll
 // anchoring does NOT reliably compensate an animated collapse), leaving the user
 // looking at the bottom of the card. Pull the target's top back to the offset —
-// but only if it actually drifted UP and is still near the viewport, so a user
-// who scrolled deep into the content isn't yanked.
+// but only if it actually drifted UP. The caller owns the user-scroll bail so a
+// user who intentionally scrolls during the collapse window is not yanked.
 const reanchorModuleTop = (index: string) => {
   const el = document.getElementById(`module-${index}`);
   if (!el) return;
   const top = el.getBoundingClientRect().top;
-  if (top < MASTHEAD_OFFSET - 4 && top > -window.innerHeight) {
+  if (top < MASTHEAD_OFFSET - 4) {
     el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
   }
 };
@@ -151,6 +160,8 @@ const App: React.FC = () => {
   const openRef = useRef<string | null>(null);
   // Pending delayed-close timer (clears the held-open previous module).
   const closeTimerRef = useRef<number | null>(null);
+  const collapseSettleTimerRef = useRef<number | null>(null);
+  const closeInteractionCleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => { openRef.current = openModuleIndex; }, [openModuleIndex]);
 
@@ -159,6 +170,12 @@ const App: React.FC = () => {
       window.clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
+    if (collapseSettleTimerRef.current !== null) {
+      window.clearTimeout(collapseSettleTimerRef.current);
+      collapseSettleTimerRef.current = null;
+    }
+    closeInteractionCleanupRef.current?.();
+    closeInteractionCleanupRef.current = null;
   };
 
   // Read ?read= URL param on mount. Shareable views: ct-dossier/?read=hiring etc.
@@ -299,14 +316,26 @@ const App: React.FC = () => {
       clearCloseTimer();
       const prev = openRef.current;
       if (prev && prev !== index) {
+        let userScrolledDuringClose = false;
+        const markUserScrolledDuringClose = () => { userScrolledDuringClose = true; };
+        window.addEventListener('wheel', markUserScrolledDuringClose, { passive: true });
+        window.addEventListener('touchmove', markUserScrolledDuringClose, { passive: true });
+        closeInteractionCleanupRef.current = () => {
+          window.removeEventListener('wheel', markUserScrolledDuringClose);
+          window.removeEventListener('touchmove', markUserScrolledDuringClose);
+        };
+
         setKeepOpenIndex(prev);
         closeTimerRef.current = window.setTimeout(() => {
           closeTimerRef.current = null;
           setKeepOpenIndex(cur => (cur === prev ? null : cur));
           // prev now collapses above the target — re-anchor the target's top
           // after the collapse finishes (if it's still the open module).
-          window.setTimeout(() => {
-            if (openRef.current === index) reanchorModuleTop(index);
+          collapseSettleTimerRef.current = window.setTimeout(() => {
+            collapseSettleTimerRef.current = null;
+            closeInteractionCleanupRef.current?.();
+            closeInteractionCleanupRef.current = null;
+            if (openRef.current === index && !userScrolledDuringClose) reanchorModuleTop(index);
           }, COLLAPSE_SETTLE);
         }, CLOSE_DELAY);
       } else {

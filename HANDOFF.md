@@ -1,151 +1,397 @@
-# CT-Dossier — Agent Handoff
+# CT-DOSSIER — Agent Handoff (V3.6.4)
 
-**Read this first.** This is the parent index any agent picking up the project should start at. It points to per-feature PRDs and tells you what's done, what's open, and how the owner expects you to operate.
+**Read this first.** This is the index any agent picking up the project starts at.
+It is current as of **V3.6.4** (`bf4f19a`, 2026-06). The fold/scroll choreography
+has been through many iterations — §8 documents **every fix** so you don't repeat
+a reverted approach.
+
+> ⚠️ The old version of this doc described a pre-V3 architecture (Role Matrix,
+> CREATIVE TECHNOLOGIST, GitHub Pages). All of that is gone. This is the rewrite.
 
 ---
 
-## 1. What CT-Dossier is
+## 0. CRITICAL — where it lives and deploys
 
-A single-page React microsite at `/Users/taoconrad/Dev/GitHub 4/CT-DOSSIER/Founder`. It is **not a portfolio**. The owner has three dedicated portfolio sites (`artdirector.rocks`, `brandproduct.dev`, `defense.observer`) that already do project casework. CT-Dossier is the **presentation surface** behind them — how the owner thinks, how they work, what they recruit for, what they would build.
+- **Canonical public home: `https://dossier-fold.vercel.app`** (Vercel). This is the
+  owner's decision (V3.6.4-era). It is the real site.
+- **Git: push to the `dossier-fold` remote only** → `git push dossier-fold dossier-fold:main`
+  (repo: `github.com/augustave/DOSSIER-FOLD`).
+- **NEVER push to `origin`** → that is `github.com/augustave/CT-DOSSIER`, a **separate,
+  STALE GitHub Pages site** (pre-V3.6.1) at `augustave.github.io/CT-DOSSIER`. It is NOT
+  this site. Do not touch it. If a user reports seeing something that doesn't match the
+  code, check whether they're looking at the stale Pages site.
+- **Deploy:** `vercel deploy --prod --yes` (scope `researchdirector`, project
+  `dossier-fold`, alias `dossier-fold.vercel.app`). No GitHub Pages, no backend, no API.
+- **Working dir:** `/Users/taoconrad/Dev/GitHub 4/CT-DOSSIER copy/Founder` (a COPY; the
+  git repo is in `Founder/`, the parent dir is not a repo). `CLAUDE.md` at the parent
+  records this too.
 
-If you find yourself wanting to add project cards, project galleries, or any kind of named-artifact list to the dossier surface, **stop**. That's portfolio work and belongs on the three external sites.
+---
+
+## 1. What CT-DOSSIER is
+
+A single-page React microsite (the `Founder/` app). It is **not a portfolio** — built
+work lives on three external sites (`artdirector.rocks`, `brandproduct.dev`,
+`defense.observer`). CT-DOSSIER is the **presentation surface / practice dossier**:
+how the owner thinks, sources taste, builds visual languages.
+
+The whole site is a stack of **fold modules** ("strata bands"). Each band is a sheet of
+paper that folds open (3D origami pleat per content row) when you "+ STUDY" it. The
+metaphor — and the hard constraint — is a **reading stack, not a strict accordion**.
+
+If you want to add project cards / galleries to this surface, **stop** — that's portfolio
+work for the external sites.
 
 ---
 
 ## 2. Tech & file map
 
-- **Stack:** React 19 + TypeScript + Vite 6, Tailwind 3 (local PostCSS), Vitest 4. Static-only. No backend, no API.
-- **Project root:** `Founder/` (yes, the deployable lives in a subdirectory).
-- **Key files:**
-  - `Founder/App.tsx` — shell, hash routing, top hero, audience selector, module rendering loop.
-  - `Founder/copy.v1_1.ts` — all editorial content. Audited keys for each module live here.
-  - `Founder/constants.tsx` — `CONTENT_MODULES` array; module render specs (JSX) live here.
-  - `Founder/types.ts` — `ModuleType` enum, `ModuleData`, `DoctrineCard` scaffolding (currently unused in render).
-  - `Founder/components/ModuleStrata.tsx` — the strata band component every module renders inside.
-  - `Founder/components/ManifestOverlay.tsx` — the INDEX (00) overlay; has a hardcoded sort order array.
-  - `Founder/App.test.tsx` — 19 Vitest tests as of the latest pass (was 15 before audience tests).
-- **Doc tree (this folder, `Founder/`):**
-  - `HANDOFF.md` — this doc.
-  - `DOSSIER_REFRAME_PRD.md` — Phase 1 PRD: dossier-as-presentation restructure.
-  - `PRD-FACETED-ENTRY.md` — Phase 2 PRD: audience-aware top hero.
-  - `PRD-FIELD-POSITION.md` — Phase 3 PRD: 2-axis positioning chart inside Module 02.
-  - `PRD-DOCTRINE-EXPLORER.md` — Phase 4 PRD: tabbed register explorer inside Module 02, after the chart.
-  - `PRD-IAA-INTEGRATION.md` — Phase 5 PRD: brand-architecture substance translated into the dossier voice (M02 thesis kicker, M03 pressure bullet, field-chart v1.1 revision; The Fold plate cut by war-game). Owner-approved + implemented 2026-06-07.
-  - `README.md` — original project README (predates the restructure).
-- **Doc tree (parent `../`, not in this git repo):**
-  - `CT_DOSSIER_EVALUATION_REPORT.md` — ship-readiness baseline from an earlier review pass. Local-only reference.
+- **Stack:** React 19 + TypeScript + Vite 6 + Tailwind 3 + Vitest 4. Static only.
+- **Key files (all under `Founder/`):**
+  - `App.tsx` — shell, masthead, hash routing, **all scroll/open choreography**
+    (scroll-first, settle, delayed close, re-anchors), module render loop.
+  - `components/ModuleStrata.tsx` — the band component; theme/shadow, the `Fold` panel,
+    the **post-fold re-anchor** effect.
+  - `components/Fold.tsx` — the single collapse primitive (`grid-rows 0fr→1fr` +
+    `data-open` / `data-pleat-open`). See §4.
+  - `components/PleatFold.tsx` — wraps content rows as origami pleats.
+  - `components/FrontMatterContent.tsx` — module 00 content (self-pleating) + Reading Lens.
+  - `components/ManifestOverlay.tsx` — the INDEX overlay (00–08 list, OPEN/RECOMMENDED).
+  - `components/SplitFlap.tsx` — Solari split-flap title reveal (TEST feature). See §6.
+  - `components/InquiryPanel.tsx` — legacy inquiry modal; **no longer mounted in App**
+    (CTAs are mailto now). File + its isolated unit tests retained.
+  - `constants.tsx` — `CONTENT_MODULES` (module render specs), `COLORS`, `AUDIENCES`/`AudienceId`.
+  - `copy.v1_1.ts` — all editorial copy + `meta.version` (the visible `Vx.x.x` label).
+  - `index.css` — fold tokens + pleat CSS + split-flap CSS + scrollbar/theme.
+  - `index.html` — metadata, OG/Twitter tags (canonical = dossier-fold.vercel.app).
+  - `App.test.tsx` — **23 Vitest tests**.
+  - `og-card.svg` — source for `public/og.png` (1200×630 social card; render via
+    `rsvg-convert -w 1200 -h 630 og-card.svg -o public/og.png`).
+  - `.claude/launch.json` — preview dev server config (`dossier-dev`, port 3100/strictPort).
 
 ---
 
-## 3. Current architecture (as of this handoff)
-
-### Module structure
+## 3. Current module architecture
 
 ```
-00 MANIFEST            (overlay, not rendered as a strata)
-01 ROLE FIT
-02 CREATIVE TECHNOLOGIST
-03 OPERATING METHOD
-04 WORLD MODEL          ← three picks (Levin / Hughes / Johnson) + Coherence → Influence → Ship
-05 PORTFOLIOS           ← three external-site tiles only
-06 ROLE MATRIX          ← interactive simulator (lazy mounted)
+00 FRONT MATTER        cream   ← thesis + identity + work links + Reading Lens (self-pleating)
+01 TASTE               cream   ← prose
+02 SEEING              clay    ← 3 cognitive lenses
+03 VISUAL LANGUAGES    black   ← self-pleating cards (folds its OWN rows)
+04 THE NEIGHBORHOOD    blue    ← the field-position chart (ONE plane, 30° fold)
+05 DOCTRINE            cream   ← prose
+06 DOCTRINE LIBRARY    black   ← self-pleating archive grid (uniform-direction, stable 2-col)
+07 PORTFOLIOS          ?       ← three external-site tiles
+08 OPERATING BIOGRAPHY ?       ← prose
+(MANIFEST is index "00" too but always filtered out of RENDERED_MODULES → the overlay only)
 ```
 
-### Top hero (above all modules)
-
-- "This is not a portfolio" framing paragraph with three inline external links.
-- **Faceted audience selector** — four pills (Hiring Manager / Client / Collaborator / Academic). When a pill is active, the module list collapses to that audience's 3 curated modules. `?read=` URL param sync. See `PRD-FACETED-ENTRY.md`.
-- Target Roles block (unchanged from original).
-
-### What is NOT on the surface but lives in source
-
-These are preserved for restoration only — do not surface them without explicit owner direction:
-
-- `_archivedCompanies` in `copy.v1_1.ts` — the seven Tier-1 project cards (DEADLIGHT, DOSSIER VOL, GREY-EARTH, TACTICAL CANVAS, MINI-D, WAR-F, CCRT, TAK-G).
-- `_archivedWedges` — the Four Pillars taxonomy.
-- `_archivedDoctrineCards` — the Tier-2 doctrine cards (SEAL, DYNAMISM DOSSIER, LIFT BENCH) that were briefly tried and cut.
+- **INDEX count = (09)** — derived from `RENDERED_MODULES.length`, not hardcoded.
+- Root `/` loads **fully folded** (no module open). `#module-XX` deep-links open that module.
+- Theme per band via `COLORS[themeColor]` (`theme-cream/blue/dark/brown` set CSS vars).
 
 ---
 
-## 4. PRD index (read these in order if catching up)
+## 4. The fold system (DO NOT change physics without explicit direction)
 
-| # | Doc | Status | Scope |
-|---|---|---|---|
-| 1 | `DOSSIER_REFRAME_PRD.md` | **Shipped** to source; uncommitted/pending push at time of writing. | Dossier-as-presentation restructure. Cut casework. Added WORLD MODEL. Stripped Module 05 to portfolios only. Read this for the full IA change and the locked design decisions (WORLD MODEL naming, picks count, etc.). |
-| 2 | `PRD-FACETED-ENTRY.md` | **Shipped** to source; tests added; pending commit. | Audience-aware top hero with URL state. War-gamed module-to-audience mapping. |
-| 3 | `PRD-FIELD-POSITION.md` | **Shipped** to source; pending commit. | 2-axis SVG chart at the end of Module 02 plotting 14 designers from Doc 2 with a highlighted dot for Ven. War-gamed placement decision favors Module 02 over alternatives (including World Model, top hero, standalone module) because it's visible to the Hiring Manager audience. |
-| 4 | `PRD-DOCTRINE-EXPLORER.md` | **Shipped** to source; tests added; pending commit. v2 placement at end of Module 03 (was Module 02 in v1). | Tabbed 3-register explorer at the end of Module 03 (Operating Method). Stateful sub-component in `components/DoctrineExplorer.tsx`. Demonstrates the rule-making practice — palette + thesis + iron rule swappable on click. After the war-game audit, moved from Module 02 to Module 03 so it's visible to Client + Collaborator + Academic. |
-| 5 | `PRD-IAA-INTEGRATION.md` | **Shipped + deployed** (`353312f`; contact-path follow-up `5ed3f46`). Pushed; gh-pages auto-deployed; live at augustave.github.io/CT-DOSSIER. Owner-approved + war-gamed. | IAA brand-architecture substance translated into the dossier voice. Shipped: M02 thesis kicker "Taste with a load rating."; M03 DEFAULT BIAS pressure bullet; Field Position chart v1.1 (new poles, named quadrants, VEN→x72/y78, tightened owned-zone wash, "peer designers" legend, new footer). Cut by war-game: The Fold cusp plate (stays off-dossier). `copy.v1_1.ts` meta → 1.3.0. tsc clean; 20/20 vitest; voice-lint clean. |
+`Fold.tsx` is the one collapse primitive. It renders:
+```
+<div class="fold" data-open={open} data-pleat-open={pleatOpen}>
+  <div class="fold__inner" inert={!open}> {children} </div>
+</div>
+```
+- **Height** collapses via CSS `grid-template-rows: 0fr → 1fr` keyed on `[data-open]`
+  (`index.css`). `inert` keeps closed content out of the tab order / a11y tree.
+- **Pleats** (`PleatFold` wraps each content row in `.pleat`): each row stands up at its
+  context angle when closed (`rotateX`) and snaps flat when open. **Activation is keyed on
+  `.fold[data-pleat-open='true']` for the rotate, but on `.fold[data-open='true']` for the
+  opacity** — this split is load-bearing (see §8 "first-open paint-baseline fix").
+- **Per-context angles** (CSS vars, `:root`): prose 60°, specimen 48°, archive 22° (uniform
+  direction — no zigzag, stable grid for 06), chart 30° (04, one plane via
+  `.pleat:has(> .pleat-chart)`). `--pleat-duration 820ms`, `--fold-duration-lg 700ms`.
+- **Self-pleating** (`ModuleStrata.unwrapResponse` + `selfPleating`): 03/06/00 render their
+  content component BARE (it folds its own cards) — wrapping would double-rotate.
+- **Reduced motion**: CSS drops the 3D fold to a fade; content always reachable.
 
-**Field Position chart is now at v1.1** — see `PRD-FIELD-POSITION.md` §9 changelog. Pole labels, quadrant names, VEN coordinate, and the owned-zone wash all changed; the old `CRAFT/AI × VELOCITY/PERMANENCE` description elsewhere is superseded.
-
-| 6 | `PRD-VOICE-V2.md` | **Implemented** 2026-06-12 (uncommitted): ROLE FIT pilot + fast-follow M01/M03 + `meta`→2.0.0. tsc/20-tests/voice-lint green. Optional remainder: Module 02 body/caption. | First-person "Meservey" voice doctrine. **Reverses** the v1.2.0 "no first-person pronoun" rule. New gate (§4), jargon→plain swaps, locked ROLE FIT reference cut (§5), migration map (§6). On implementation: `copy.v1_1.ts` `meta.version`→2.0.0, `meta.rule` replaced. NOTE: the §6 "Banned phrases" list below predates v2 — v2 adds jargon-flag bans and removes the first-person ban. |
-
-If a sixth PRD is added later, register it here.
-
-### Site-wide war-game restructure (no separate PRD, see commit history)
-
-A site-wide audience-by-audience audit ran on the dossier with field-position chart + doctrine explorer + audience selector all live. Four changes shipped from that pass:
-
-1. **Doctrine explorer moved from Module 02 → Module 03.** Reaches three audiences instead of two. See `PRD-DOCTRINE-EXPLORER.md` §placement-v2.
-2. **Collaborator audience curation changed from `04/03/06` → `02/04/03`.** Drops Role Matrix; adds Module 02 so collaborators see the field-position chart. See `PRD-FACETED-ENTRY.md` revision log.
-3. **Module 05 PORTFOLIOS gains an outcome line** below the three tiles: *"Each site stands alone. None of them tries to say what the practice is — that's this dossier's job."* Thickens the closer for Hiring Manager and Client.
-4. **Module 01 ROLE FIT gains a 3-signal coordinate strip** above the existing lead copy. Three labeled tiles: `SIGNAL · 01 Visual systems` / `SIGNAL · 02 Interactive proto.` / `SIGNAL · 03 Technical narrative`. Mirrors the field-position chart's "coordinate" register at the role-fit scale. Gives Module 01 its first visual anchor.
-
----
-
-## 5. Open follow-ups (not blocking, but track them)
-
-> **Correction (2026-06-12):** Items 1–4 below are stale. Local main == origin/main — prior commits ARE pushed. Deploy is live via GitHub Pages auto-deploy (workflow added 2026-05-31, stale-HTML sync fixed same day, favicon pushed 2026-06-11); Vercel is no longer the plan and the stale-`dist/` concern is handled by CI. Item 0 remains open, and a second uncommitted batch now exists: the contact-path fix of 2026-06-10 (`contact.ts` new, `App.tsx`, `components/InquiryPanel.tsx`) — commit it separately from the IAA batch. See `TASKS.md` at repo root.
-
-0. **IAA integration is SHIPPED** — committed (`353312f` + contact-path `5ed3f46`), pushed, and gh-pages auto-deployed; live bundle at augustave.github.io/CT-DOSSIER verified to carry the kicker, chart v1.1, contact blocks, and the v1.3.0 label. Remaining: LinkedIn URL into `contact.ts`; real peer names on the chart; FIG.02-04 plates; interview drill. (Pages auto-deploys on push — no manual build/deploy step.)
-1. **Push to origin.** Latest commits are in the local working tree only; `git push origin main` from the owner's Mac (sandbox has no network access). See per-PRD acceptance sections for which files to stage.
-2. **Deploy.** No host is connected. Vercel is the recommended path — `vercel.com → New Project → import augustave/CT-DOSSIER → set root to Founder/`. Two adjacent sites under the same owner (`grey-earth.vercel.app`, `tak-h.vercel.app`) already deploy on Vercel.
-3. **Stale `dist/`.** The committed `dist/` is from April 16, predating all restructure work. `npm run build` will regenerate; do not deploy the old artifact.
-4. **No domain.** The dossier has no domain. Until selected, `ct-dossier.vercel.app` (or a chosen subdomain) is the working address.
-5. **`ProjectxP-Map-DO_a1.md` untracked.** Sits at `Founder/` root, unrelated to this restructure. Leave alone unless owner asks.
-6. **Visual demonstration surface (Idea 3 from session).** Considered but not built: a small generative/interactive piece that *demonstrates* the polymath claim rather than asserting it. Worth raising with owner when capacity exists.
-7. **Two-axis positioning diagram (Idea 1).** Mockup discussed but not implemented in the dossier. Source: the three uploaded designer-graph documents (`Designers-1-graph.md`, `Designers-2-Graph.md`, `Poly-1Graph.md`). Plotting designers across AI/Craft × Velocity/Permanence with the owner placed on it.
+**Matte doctrine:** pure-black shadows, no glow/glint/gradient. 04 stays one plane. 06 grid
+stable. These are invariants.
 
 ---
 
-## 6. Owner notes — read carefully
+## 5. The open/scroll choreography (the heart — `App.tsx`)
 
-The owner is **Ven** (legal name Tao Conrad, professional Ebenz Augustave). Studio: **ANP Studio**. NYC. Solo operator across defense-tech, design systems, AI orchestration.
+This is what most of §8 iterated on. The current end-to-end open sequence:
+
+1. **Click `+ STUDY`** → `handleToggle(index)`.
+   - If clicking the already-open module → fold it immediately (no scroll), clear state.
+   - Else → `requestOpenModule(index)` (`pendingRef` dedupes rapid clicks; latest wins).
+2. **Scroll-first** (`scrollModuleIntoView`): scroll the band header to the masthead-safe
+   position (`MASTHEAD_OFFSET = 100`, matches each section's `scroll-mt-[100px]`). Returns
+   false (no scroll) if already within 4px → opens in place.
+3. **Settle** (`afterScrollSettle(index, commit)`): wait for native `scrollend` — but only
+   accept it once the TARGET is actually at rest near the offset (or the page is clamped at
+   the bottom). Browsers without `scrollend` use a short-lived geometry probe instead of a
+   blind fixed delay. Hard stop: 1400ms (`scrollend`) / 1800ms (no `scrollend`). No
+   `requestAnimationFrame` wrap — rAF is starved in background tabs and must never gate
+   whether a module opens.
+4. **Commit** → set `openModuleIndex`; **delayed close**: if a previous module was open, keep
+   it open (`keepOpenIndex`) for `CLOSE_DELAY = 900ms` so its collapse can't steal the stage
+   while the target scrolls/folds. Write hash via `replaceState` (no jump, no re-entrant
+   `hashchange`).
+5. **Fold** plays (`data-open` → height + opacity; `data-pleat-open` flips one committed
+   frame later → rotate; ModuleStrata fires its post-fold re-anchor at the band's
+   `padding-top` `transitionend`, a no-op if already at offset).
+6. **Held module collapses** after `CLOSE_DELAY`, then a **post-collapse re-anchor**
+   (`reanchorModuleTop`, after `COLLAPSE_SETTLE = 760ms`) pulls the target's top back to the
+   offset — guarded by "still the open module" plus a user-scroll bail during the close window.
+   This is the fix for "card sticks at the bottom" (§8 V3.6.4 / `bf4f19a`).
+
+`isOpen` for a band = `openModuleIndex === idx || keepOpenIndex === idx`.
+
+**Root / refresh:** module-scope `history.scrollRestoration = 'manual'` (runs before mount,
+no restore flash) + `scrollTo(0,0)` on no-`#module` load. `openModuleIndex` is never
+persisted. `?read=` only selects the Reading Lens (no scroll/module restore).
+
+**Hash:** deep-link on cold load jumps + opens after 2 rAFs; external `hashchange`
+(typed URL, back/forward) routes through `requestOpenModule` (same scroll-first+settle).
+
+---
+
+## 6. Split-flap titles (TEST feature — easy to remove)
+
+`SplitFlap.tsx` + `.splitflap*` in `index.css`. Each band title flips through glyphs
+(Solari board) and locks to its letters; wrapped around `module.title` in ModuleStrata
+(`<SplitFlap text={module.title} open={isOpen} />`).
+- **Forward** cascade (left→right, top-hinge) on scroll-into-view (IntersectionObserver, once).
+- **Reverse** cascade (right→left, bottom-hinge) re-fires on each `open` (false→true) edge.
+- **Physics:** gravity ease-in fall + clack settle-bounce (CSS `splitflap-fall` / `-clack`);
+  a fast cycling phase then a **homing** approach that steps alphabetically into the target
+  (`glyphBefore`) with **decelerating** gaps (`HOMING_GAPS [88,132,190]`); per-letter haptic
+  `navigator.vibrate(6)` on lock (mobile, guarded). Tuning: `STAGGER 72`, `SPIN 480`,
+  `FLAP_MS 72`.
+- **Robust:** cells reserve the final glyph's width (`::after`) so the proportional title
+  never reflows; `overflow:hidden` clips a wide spin glyph to its slot; a **generation token**
+  cancels overlapping plays; jsdom (no IntersectionObserver) + reduced-motion → final text,
+  no animation; `aria-label` carries the word, cells `aria-hidden`.
+- To remove: drop the `<SplitFlap>` wrapper in ModuleStrata → title is plain text again.
+
+---
+
+## 7. Other surfaces
+
+- **CTA → one mailto.** Masthead "REQUEST CONVERSATION" + footer "Compose Inquiry" both
+  open `mailto:ebenz.aug@gmail.com?subject=CT DOSSIER — Conversation Request&body=…`
+  (`CONVERSATION_MAILTO` in `App.tsx`). No modal. Footer email is a direct mailto.
+- **Reading Lens** (in module 00, `FrontMatterContent`): four pills (Hiring/Client/
+  Collaborator/Academic). It is an **ORIENTATION AID, not a filter** — selecting a lens
+  shows a helper path line and marks RECOMMENDED modules in the Index. **It never hides any
+  module.** `aria-pressed`. `?read=` URL param persists/shares the selection. Paths in
+  `AUDIENCES` (`constants.tsx`), all start at 00.
+- **Index overlay** (`ManifestOverlay`): rows are `<button>`s with number + title + prompt
+  label; the open module shows an **OPEN** badge (`activeIndex={openModuleIndex}`, set at
+  commit so a held-open module never shows OPEN prematurely); lens path shows a quieter
+  **RECOMMENDED** marker. OPEN outranks RECOMMENDED.
+- **Metadata** (`index.html`): title "CT DOSSIER — Ebenz Augustave", description, canonical +
+  OG + Twitter (`summary_large_image`), all absolute URLs → `dossier-fold.vercel.app`,
+  `og:image` = `/og.png`. `theme-color #F2EFE4`.
+
+---
+
+## 8. CHANGELOG — every fix in the V3.6.x fold/scroll saga
+
+Read this before touching the fold or scroll logic. Several approaches were tried and
+**reverted/superseded** — don't reintroduce them.
+
+### V3.6.0 — `b495509`, `6c240af`
+- Static hero → numbered **module 00 FRONT MATTER**, folded by default on root. Teaches the
+  fold grammar from the first screen.
+- **Full-width masthead**: brand anchors viewport-left, REQUEST CONVERSATION + INDEX anchor
+  right, independent of the `max-w-6xl` content column.
+- INDEX count → **(09)**. `AudienceId`/`AUDIENCES` moved to `constants.tsx`. Module 00's
+  `responseDisplay` injected dynamically in App (carries lens state).
+- ManifestOverlay **active-module highlight** (`activeIndex`). **Removed** the collapsed-band
+  `promptText` preview (caused a "WHERE THE WORK LIVES" ghost label near the wrong module).
+
+### V3.6.1 — `2dbd05c`
+- **CTA unify → one prefilled mailto.** Removed the InquiryPanel modal from App (file kept,
+  isolated tests kept).
+- **Index polish**: per-row prompt label; rows became `<button>`; OPEN badge + RECOMMENDED
+  marker; `aria-current`.
+- **Reading Lens → orientation aid, NOT a filter.** Previously the lens FILTERED modules
+  (hid them). Now nothing is hidden; lens drives the helper line + Index RECOMMENDED only.
+  Removed the filtering `useMemo` + the reconcile effect. New lens paths (start at 00).
+  *(Tests rewritten: the old "faceted entry" filter assertions → "orientation aid" assertions.)*
+
+### Launch hardening — `1cbd113`, then `a725643`
+- `index.html` metadata + OG/Twitter; generated `public/og.png` (matte 1200×630 card from
+  `og-card.svg` via `rsvg-convert`).
+- **Canonical decision:** first pointed at `augustave.github.io/CT-DOSSIER`, then **repointed
+  to `dossier-fold.vercel.app`** (`a725643`) so canonical/`og:image` match where it actually
+  deploys (no merge to the stale repo needed). `CLAUDE.md` updated to match.
+
+### Fold first-open paint-baseline fix — `2cb12b6`  ⚠️ load-bearing
+- **Bug:** the FIRST time a module opened, the pleats snapped flat (no fold); a retract +
+  reopen then animated. Worst on heavy self-pleating modules (03/06).
+- **Cause:** the pleat rotate transition was keyed on the same `.fold[data-open]` that drives
+  the height collapse. While closed (`grid-rows:0fr` + `opacity:0`) the pleat subtree has zero
+  paint area → no transition baseline → first open jumps straight to flat.
+- **Fix:** split the triggers. **Opacity** keys on `data-open` (immediate → paints the tilted
+  row, giving the rotate a baseline). **Rotate** keys on a new `data-pleat-open` that
+  `Fold.tsx` flips ONE committed frame later (rAF + forced reflow + a `setTimeout` fallback so
+  a starved rAF can never strand it). → fold plays on the first open, every time.
+- **Lesson encoded:** never gate visibility on `requestAnimationFrame` (starved in background
+  tabs).
+
+### V3.6.2 — scroll-first choreography — `15bf16f`
+- **Bug:** short modules (05) finished folding **off-screen** — the open fired immediately and
+  the band scrolled into view AFTER (ModuleStrata's old effect even waited for the fold's
+  `transitionend` before scrolling).
+- **Fix:** invert it — scroll the header to the offset FIRST, wait for settle, THEN open
+  (`requestOpenModule` + `afterScrollSettle` + `scrollModuleIntoView` + `pendingRef`).
+  Removed ModuleStrata's old post-open scroll effect.
+
+### V3.6.3 — post-fold re-anchor + hardening — `7f229c0`
+- **Reported:** after scroll-first, the card "remained down" / didn't settle at its top.
+- **Fix:** re-added a **post-fold re-anchor** (ModuleStrata): after the fold settles, scroll
+  the card top to the offset (corrects drift). Guards: `delta <= 4` no-op (no double-jump when
+  already aligned) + **user-scroll bail** (`wheel`/`touchmove` → don't yank a user who scrolled).
+- **Hardening** from a 4-lens adversarial review (6 confirmed findings, all fixed):
+  - `afterScrollSettle` **scoped to the target** — a bare window `scrollend` could be fired by
+    another module's scroll and commit the open with the viewport elsewhere; now it only
+    accepts `scrollend` once the target is at rest near the offset (or clamped at the bottom).
+  - Safety backstop raised **420ms → 1000ms** (a long smooth scroll no longer pre-empts).
+  - External `hashchange` routes through the same scroll-first+settle path (was a fixed 2-rAF
+    delay that opened mid-scroll on back/forward).
+
+### Split-flap title reveal (TEST) — `af5cd35`, `8442325`, `00ec49d`
+- `af5cd35` added the effect (forward cascade, scroll-into-view).
+- `8442325` made it **20% slower** + added the **reverse cascade on open**. A generation token
+  was added so an overlapping play (scroll-in then click) can't interleave timers. Review
+  fixes: text-change reset effect; `overflow:hidden` to clip a wide spin glyph to its slot.
+- `00ec49d` **recalculated physics** for realism + haptics: gravity fall + clack settle, the
+  alphabetical homing approach with decelerating gaps, per-letter `navigator.vibrate`. An
+  adversarial scheduler review returned **0 findings**.
+
+### V3.6.4 — reading-stack regression patch — `45f7f53`  (+ `bf4f19a`)
+PRD: "behave like a reading stack, not a strict accordion." **State choreography + one visual
+fix only — fold physics untouched.**
+- **A/B — preserve vertical space (delayed close):** opening a module now HOLDS the previously
+  open one open (`keepOpenIndex`) through the target's scroll + fold, then collapses it after
+  `CLOSE_DELAY = 900ms`. Without this, the previous module collapsed mid-fold and the page
+  jumped (the V3.6.3 complaint). `isOpen = open || keepOpen`. Cleanup on close/Escape.
+- **C — root/refresh reset:** `history.scrollRestoration = 'manual'` (module scope) +
+  `scrollTo(0,0)` on no-hash root. Fixed the "saves memory on refresh" regression.
+- **E — "01 Taste gradient":** investigated exhaustively — **there is NO CSS gradient.** It was
+  the **paper-stack drop-shadow**: cream module 00 (higher z-index) cast its wide soft drop
+  over cream 01's top edge, reading as "SaaS hero shading." **Fix:** cream `shadowClass` in
+  ModuleStrata flattened to a TIGHT subtle paper-depth (closed `0 1px 2px /.05`; open
+  `0 3px 8px -2px /.08`); the band seam is the crisp `border-b` hairline. Dark-band lift +
+  inset lit-edge unchanged. Owner chose "flat cream + crisp seam."
+- **D (Reading Lens) and F (Index OPEN sync):** already satisfied from V3.6.1 — no change.
+
+### Post-collapse re-anchor — `bf4f19a`  (+ follow-up hardening)
+- **Reported:** after a card rolls open it "sticks at the bottom" and doesn't return to its top.
+- **Cause:** V3.6.4's delayed close collapses the previous module ~900ms later, **above** the
+  open card. Browser **scroll anchoring does NOT reliably compensate an animated collapse**, so
+  the card's header scrolls above the masthead. The post-fold re-anchor had already fired
+  (at the fold's `transitionend`) BEFORE that collapse, so nothing corrected it.
+- **Fix:** `reanchorModuleTop(index)` fires after `CLOSE_DELAY + COLLAPSE_SETTLE (760ms)` — once
+  the held module has finished collapsing — and pulls the open card's top back to the offset.
+  Follow-up hardening removed the brittle "near viewport" lower-bound guard; now the close
+  window listens for `wheel` / `touchmove` and bails only if the user intentionally scrolls
+  before the post-collapse re-anchor. This keeps 02→03 and 04→05 pinned to the card top after
+  tall previous modules collapse.
+
+---
+
+## 9. Invariants — do not break
+
+- **Fold physics frozen:** angles/tokens/durations, 03 folds once (no double-rotate), 04 one
+  plane, 06 stable 2-col grid, prose drama on 01/05/08. The V3.6.4 PRD's failure criterion is
+  "changed fold physics instead of fixing state."
+- **Matte doctrine:** pure-black shadows, no glow/glint/gradient/glassmorphism/SaaS shading.
+- **Pleat opacity keyed on `data-open`, rotate on `data-pleat-open`** — do not re-merge them
+  (re-introduces the first-open snap).
+- **Never gate a module opening on `requestAnimationFrame`** (background-tab starvation).
+- **Reading Lens never hides content.** Index OPEN tracks `openModuleIndex` (post-commit only).
+- **Accessibility:** `aria-expanded` on toggles, `inert` on collapsed content, `aria-pressed`
+  on lens pills, `aria-current` in Index, visible focus, reduced-motion fold off.
+- **Push `dossier-fold` only. Never `origin`/CT-DOSSIER.**
+
+---
+
+## 10. Known limitations / open items
+
+- **Scroll anchoring is unreliable for the held-module collapse** — handled by the
+  post-collapse re-anchor (`bf4f19a`), but the final settle lands a beat (~1.6s) after the
+  fold. **Alternative not yet built:** collapse the off-screen previous module **instantly**
+  with a matching `scrollBy` compensation (zero visible motion, no late snap). Offer this if
+  the owner finds the late settle jarring.
+- **Last module on tall (1080p+) viewports:** scroll-first can't lift the very last band to the
+  offset until its content expands the page, so the fold tail can briefly play below the fold
+  line. End state is correct (re-anchor lands it). Minor; would need a trailing spacer.
+- **Split-flap is a TEST.** Owner is still tuning feel (`STAGGER`/`SPIN`/`FLAP_MS`/`HOMING_GAPS`
+  + the two cubic-beziers + `buzz(6)`). May be kept, tuned, scoped to specific modules, or removed.
+- **Stale Pages site** (`augustave.github.io/CT-DOSSIER`) still serves a pre-V3.6.1 build. Leave
+  it, or the owner repoints/retires it later — not our repo to push.
+
+---
+
+## 11. Verify & deploy
+
+```bash
+cd Founder
+npm run typecheck          # tsc --noEmit  (clean)
+npm test -- --run          # 23 Vitest tests (pass)
+npm run build              # vite build (clean)
+# real-browser QA on the dev server — the preview tool FREEZES 3D + throttles timers,
+# so verify motion/scroll in a real browser, not the preview:
+#   - open 02 → click 03 → 02 holds, 03 scrolls in + folds, no jump, lands at 03's TOP
+#   - scroll to 05, refresh → top, 00 visible, all folded
+#   - 01 collapsed/open → flat cream, crisp seam, no soft top gradient
+#   - 03 folds once · 04 one plane · 06 grid stable · reduced-motion stable · mobile no overflow
+git add -A && git commit -m "…"          # end commit body with the Co-Authored-By trailer
+git push dossier-fold dossier-fold:main  # NEVER origin
+vercel deploy --prod --yes               # → dossier-fold.vercel.app
+```
+Bump `copy.v1_1.ts` `meta.version` when shipping a behavior change (drives the visible
+`Vx.x.x · NO API` label).
+
+---
+
+## 12. Owner notes — read carefully
+
+Owner: **Ebenz Augustave** ("Tao Conrad" is the account handle, not the name). Art Director /
+Design Engineer. Independent practice **VEN** ("Doctrine + agent orchestration"). Markets:
+enterprise design leadership, American Dynamism / defense-tech, frontier AI labs.
 
 ### Voice & posture
+- Terse, decisive, doctrine-flavored. Conclusion-first. No hedging, no marketing.
+- When underspecified, ask **one** sharp question or present 2–4 options — never an open prompt.
+- Treat short corrections as spec ("revert it" = revert, full stop). Defer to artifacts
+  (screenshots/PDFs he shows you outrank your synthesis).
+- Don't narrate deliberation; commit and move. Don't invent specs, dates, URLs, or claims.
+- Copy doctrine (current site copy = v1.2.0): plainspoken, no frameworks-as-nouns.
 
-- Terse. Decisive. Doctrine-flavored.
-- First-person, declarative. No hedging.
-- When something is underspecified, ask **one** question (or present 2–4 sharp options or a single binary). Never an open prompt.
-- When committing to a decision, commit and move. Don't narrate deliberation.
-- Match the register of his existing work — don't soften it, don't add marketing, don't hedge.
-
-### Banned phrases (never publish under his name)
-
-"Excited to share / thrilled / honored / humbled" · "I had the pleasure of" · "Passionate about" · "Game-changer" · "Leverages / unlocks" as verb spam · "AI-powered" as marketing adjective · "Reach out" · "In today's fast-paced world" · hashtag clusters of 3+ · em-dash-and-hedge.
-
-**Voice v2 update (2026-06-12):** first person is now ALLOWED (was banned). Added jargon-flag bans — `visual operating language`, `deterministic brand systems`, `fabrication-grade governance`, `validated claims sheet`, `artifact contract`, framework-as-noun, defense acronyms in body copy. Full gate + jargon→plain swaps live in `PRD-VOICE-V2.md` §4. Enemies must be categories, never real people.
-
-### Workflow tells from past sessions
-
-- **Defer to artifacts.** Screenshots and files the owner shows you outrank any synthesis you produce. If he uploads three documents, read all three before responding.
-- **Don't categorize without asking.** "Is this a project, sub-project, category, or label?" — one-line question beats a three-paragraph cleanup.
-- **Don't generate structural reads he hasn't asked for.** Less synthesis, more direct execution.
-- **Treat short direct corrections as spec.** "Revert it" = revert it, full stop. Not "and let me also propose…"
-- **Never invent specs, dates, URLs, claims, user counts, or repo slugs.** When uncertain, use a `pending` marker or ask.
-
-### Environment quirks you'll hit
-
-- Mac sandbox can't unlink files in `.git/index.lock` — if you see this, ask the owner to clear it on his Mac.
-- Mac sandbox can't write into `Founder/dist/` (permissions). `vite build --outDir /tmp/...` works for verification.
-- Network from sandbox to GitHub is blocked. Push always happens on the owner's machine.
+### Working tells
+- He ships PRDs (often as PDFs in `Library/`) — read the whole PRD, follow it, don't redesign
+  beyond scope. Several PRDs explicitly say "do NOT change fold physics."
+- He verifies in a real browser and reports feel ("sticks at the bottom", "20% slower",
+  "haptic"). Trust those over the (motion-blind) preview tool.
 
 ---
 
-## 7. Sister projects (mentioned for context, not in scope)
+## 13. Environment gotchas
 
-- `DOSSIER` (a separate Cowork folder, sometimes called the "profile website") — canonical for bio, headlines, public-facing positioning. **CT-Dossier may read from it but never writes to it.**
-- `LINKEDIN-X` — content strategy, case-study source, post drafts, distribution. Out of scope for CT-Dossier work.
+- **Preview tool freezes 3D + throttles timers.** Screenshots of an animating 3D fold render
+  blank; `scrollIntoView`/timers are throttled in headless. Verify *state* via DOM/computed
+  style; verify *motion* in the owner's real browser. (See session memory
+  `preview-tool-no-animations`.)
+- **Dev server:** `preview_start` config `dossier-dev` (port 3100 strictPort) — another local
+  project sometimes squats port 3000.
+- The platform safety classifier can briefly go unavailable (gates Bash/Agent/preview, not
+  Read/Edit/Write); wait and retry.
 
-These exist; do not edit them as part of dossier work.
+---
+
+*Last updated: V3.6.4 (`bf4f19a`). If you ship past this, append to §8 and bump the header.*

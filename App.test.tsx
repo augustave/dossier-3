@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { act, render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import App from './App';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
@@ -40,6 +40,51 @@ describe('CT Dossier: recruiter-facing layout and IA', () => {
     // Other modules should remain collapsed
     expect(getModuleToggle('module-01')?.getAttribute('aria-expanded')).toBe('false');
     expect(getModuleToggle('module-02')?.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('waits for target geometry before opening when scrollend is unavailable', async () => {
+    vi.useFakeTimers();
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    let module03Top = 700;
+    const rect = (top: number) => ({
+      x: 0,
+      y: top,
+      top,
+      left: 0,
+      right: 100,
+      bottom: top + 100,
+      width: 100,
+      height: 100,
+      toJSON: () => ({}),
+    });
+
+    Element.prototype.scrollIntoView = vi.fn();
+    Element.prototype.getBoundingClientRect = function () {
+      if ((this as Element).id === 'module-03') return rect(module03Top) as DOMRect;
+      return originalGetBoundingClientRect.call(this);
+    };
+
+    try {
+      render(<App />);
+
+      fireEvent.click(getModuleToggle('module-03')!);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(560);
+      });
+      expect(getModuleToggle('module-03')?.getAttribute('aria-expanded')).toBe('false');
+
+      module03Top = 100;
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(90);
+      });
+      expect(getModuleToggle('module-03')?.getAttribute('aria-expanded')).toBe('true');
+    } finally {
+      Element.prototype.scrollIntoView = originalScrollIntoView;
+      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+      vi.useRealTimers();
+    }
   });
 
   it('shows Header/Footer CTA as REQUEST CONVERSATION', () => {
