@@ -284,12 +284,15 @@ describe('Reading Lens (V3.6.9 route filter)', () => {
     render(<App />);
 
     const strip = await screen.findByTestId('reading-lens-strip');
+    expect(within(strip).getByText(/Hiring Manager route · 4 of 9 modules shown/i)).toBeInTheDocument();
     expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 03 → 07 → 08');
     expect(within(strip).getByText(/visual language, built evidence, and biography/i)).toBeInTheDocument();
     // Stamp + a single CHANGE LENS control — the four tabs are gone.
     expect(within(strip).queryByRole('button', { name: 'Set reading lens: CLIENT' })).toBeNull();
     expect(within(strip).queryByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeNull();
     expect(within(strip).getByRole('button', { name: /Change reading lens/i })).toBeInTheDocument();
+    expect(within(strip).getByRole('button', { name: /Show all modules/i })).toBeInTheDocument();
+    expect(screen.getByText(/INDEX \(04 \/ 09\)/i)).toBeInTheDocument();
     expect(screen.queryByTestId('start-path')).toBeNull();
 
     // Lens FILTERS the stack — only the route's modules render; nothing auto-opens.
@@ -305,8 +308,10 @@ describe('Reading Lens (V3.6.9 route filter)', () => {
     const strip = await screen.findByTestId('reading-lens-strip');
     // Reveal the picker; current selection preserved, URL unchanged.
     fireEvent.click(within(strip).getByRole('button', { name: /Change reading lens/i }));
+    expect(within(strip).getByText(/Hiring Manager selected · choose another route/i)).toBeInTheDocument();
     const collab = await within(strip).findByRole('button', { name: 'Set reading lens: COLLABORATOR' });
     expect(within(strip).getByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeInTheDocument();
+    expect(within(strip).getByRole('button', { name: 'Set reading lens: HIRING MANAGER' }).getAttribute('aria-pressed')).toBe('true');
     expect(window.location.search).toContain('read=hiring');
 
     // Switch lens → re-collapses to the new route stamp.
@@ -337,13 +342,28 @@ describe('Reading Lens (V3.6.9 route filter)', () => {
     ['02', '04', '06', '08'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).toBeNull());
   });
 
+  it('root All modules clears the active route and restores the full stack', async () => {
+    window.history.replaceState(null, '', '?read=acad');
+    render(<App />);
+
+    const strip = await screen.findByTestId('reading-lens-strip');
+    expect(screen.getByText(/INDEX \(05 \/ 09\)/i)).toBeInTheDocument();
+    fireEvent.click(within(strip).getByRole('button', { name: /Show all modules/i }));
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('read=');
+    });
+    expect(screen.getByText(/INDEX \(09\)/i)).toBeInTheDocument();
+    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+  });
+
   it('renders the Reading Lens / Reading Path block exactly once (no module-00 duplicate)', async () => {
     window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
     await screen.findByTestId('reading-lens-strip');
     expect(screen.getAllByTestId('reading-lens-path')).toHaveLength(1);
-    expect(screen.getAllByText(/Reading path · HIRING MANAGER/i)).toHaveLength(1);
+    expect(screen.getAllByText(/Hiring Manager route · 4 of 9 modules shown/i)).toHaveLength(1);
   });
 
   it('the Index lists ONLY the active route modules (lens filters)', async () => {
@@ -355,6 +375,23 @@ describe('Reading Lens (V3.6.9 route filter)', () => {
     const indices = items.map(r => r.getAttribute('data-index')).sort();
     // Hiring route is 00,03,07,08 — the off-route modules are not listed.
     expect(indices).toEqual(['00', '03', '07', '08']);
+    expect(screen.getByTestId('index-route-context')).toHaveTextContent(/Hiring Manager route · 4 of 9 modules shown/i);
+  });
+
+  it('All modules inside the Index clears the route and restores INDEX (09)', async () => {
+    window.history.replaceState(null, '', '?read=acad');
+    render(<App />);
+
+    fireEvent.click(screen.getByText(/INDEX \(05 \/ 09\)/i));
+    expect(await screen.findByTestId('index-route-context')).toHaveTextContent(/Academic route · 5 of 9 modules shown/i);
+    fireEvent.click(screen.getByRole('button', { name: /Show all modules from Index/i }));
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('read=');
+    });
+    expect(screen.getByText(/INDEX \(09\)/i)).toBeInTheDocument();
+    const items = await screen.findAllByTestId('manifest-item');
+    expect(items).toHaveLength(9);
   });
 
   it('with no lens the Index lists every module', async () => {
@@ -390,7 +427,43 @@ describe('Reading Lens (V3.6.9 route filter)', () => {
     await waitFor(() => {
       expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
     });
-    expect(within(strip).getByText(/Reading path · COLLABORATOR/i)).toBeInTheDocument();
+    expect(within(strip).getByText(/Collaborator route · 5 of 9 modules shown/i)).toBeInTheDocument();
+  });
+
+  it('opens module 04 using the masthead-safe scroll offset', async () => {
+    const originalScrollTo = window.scrollTo;
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    const scrollTo = vi.fn();
+    Object.defineProperty(window, 'scrollTo', { configurable: true, writable: true, value: scrollTo });
+    Element.prototype.getBoundingClientRect = function () {
+      if ((this as Element).id === 'module-04') {
+        return {
+          x: 0,
+          y: 640,
+          top: 640,
+          left: 0,
+          right: 100,
+          bottom: 760,
+          width: 100,
+          height: 120,
+          toJSON: () => ({}),
+        } as DOMRect;
+      }
+      return originalGetBoundingClientRect.call(this);
+    };
+
+    try {
+      window.history.replaceState(null, '', '?read=acad');
+      render(<App />);
+      scrollTo.mockClear();
+
+      fireEvent.click(getModuleToggle('module-04')!);
+
+      expect(scrollTo).toHaveBeenCalledWith({ top: 540, behavior: 'smooth' });
+    } finally {
+      Object.defineProperty(window, 'scrollTo', { configurable: true, writable: true, value: originalScrollTo });
+      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+    }
   });
 
   it('Index row exposes accessible open state; off-route rows are absent', async () => {

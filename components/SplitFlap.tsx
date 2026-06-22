@@ -73,7 +73,6 @@ export const SplitFlap: React.FC<SplitFlapProps> = ({
   const [cells, setCells] = useState<Cell[]>(() => finalCells(finals));
   const [dir, setDir] = useState<Direction>('forward');
   const ref = useRef<HTMLSpanElement>(null);
-  const startedRef = useRef(false);
   const prevOpenRef = useRef(open);
   const genRef = useRef(0);
   const timersRef = useRef<number[]>([]);
@@ -166,36 +165,7 @@ export const SplitFlap: React.FC<SplitFlapProps> = ({
   useEffect(() => {
     clearTimers();
     genRef.current += 1;
-    startedRef.current = false;
     setCells(finalCells(Array.from(text)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text]);
-
-  // FORWARD — once, when the band scrolls into view.
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    if (!canAnimate()) {
-      setCells(finalCells(finals));
-      return;
-    }
-    const io = new IntersectionObserver(
-      entries => {
-        if (entries.some(e => e.isIntersecting)) {
-          if (!startedRef.current) {
-            startedRef.current = true;
-            play('forward');
-          }
-          io.disconnect();
-        }
-      },
-      { threshold: 0.35 }
-    );
-    io.observe(node);
-    return () => {
-      io.disconnect();
-      clearTimers();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
 
@@ -204,11 +174,12 @@ export const SplitFlap: React.FC<SplitFlapProps> = ({
     const wasOpen = prevOpenRef.current;
     prevOpenRef.current = open;
     if (open && !wasOpen && canAnimate()) {
-      startedRef.current = true;
       play('reverse');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  useEffect(() => clearTimers, []);
 
   return (
     <span ref={ref} className={`splitflap ${className}`.trim()} aria-label={text}>

@@ -14,10 +14,26 @@ interface ManifestOverlayProps {
       all modules when no lens is selected. The Index lists ONLY these so a click
       can't target a filtered-out module. */
   visibleIndices: string[];
+  /** Active route label, e.g. "Academic". Null/undefined means full stack. */
+  routeLabel?: string | null;
+  routeCount: number;
+  totalCount: number;
+  onClearRoute: () => void;
 }
 
-export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClose, onNavigate, activeIndex, visibleIndices }) => {
+export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({
+  isOpen,
+  onClose,
+  onNavigate,
+  activeIndex,
+  visibleIndices,
+  routeLabel,
+  routeCount,
+  totalCount,
+  onClearRoute,
+}) => {
   const [isVisible, setIsVisible] = useState(false);
+  const isFiltered = Boolean(routeLabel);
 
   useEffect(() => {
     if (isOpen) {
@@ -45,11 +61,21 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
       {/* Content Container */}
       <div className={`relative w-full max-w-6xl mx-auto px-4 md:px-8 h-full flex flex-col justify-center transition-transform duration-[var(--fold-duration)] ease-[var(--fold-ease)] delay-100 ${isOpen ? 'translate-y-0' : 'translate-y-8'}`}>
         
-        {/* Header (Close Button) */}
-        <div className="absolute top-4 right-4 md:top-8 md:right-8">
+        {/* Header controls */}
+        <div className="absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-2">
+          {isFiltered && (
+            <button
+              type="button"
+              onClick={onClearRoute}
+              aria-label="Show all modules from Index"
+              className="min-h-10 border border-black/25 px-4 py-2 font-mono text-xs uppercase tracking-widest text-black/60 hover:text-black hover:border-black transition-colors"
+            >
+              All modules
+            </button>
+          )}
            <button 
              onClick={onClose}
-             className="group flex items-center gap-2 font-mono text-xs uppercase tracking-widest bg-black text-white px-4 py-2 hover:bg-black/80 transition-colors"
+             className="group min-h-10 flex items-center gap-2 font-mono text-xs uppercase tracking-widest bg-black text-white px-4 py-2 hover:bg-black/80 transition-colors"
            >
              <span>Close Index</span>
              <XIcon className="w-4 h-4 group-hover:rotate-90 transition-transform" />
@@ -60,6 +86,11 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
           <h2 className="font-sans text-9xl font-bold tracking-tighter opacity-ghost select-none">INDEX</h2>
           {/* Personhood epigraph — VOICE v2 (PRD-VOICE-V2). Sets tone on open. */}
           <p className="font-serif text-2xl md:text-3xl opacity-secondary mt-2">{COPY.indexEpigraph}</p>
+          {isFiltered && (
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-strata-blue mt-4" data-testid="index-route-context">
+              {routeLabel} route · {routeCount} of {totalCount} modules shown
+            </p>
+          )}
         </div>
 
         {/* Module list — narrative order. V3.6.9: lists ONLY the modules on the

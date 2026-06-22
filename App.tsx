@@ -42,6 +42,8 @@ const CONVERSATION_MAILTO =
 const RENDERED_MODULES = CONTENT_MODULES
   .filter(m => m.id !== ModuleType.MANIFEST)
   .sort((a, b) => a.index.localeCompare(b.index));
+const TOTAL_MODULE_COUNT = RENDERED_MODULES.length;
+const formatModuleCount = (count: number) => String(count).padStart(2, '0');
 
 const AUDIENCE_IDS = AUDIENCES.map(a => a.id);
 const isAudienceId = (s: string | null): s is AudienceId =>
@@ -61,6 +63,8 @@ const normalizeAudienceId = (s: string | null): AudienceId | null => {
 
 // Reading-path notation: "00 -> 03 -> 07 -> 08".
 const formatPath = (modules: string[]) => modules.join(' → ');
+const titleCaseLabel = (label: string) =>
+  label.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 
 // Fixed-masthead clearance — matches each section's scroll-mt-[100px].
 const MASTHEAD_OFFSET = 100;
@@ -89,14 +93,17 @@ const prefersReducedMotion = () =>
 //
 // Scroll the module band to the masthead-safe position. Returns true only if a
 // scroll was actually needed — already-positioned modules open without waiting.
-const scrollModuleIntoView = (index: string): boolean => {
+const scrollToModuleOffset = (index: string, behavior: ScrollBehavior): boolean => {
   const el = document.getElementById(`module-${index}`);
   if (!el) return false;
-  const delta = Math.abs(el.getBoundingClientRect().top - MASTHEAD_OFFSET);
+  const targetTop = Math.max(0, el.getBoundingClientRect().top + window.scrollY - MASTHEAD_OFFSET);
+  const delta = Math.abs(window.scrollY - targetTop);
   if (delta <= 4) return false;
-  el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+  window.scrollTo({ top: targetTop, behavior });
   return true;
 };
+const scrollModuleIntoView = (index: string): boolean =>
+  scrollToModuleOffset(index, prefersReducedMotion() ? 'auto' : 'smooth');
 
 // Run cb once the scroll that brings module `index` to the masthead offset has
 // settled. `scrollend` fires for ANY scroll, so we only accept it once the TARGET
@@ -153,7 +160,7 @@ const reanchorModuleTop = (index: string) => {
   if (!el) return;
   const top = el.getBoundingClientRect().top;
   if (top < MASTHEAD_OFFSET - 4) {
-    el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+    scrollToModuleOffset(index, prefersReducedMotion() ? 'auto' : 'smooth');
   }
 };
 
@@ -250,6 +257,10 @@ const App: React.FC = () => {
     [selectedLens]
   );
   const visibleIndices = useMemo(() => visibleModules.map(m => m.index), [visibleModules]);
+  const selectedLensLabel = selectedLens ? titleCaseLabel(selectedLens.label) : null;
+  const indexCountLabel = selectedLens
+    ? `${formatModuleCount(visibleModules.length)} / ${formatModuleCount(TOTAL_MODULE_COUNT)}`
+    : formatModuleCount(TOTAL_MODULE_COUNT);
 
   // Deep-link init — open the target module if a #module-XX hash is present.
   // On root load with no hash: dossier starts fully folded (null). The first
@@ -264,8 +275,7 @@ const App: React.FC = () => {
     const hash = window.location.hash;
     if (hash.startsWith('#module-')) {
       const index = hash.replace('#module-', '');
-      const el = document.getElementById(`module-${index}`);
-      if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+      scrollToModuleOffset(index, 'auto');
       requestAnimationFrame(() => requestAnimationFrame(() => setOpenModuleIndex(index)));
     } else {
       // V3.6.4 root reset: no #module hash → start at the TOP, fully folded,
@@ -416,7 +426,7 @@ const App: React.FC = () => {
                   onClick={() => setIsIndexOpen(true)}
                   className="font-mono text-xs uppercase tracking-widest border border-black/40 px-3 py-1 hover:bg-black hover:text-white hover:border-black transition-colors text-black"
                >
-                  INDEX ({String(visibleModules.length).padStart(2, '0')})
+                  INDEX ({indexCountLabel})
                </button>
              </div>
              <div className="hidden md:block font-mono text-micro text-right text-black/50">
@@ -445,7 +455,7 @@ const App: React.FC = () => {
               {selectedLens && !lensPickerOpen ? (
                 <div className="flex flex-col gap-1.5">
                   <span className="font-mono text-micro uppercase tracking-[0.22em] text-black/70">
-                    Reading path · {selectedLens.label}
+                    {selectedLensLabel} route · {visibleModules.length} of {TOTAL_MODULE_COUNT} modules shown
                   </span>
                   <span className="font-mono text-xs md:text-sm tracking-[0.3em] text-strata-blue" data-testid="reading-lens-path">
                     {formatPath(selectedLens.modules)}
@@ -453,18 +463,28 @@ const App: React.FC = () => {
                   <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
                     {selectedLens.helper}
                   </span>
-                  <button
-                    type="button"
-                    onClick={changeLens}
-                    aria-label="Change reading lens"
-                    className="self-start mt-1 font-mono text-micro uppercase tracking-widest text-black/45 hover:text-black underline-offset-4 hover:underline transition-colors"
-                  >
-                    Change lens
-                  </button>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={changeLens}
+                      aria-label="Change reading lens"
+                      className="min-h-10 border border-black/25 px-3 py-2 font-mono text-micro uppercase tracking-widest text-black/60 hover:text-black hover:border-black transition-colors"
+                    >
+                      Change lens
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearAudience}
+                      aria-label="Show all modules"
+                      className="min-h-10 border border-black/25 px-3 py-2 font-mono text-micro uppercase tracking-widest text-black/60 hover:text-black hover:border-black transition-colors"
+                    >
+                      All modules
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
-                  Select a reading lens.
+                  {selectedLens ? `${selectedLensLabel} selected · choose another route.` : 'Select a reading lens.'}
                 </span>
               )}
             </div>
@@ -482,7 +502,7 @@ const App: React.FC = () => {
                       onClick={() => selectLens(a.id)}
                       aria-pressed={isActive}
                       aria-label={`Set reading lens: ${a.label}`}
-                      className={`font-mono text-micro md:text-xs uppercase tracking-widest border px-3 py-1.5 transition-colors ${
+                      className={`min-h-10 font-mono text-micro md:text-xs uppercase tracking-widest border px-3 py-2 transition-colors ${
                         isActive
                           ? 'bg-black text-white border-black'
                           : 'bg-transparent text-black/60 border-black/25 hover:border-black hover:text-black'
@@ -497,7 +517,7 @@ const App: React.FC = () => {
                     type="button"
                     onClick={clearAudience}
                     aria-label="Clear reading lens"
-                    className="font-mono text-micro md:text-xs uppercase tracking-widest border border-black/20 px-3 py-1.5 text-black/45 hover:text-black hover:border-black transition-colors"
+                    className="min-h-10 font-mono text-micro md:text-xs uppercase tracking-widest border border-black/20 px-3 py-2 text-black/45 hover:text-black hover:border-black transition-colors"
                   >
                     Clear
                   </button>
@@ -597,6 +617,10 @@ const App: React.FC = () => {
         onNavigate={handleIndexNavigate}
         activeIndex={openModuleIndex}
         visibleIndices={visibleIndices}
+        routeLabel={selectedLensLabel}
+        routeCount={visibleModules.length}
+        totalCount={TOTAL_MODULE_COUNT}
+        onClearRoute={clearAudience}
       />
     </div>
   );
