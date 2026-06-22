@@ -234,6 +234,10 @@ const App: React.FC = () => {
     () => (selectedAudience ? AUDIENCES.find(a => a.id === selectedAudience)?.modules ?? [] : []),
     [selectedAudience]
   );
+  const selectedLens = useMemo(
+    () => (selectedAudience ? AUDIENCES.find(a => a.id === selectedAudience) ?? null : null),
+    [selectedAudience]
+  );
 
   // Deep-link init — open the target module if a #module-XX hash is present.
   // On root load with no hash: dossier starts fully folded (null). The first
@@ -412,6 +416,53 @@ const App: React.FC = () => {
 
       {/* pt-24/pt-32 clears the fixed masthead. Module 00 is first in the stack. */}
       <main className="w-full pt-24 md:pt-32">
+        <section
+          aria-label="Reading Lens"
+          data-testid="reading-lens-strip"
+          className="container mx-auto px-4 md:px-8 max-w-6xl mb-4 md:mb-6"
+        >
+          <div className="border-y border-black/10 py-3 md:py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-micro uppercase tracking-[0.25em] text-black/40">
+                Reading Lens
+              </span>
+              <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
+                {selectedLens ? selectedLens.helper : 'Select a path; the dossier stays complete.'}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {AUDIENCES.map((a) => {
+                const isActive = selectedAudience === a.id;
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => handleAudience(a.id)}
+                    aria-pressed={isActive}
+                    aria-label={`Set reading lens: ${a.label}`}
+                    className={`font-mono text-micro md:text-xs uppercase tracking-widest border px-3 py-1.5 transition-colors ${
+                      isActive
+                        ? 'bg-black text-white border-black'
+                        : 'bg-transparent text-black/60 border-black/25 hover:border-black hover:text-black'
+                    }`}
+                  >
+                    {a.label.replace(' MANAGER', '')}
+                  </button>
+                );
+              })}
+              {selectedAudience && (
+                <button
+                  type="button"
+                  onClick={clearAudience}
+                  aria-label="Clear reading lens"
+                  className="font-mono text-micro md:text-xs uppercase tracking-widest border border-black/20 px-3 py-1.5 text-black/45 hover:text-black hover:border-black transition-colors"
+                >
+                  All
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
 
         {/* Render visible modules. Module 00 gets its dynamic responseDisplay
             injected here (carries lens state). stackIndex/stackCount drive the

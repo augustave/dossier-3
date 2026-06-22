@@ -290,8 +290,9 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
 
     // Orientation aid — every module stays present, nothing collapses out.
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
-    // Helper copy for the hiring lens appears.
-    expect(screen.getByText(/visual language, built evidence, and biography/i)).toBeInTheDocument();
+    // Helper copy is visible in the root Reading Lens strip, even while 00 is folded.
+    expect(within(screen.getByTestId('reading-lens-strip')).getByText(/visual language, built evidence, and biography/i)).toBeInTheDocument();
+    expect(document.querySelector('#module-00 .fold')?.getAttribute('data-open')).toBe('false');
   });
 
   it('clicking a pill writes ?read= to the URL and keeps every module visible', async () => {
@@ -304,7 +305,27 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
       expect(window.location.search).toContain('read=client');
     });
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
-    expect(screen.getByText(/taste, systems, doctrine, and built work/i)).toBeInTheDocument();
+    expect(within(screen.getByTestId('reading-lens-strip')).getByText(/taste, systems, doctrine, and built work/i)).toBeInTheDocument();
+  });
+
+  it('root Reading Lens strip visibly updates the shareable ?read= state', async () => {
+    window.history.replaceState(null, '', '?read=acad');
+    render(<App />);
+
+    const strip = await screen.findByTestId('reading-lens-strip');
+    const academic = within(strip).getByRole('button', { name: 'Set reading lens: ACADEMIC' });
+    await waitFor(() => {
+      expect(academic.getAttribute('aria-pressed')).toBe('true');
+    });
+    expect(within(strip).getByText(/sourcing discipline, neighborhood map, doctrine, and library/i)).toBeInTheDocument();
+    expect(document.querySelector('#module-00 .fold')?.getAttribute('data-open')).toBe('false');
+
+    fireEvent.click(within(strip).getByRole('button', { name: 'Set reading lens: COLLABORATOR' }));
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('read=collab');
+    });
+    expect(within(strip).getByText(/lenses, registers, neighboring practices, and source texts/i)).toBeInTheDocument();
   });
 
   it('clicking the active pill toggles it off and clears the helper', async () => {
