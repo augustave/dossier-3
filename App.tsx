@@ -118,6 +118,25 @@ const afterScrollSettle = (index: string, cb: () => void) => {
   if (hasScrollEnd) window.addEventListener('scrollend', onScrollEnd);
 };
 
+// Time to wait out the held module's collapse (≈ --fold-duration-lg) before the
+// post-collapse re-anchor measures the FINAL geometry.
+const COLLAPSE_SETTLE = 760;
+
+// V3.6.4 fix: after the held-open previous module collapses ABOVE the open
+// target, the target's header can scroll above the masthead (browser scroll
+// anchoring does NOT reliably compensate an animated collapse), leaving the user
+// looking at the bottom of the card. Pull the target's top back to the offset —
+// but only if it actually drifted UP and is still near the viewport, so a user
+// who scrolled deep into the content isn't yanked.
+const reanchorModuleTop = (index: string) => {
+  const el = document.getElementById(`module-${index}`);
+  if (!el) return;
+  const top = el.getBoundingClientRect().top;
+  if (top < MASTHEAD_OFFSET - 4 && top > -window.innerHeight) {
+    el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+  }
+};
+
 const App: React.FC = () => {
   const [openModuleIndex, setOpenModuleIndex] = useState<string | null>(null);
   // Previous module held OPEN transiently during a switch (delayed close) so it
@@ -273,9 +292,10 @@ const App: React.FC = () => {
       pendingRef.current = null;
       // Reading-stack: hold the PREVIOUS module open through the target's open +
       // fold so its collapse can't remove the stage above the target mid-motion.
-      // Collapse it only after the target is stable (CLOSE_DELAY). The eventual
-      // collapse happens above the viewport and the browser's scroll anchoring
-      // keeps the target pinned — no jump.
+      // Collapse it only after the target is stable (CLOSE_DELAY), THEN re-anchor
+      // the target's top once the collapse settles — the collapse happens above
+      // the target and scroll anchoring doesn't reliably keep it pinned, so
+      // without this the card's header scrolls off the top ("stuck at bottom").
       clearCloseTimer();
       const prev = openRef.current;
       if (prev && prev !== index) {
@@ -283,6 +303,11 @@ const App: React.FC = () => {
         closeTimerRef.current = window.setTimeout(() => {
           closeTimerRef.current = null;
           setKeepOpenIndex(cur => (cur === prev ? null : cur));
+          // prev now collapses above the target — re-anchor the target's top
+          // after the collapse finishes (if it's still the open module).
+          window.setTimeout(() => {
+            if (openRef.current === index) reanchorModuleTop(index);
+          }, COLLAPSE_SETTLE);
         }, CLOSE_DELAY);
       } else {
         setKeepOpenIndex(null);
