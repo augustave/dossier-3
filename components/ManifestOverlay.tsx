@@ -10,15 +10,13 @@ interface ManifestOverlayProps {
   onNavigate: (index: string) => void;
   /** Currently open module index (e.g. "03"), or null if all folded. */
   activeIndex: string | null;
-  /** Module indices on the active Reading Lens path — marked RECOMMENDED.
-      Orientation only; nothing is hidden. Empty when no lens is selected. */
-  recommendedIndices?: string[];
-  /** Active lens label (e.g. "HIRING MANAGER") — used in the accessible
-      "recommended for … path" row labels. Undefined when no lens is selected. */
-  recommendedLabel?: string;
+  /** Module indices currently on the page — the active Reading Lens route, or
+      all modules when no lens is selected. The Index lists ONLY these so a click
+      can't target a filtered-out module. */
+  visibleIndices: string[];
 }
 
-export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClose, onNavigate, activeIndex, recommendedIndices = [], recommendedLabel }) => {
+export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClose, onNavigate, activeIndex, visibleIndices }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -64,23 +62,18 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
           <p className="font-serif text-2xl md:text-3xl opacity-secondary mt-2">{COPY.indexEpigraph}</p>
         </div>
 
-        {/* Module list — narrative order, ascending 00–08. Each row is a real
-            button (Enter/Space activate, logical tab order). Active module is
-            highlighted (OPEN); lens-recommended modules carry a quieter
-            RECOMMENDED marker — distinct from, and outranked by, OPEN. */}
+        {/* Module list — narrative order. V3.6.9: lists ONLY the modules on the
+            page (the active lens route, or all when no lens), so the Index is the
+            route's map and a click can't target a filtered-out module. Active
+            module shows OPEN. */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
           {CONTENT_MODULES
             .filter(m => m.id !== ModuleType.MANIFEST)
+            .filter(m => visibleIndices.includes(m.index))
             .sort((a, b) => a.index.localeCompare(b.index))
             .map((m) => {
               const isActive = m.index === activeIndex;
-              const isRecommended = !isActive && recommendedIndices.includes(m.index);
-              // Accessible state — OPEN outranks RECOMMENDED (PRD §9.3).
-              const rowLabel = isActive
-                ? `${m.index} ${m.title} — open`
-                : isRecommended
-                  ? `${m.index} ${m.title} — recommended${recommendedLabel ? ` for ${recommendedLabel} path` : ''}`
-                  : `${m.index} ${m.title}`;
+              const rowLabel = isActive ? `${m.index} ${m.title} — open` : `${m.index} ${m.title}`;
               return (
                 <button
                   type="button"
@@ -93,17 +86,13 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
                   className={`group/item w-full text-left flex items-baseline gap-4 cursor-pointer border-b pb-4 transition-all duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-blue rounded-sm ${
                     isActive
                       ? 'border-strata-blue/40 pl-4'
-                      : isRecommended
-                        ? 'border-strata-blue/20 hover:pl-4'
-                        : 'border-black/10 hover:pl-4'
+                      : 'border-black/10 hover:pl-4'
                   }`}
                 >
                   <span className={`font-mono text-3xl md:text-4xl font-bold transition-all ${
                     isActive
                       ? 'text-strata-blue opacity-100'
-                      : isRecommended
-                        ? 'text-strata-blue opacity-80'
-                        : 'opacity-subtle group-hover/item:opacity-primary group-hover/item:text-strata-blue'
+                      : 'opacity-subtle group-hover/item:opacity-primary group-hover/item:text-strata-blue'
                   }`}>
                     {m.index}
                   </span>
@@ -117,18 +106,11 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
                       {m.promptText}
                     </span>
                   </span>
-                  {isActive && (
+                  {isActive ? (
                     <span className="ml-auto self-center font-mono text-micro uppercase tracking-widest text-strata-blue opacity-70 shrink-0">
                       OPEN
                     </span>
-                  )}
-                  {isRecommended && (
-                    <span className="ml-auto self-center flex items-center gap-1.5 text-strata-blue/70 shrink-0">
-                      <span className="w-1.5 h-1.5 bg-strata-blue/60" aria-hidden="true" />
-                      <span className="font-mono text-micro uppercase tracking-widest">Recommended</span>
-                    </span>
-                  )}
-                  {!isActive && !isRecommended && (
+                  ) : (
                     <ArrowRightIcon className="ml-auto self-center w-5 h-5 opacity-0 group-hover/item:opacity-primary transition-opacity shrink-0" />
                   )}
                 </button>

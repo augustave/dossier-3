@@ -43,10 +43,6 @@ const RENDERED_MODULES = CONTENT_MODULES
   .filter(m => m.id !== ModuleType.MANIFEST)
   .sort((a, b) => a.index.localeCompare(b.index));
 
-// Index label count — derived from the rendered module count so the chrome
-// can never go stale against the module list (was hardcoded "00").
-const INDEX_COUNT = String(RENDERED_MODULES.length).padStart(2, '0');
-
 const AUDIENCE_IDS = AUDIENCES.map(a => a.id);
 const isAudienceId = (s: string | null): s is AudienceId =>
   s !== null && (AUDIENCE_IDS as string[]).includes(s);
@@ -241,21 +237,19 @@ const App: React.FC = () => {
   // the stack; module 00 no longer renders a duplicate lens block.
   const frontMatterDisplay = useMemo(() => <FrontMatterContent />, []);
 
-  // V3.6.1: the Reading Lens is an ORIENTATION AID, not a filter. Every module
-  // stays on the page in narrative order, always. The lens only drives (a) the
-  // helper line in module 00 and (b) the RECOMMENDED markers in the Index.
-  const visibleModules = RENDERED_MODULES;
-
-  // Recommended reading path for the active lens — module indices the Index marks
-  // as RECOMMENDED. Empty when no lens is selected. Never hides anything.
-  const recommendedIndices = useMemo(
-    () => (selectedAudience ? AUDIENCES.find(a => a.id === selectedAudience)?.modules ?? [] : []),
-    [selectedAudience]
-  );
   const selectedLens = useMemo(
     () => (selectedAudience ? AUDIENCES.find(a => a.id === selectedAudience) ?? null : null),
     [selectedAudience]
   );
+
+  // V3.6.9: the Reading Lens FILTERS the stack. A selected lens shows ONLY its
+  // route's modules (00 always included); no lens shows the full archive. The
+  // Index mirrors the same set so a click can't target a hidden module.
+  const visibleModules = useMemo(
+    () => (selectedLens ? RENDERED_MODULES.filter(m => selectedLens.modules.includes(m.index)) : RENDERED_MODULES),
+    [selectedLens]
+  );
+  const visibleIndices = useMemo(() => visibleModules.map(m => m.index), [visibleModules]);
 
   // Deep-link init — open the target module if a #module-XX hash is present.
   // On root load with no hash: dossier starts fully folded (null). The first
@@ -422,7 +416,7 @@ const App: React.FC = () => {
                   onClick={() => setIsIndexOpen(true)}
                   className="font-mono text-xs uppercase tracking-widest border border-black/40 px-3 py-1 hover:bg-black hover:text-white hover:border-black transition-colors text-black"
                >
-                  INDEX ({INDEX_COUNT})
+                  INDEX ({String(visibleModules.length).padStart(2, '0')})
                </button>
              </div>
              <div className="hidden md:block font-mono text-micro text-right text-black/50">
@@ -602,8 +596,7 @@ const App: React.FC = () => {
         onClose={() => setIsIndexOpen(false)}
         onNavigate={handleIndexNavigate}
         activeIndex={openModuleIndex}
-        recommendedIndices={recommendedIndices}
-        recommendedLabel={selectedLens?.label}
+        visibleIndices={visibleIndices}
       />
     </div>
   );

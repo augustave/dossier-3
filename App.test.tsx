@@ -266,7 +266,7 @@ describe('Inquiry dialog (component, contactEmail branches)', () => {
   });
 });
 
-describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
+describe('Reading Lens (V3.6.9 route filter)', () => {
   // Every module index that must always remain on the page — the lens never hides.
   const ALL = ['00', '01', '02', '03', '04', '05', '06', '07', '08'];
 
@@ -292,8 +292,9 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     expect(within(strip).getByRole('button', { name: /Change reading lens/i })).toBeInTheDocument();
     expect(screen.queryByTestId('start-path')).toBeNull();
 
-    // Nothing hidden, nothing auto-opened.
-    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    // Lens FILTERS the stack — only the route's modules render; nothing auto-opens.
+    ['00', '03', '07', '08'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    ['01', '02', '04', '05', '06'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).toBeNull());
     expect(document.querySelector('#module-00 .fold')?.getAttribute('data-open')).toBe('false');
   });
 
@@ -331,7 +332,9 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     // Stamp only — the picker is gone (not merely hidden).
     expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
     expect(within(strip).queryByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeNull();
-    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    // Client route filters the stack to 00,01,03,05,07.
+    ['00', '01', '03', '05', '07'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    ['02', '04', '06', '08'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).toBeNull());
   });
 
   it('renders the Reading Lens / Reading Path block exactly once (no module-00 duplicate)', async () => {
@@ -343,25 +346,22 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     expect(screen.getAllByText(/Reading path · HIRING MANAGER/i)).toHaveLength(1);
   });
 
-  it('marks the lens path RECOMMENDED in the Index without hiding anything', async () => {
+  it('the Index lists ONLY the active route modules (lens filters)', async () => {
     window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
-    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(/i));
     const items = await screen.findAllByTestId('manifest-item');
+    const indices = items.map(r => r.getAttribute('data-index')).sort();
+    // Hiring route is 00,03,07,08 — the off-route modules are not listed.
+    expect(indices).toEqual(['00', '03', '07', '08']);
+  });
 
-    // Hiring path is 00,03,07,08 — each carries a Recommended marker.
-    const recd = ['00', '03', '07', '08'];
-    items.forEach(row => {
-      const idx = row.getAttribute('data-index')!;
-      const marker = within(row).queryByText(/^recommended$/i);
-      if (recd.includes(idx)) {
-        expect(marker).toBeInTheDocument();
-      } else {
-        expect(marker).not.toBeInTheDocument();
-      }
-    });
-    // Index still lists all nine modules — orientation, not a filter.
+  it('with no lens the Index lists every module', async () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByText(/INDEX \(/i));
+    const items = await screen.findAllByTestId('manifest-item');
     expect(items).toHaveLength(9);
   });
 
@@ -393,16 +393,16 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     expect(within(strip).getByText(/Reading path · COLLABORATOR/i)).toBeInTheDocument();
   });
 
-  it('Index rows expose accessible recommended/open state (PRD 9.3)', async () => {
+  it('Index row exposes accessible open state; off-route rows are absent', async () => {
     window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
-    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(/i));
     const items = await screen.findAllByTestId('manifest-item');
-    const row03 = items.find(r => r.getAttribute('data-index') === '03')!;
-    const row01 = items.find(r => r.getAttribute('data-index') === '01')!;
-    expect(row03.getAttribute('aria-label')).toMatch(/recommended for HIRING MANAGER path/i);
-    expect(row01.getAttribute('aria-label')).toBe('01 TASTE');
+    const row07 = items.find(r => r.getAttribute('data-index') === '07')!;
+    expect(row07.getAttribute('aria-label')).toBe('07 PORTFOLIOS');
+    // 01 TASTE is off the hiring route — not listed at all.
+    expect(items.find(r => r.getAttribute('data-index') === '01')).toBeUndefined();
   });
 });
 
