@@ -13,9 +13,12 @@ interface ManifestOverlayProps {
   /** Module indices on the active Reading Lens path — marked RECOMMENDED.
       Orientation only; nothing is hidden. Empty when no lens is selected. */
   recommendedIndices?: string[];
+  /** Active lens label (e.g. "HIRING MANAGER") — used in the accessible
+      "recommended for … path" row labels. Undefined when no lens is selected. */
+  recommendedLabel?: string;
 }
 
-export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClose, onNavigate, activeIndex, recommendedIndices = [] }) => {
+export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClose, onNavigate, activeIndex, recommendedIndices = [], recommendedLabel }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -72,6 +75,12 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
             .map((m) => {
               const isActive = m.index === activeIndex;
               const isRecommended = !isActive && recommendedIndices.includes(m.index);
+              // Accessible state — OPEN outranks RECOMMENDED (PRD §9.3).
+              const rowLabel = isActive
+                ? `${m.index} ${m.title} — open`
+                : isRecommended
+                  ? `${m.index} ${m.title} — recommended${recommendedLabel ? ` for ${recommendedLabel} path` : ''}`
+                  : `${m.index} ${m.title}`;
               return (
                 <button
                   type="button"
@@ -80,6 +89,7 @@ export const ManifestOverlay: React.FC<ManifestOverlayProps> = ({ isOpen, onClos
                   data-index={m.index}
                   onClick={() => onNavigate(m.index)}
                   aria-current={isActive ? 'true' : undefined}
+                  aria-label={rowLabel}
                   className={`group/item w-full text-left flex items-baseline gap-4 cursor-pointer border-b pb-4 transition-all duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-blue rounded-sm ${
                     isActive
                       ? 'border-strata-blue/40 pl-4'

@@ -380,6 +380,51 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     // Index still lists all nine modules — orientation, not a filter.
     expect(items).toHaveLength(9);
   });
+
+  it('shows the reading-path notation for the active lens (V3.6.5 route card)', async () => {
+    window.history.replaceState(null, '', '?read=hiring');
+    render(<App />);
+
+    const strip = await screen.findByTestId('reading-lens-strip');
+    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 03 → 07 → 08');
+  });
+
+  it('offers a START PATH action targeting the lens first module', async () => {
+    window.history.replaceState(null, '', '?read=collab');
+    render(<App />);
+
+    const strip = await screen.findByTestId('reading-lens-strip');
+    const start = within(strip).getByTestId('start-path');
+    // Collaborator path 00 -> 02 -> … so START PATH opens module 02.
+    expect(start.getAttribute('aria-label')).toMatch(/opens module 02/i);
+    // No START PATH before a lens is chosen.
+    fireEvent.click(within(strip).getByRole('button', { name: 'Set reading lens: COLLABORATOR' })); // toggle off
+    await waitFor(() => {
+      expect(within(strip).queryByTestId('start-path')).toBeNull();
+    });
+  });
+
+  it('accepts the long-form ?read=collaborator alias', async () => {
+    window.history.replaceState(null, '', '?read=collaborator');
+    render(<App />);
+
+    const pill = await screen.findByRole('button', { name: /^COLLABORATOR$/i });
+    await waitFor(() => {
+      expect(pill.getAttribute('aria-pressed')).toBe('true');
+    });
+  });
+
+  it('Index rows expose accessible recommended/open state (PRD 9.3)', async () => {
+    window.history.replaceState(null, '', '?read=hiring');
+    render(<App />);
+
+    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    const items = await screen.findAllByTestId('manifest-item');
+    const row03 = items.find(r => r.getAttribute('data-index') === '03')!;
+    const row01 = items.find(r => r.getAttribute('data-index') === '01')!;
+    expect(row03.getAttribute('aria-label')).toMatch(/recommended for HIRING MANAGER path/i);
+    expect(row01.getAttribute('aria-label')).toBe('01 TASTE');
+  });
 });
 
 describe('Visual Languages (module 03)', () => {

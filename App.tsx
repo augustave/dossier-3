@@ -51,6 +51,21 @@ const AUDIENCE_IDS = AUDIENCES.map(a => a.id);
 const isAudienceId = (s: string | null): s is AudienceId =>
   s !== null && (AUDIENCE_IDS as string[]).includes(s);
 
+// ?read= accepts the canonical ids AND their long-form spellings, so a shared
+// /?read=collaborator or /?read=academic resolves the same lens as the short id.
+const READ_ALIASES: Record<string, AudienceId> = {
+  collaborator: 'collab',
+  academic: 'acad',
+};
+const normalizeAudienceId = (s: string | null): AudienceId | null => {
+  if (s === null) return null;
+  if (isAudienceId(s)) return s;
+  return READ_ALIASES[s] ?? null;
+};
+
+// Reading-path notation: "00 -> 03 -> 07 -> 08".
+const formatPath = (modules: string[]) => modules.join(' → ');
+
 // Fixed-masthead clearance — matches each section's scroll-mt-[100px].
 const MASTHEAD_OFFSET = 100;
 
@@ -182,8 +197,8 @@ const App: React.FC = () => {
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      const read = params.get('read');
-      if (isAudienceId(read)) setSelectedAudience(read);
+      const read = normalizeAudienceId(params.get('read'));
+      if (read) setSelectedAudience(read);
     } catch (e) {
       // URLSearchParams unsupported (test env, etc.) — fall through.
     }
@@ -212,6 +227,14 @@ const App: React.FC = () => {
     writeAudienceToUrl(null);
   };
 
+  // START PATH — open the active lens's first recommended module after the cover,
+  // through the normal scroll-first/open-second choreography. Never auto-fires;
+  // only on an explicit click. Nothing is hidden.
+  const startActivePath = () => {
+    const lens = AUDIENCES.find(a => a.id === selectedAudience);
+    if (lens) requestOpenModule(lens.start);
+  };
+
   // Dynamic responseDisplay for module 00 — carries audience-lens state that
   // can't live in the static CONTENT_MODULES constant.
   const frontMatterDisplay = useMemo(() => (
@@ -219,6 +242,7 @@ const App: React.FC = () => {
       selectedAudience={selectedAudience}
       onAudience={handleAudience}
       onClear={clearAudience}
+      onStartPath={startActivePath}
     />
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [selectedAudience]);
@@ -421,14 +445,40 @@ const App: React.FC = () => {
           data-testid="reading-lens-strip"
           className="container mx-auto px-4 md:px-8 max-w-6xl mb-4 md:mb-6"
         >
-          <div className="border-y border-black/10 py-3 md:py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-col gap-1">
+          <div className="border-y border-black/10 py-3 md:py-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            {/* Route card — a lens is a route THROUGH the dossier, not a filter.
+                Selecting one marks a recommended path (00 -> … notation), surfaces
+                the helper, and offers START PATH. Nothing is ever hidden. */}
+            <div className="flex flex-col gap-1 min-w-0" aria-live="polite">
               <span className="font-mono text-micro uppercase tracking-[0.25em] text-black/40">
                 Reading Lens
               </span>
-              <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
-                {selectedLens ? selectedLens.helper : 'Select a path; the dossier stays complete.'}
-              </span>
+              {selectedLens ? (
+                <div className="flex flex-col gap-1.5">
+                  <span className="font-mono text-micro uppercase tracking-[0.22em] text-black/70">
+                    Reading path · {selectedLens.label}
+                  </span>
+                  <span className="font-mono text-xs md:text-sm tracking-[0.3em] text-strata-blue" data-testid="reading-lens-path">
+                    {formatPath(selectedLens.modules)}
+                  </span>
+                  <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
+                    {selectedLens.helper}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={startActivePath}
+                    data-testid="start-path"
+                    aria-label={`Start the ${selectedLens.label} reading path — opens module ${selectedLens.start}`}
+                    className="self-start mt-1 font-mono text-micro uppercase tracking-widest border border-strata-blue/50 text-strata-blue px-3 py-1.5 hover:bg-strata-blue hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-blue transition-colors"
+                  >
+                    Start path →
+                  </button>
+                </div>
+              ) : (
+                <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
+                  Choose a reading lens to mark a recommended path through the dossier.
+                </span>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
               {AUDIENCES.map((a) => {
@@ -446,7 +496,7 @@ const App: React.FC = () => {
                         : 'bg-transparent text-black/60 border-black/25 hover:border-black hover:text-black'
                     }`}
                   >
-                    {a.label.replace(' MANAGER', '')}
+                    {a.label}
                   </button>
                 );
               })}
@@ -554,6 +604,7 @@ const App: React.FC = () => {
         onNavigate={handleIndexNavigate}
         activeIndex={openModuleIndex}
         recommendedIndices={recommendedIndices}
+        recommendedLabel={selectedLens?.label}
       />
     </div>
   );

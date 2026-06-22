@@ -13,18 +13,20 @@ export interface Audience {
       through the Index — it no longer filters/hides any module. Orientation aid,
       not a filter. Includes 00 so the path always starts at the cover. */
   modules: string[];
+  /** First useful module to open after the cover — the START PATH target. */
+  start: string;
   /** Orientation helper line shown under the lens row when this lens is active. */
   helper: string;
 }
 
 export const AUDIENCES: Audience[] = [
-  { id: 'hiring', label: 'HIRING MANAGER', modules: ['00', '03', '07', '08'],
+  { id: 'hiring', label: 'HIRING MANAGER', modules: ['00', '03', '07', '08'], start: '03',
     helper: 'Recommended path: visual language, built evidence, and biography.' },
-  { id: 'client', label: 'CLIENT',         modules: ['00', '01', '03', '05', '07'],
+  { id: 'client', label: 'CLIENT',         modules: ['00', '01', '03', '05', '07'], start: '01',
     helper: 'Recommended path: taste, systems, doctrine, and built work.' },
-  { id: 'collab', label: 'COLLABORATOR',   modules: ['00', '02', '03', '04', '06'],
+  { id: 'collab', label: 'COLLABORATOR',   modules: ['00', '02', '03', '04', '06'], start: '02',
     helper: 'Recommended path: lenses, registers, neighboring practices, and source texts.' },
-  { id: 'acad',   label: 'ACADEMIC',       modules: ['00', '01', '04', '05', '06'],
+  { id: 'acad',   label: 'ACADEMIC',       modules: ['00', '01', '04', '05', '06'], start: '01',
     helper: 'Recommended path: sourcing discipline, neighborhood map, doctrine, and library.' }
 ];
 

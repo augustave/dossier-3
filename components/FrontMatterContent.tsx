@@ -11,6 +11,8 @@ interface FrontMatterContentProps {
   selectedAudience: AudienceId | null;
   onAudience: (id: AudienceId) => void;
   onClear: () => void;
+  /** Open the active lens's first recommended module (START PATH). */
+  onStartPath: () => void;
 }
 
 /**
@@ -23,6 +25,7 @@ export const FrontMatterContent: React.FC<FrontMatterContentProps> = ({
   selectedAudience,
   onAudience,
   onClear,
+  onStartPath,
 }) => {
   const selectedLens = selectedAudience
     ? AUDIENCES.find((a) => a.id === selectedAudience) ?? null
@@ -130,16 +133,26 @@ export const FrontMatterContent: React.FC<FrontMatterContentProps> = ({
               );
             })}
           </div>
-          {/* Orientation helper — the lens recommends a reading path; it never
-              hides modules. Open the Index to see the path marked RECOMMENDED. */}
+          {/* Route card — the lens marks a recommended path; it never hides
+              modules. Path notation + helper + START PATH (opens the first
+              recommended module). Index marks the same modules RECOMMENDED. */}
           {selectedLens && (
-            <p
-              className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 mt-3 leading-relaxed"
-              aria-live="polite"
-            >
-              {selectedLens.helper}{' '}
-              <span className="text-black/40">Open the Index to follow it.</span>
-            </p>
+            <div className="mt-3" aria-live="polite">
+              <p className="font-mono text-xs tracking-[0.3em] text-strata-blue mb-1.5">
+                {selectedLens.modules.join(' → ')}
+              </p>
+              <p className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed">
+                {selectedLens.helper}
+              </p>
+              <button
+                type="button"
+                onClick={onStartPath}
+                aria-label={`Start the ${selectedLens.label} reading path — opens module ${selectedLens.start}`}
+                className="self-start mt-3 font-mono text-micro uppercase tracking-widest border border-strata-blue/50 text-strata-blue px-4 py-2 hover:bg-strata-blue hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-blue transition-colors"
+              >
+                Start path →
+              </button>
+            </div>
           )}
         </div>
       </div>
