@@ -39,11 +39,6 @@ interface ModuleStrataProps {
 
 export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onToggle, stackIndex, stackCount }) => {
   const themeClass = COLORS[module.themeColor];
-  const tabSkin =
-    module.themeColor === 'cream' ? 'paper' :
-    module.themeColor === 'blue' ? 'blue' :
-    module.themeColor === 'clay' ? 'brown' :
-    null;
 
   // Paper-stack z-index: earlier bands sit HIGHER so each sheet's drop shadow
   // draws over the (opaque) band below instead of being painted over by it.
@@ -161,7 +156,6 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
       ref={containerRef}
       id={`module-${module.index}`}
       aria-label={`Module ${module.index}: ${module.title}`}
-      data-tab-skin={tabSkin ?? undefined}
       // PRD v1.0.2: scroll-margin-top added for fixed header offset
       // EVERY band reads as a sheet of paper with a full-width pure-black
       // elevation drop shadow UNDERNEATH it — always, even closed (the
@@ -177,8 +171,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
         onToggle();
       }}
     >
-      {tabSkin && <div className="module-tab-skin" aria-hidden="true" />}
-      <div className="relative z-10 container mx-auto px-4 md:px-8 max-w-6xl">
+      <div className="container mx-auto px-4 md:px-8 max-w-6xl">
         {/* Header Band */}
         <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 md:gap-12 select-none">
           <div className="flex items-baseline gap-6 relative">
