@@ -168,6 +168,9 @@ const App: React.FC = () => {
   const [keepOpenIndex, setKeepOpenIndex] = useState<string | null>(null);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [selectedAudience, setSelectedAudience] = useState<AudienceId | null>(null);
+  // Selected lens collapses to a route stamp; CHANGE LENS reveals the four
+  // choices again so the reader can switch without touching the URL.
+  const [lensPickerOpen, setLensPickerOpen] = useState(false);
   // Latest scroll-first open request. A mutable ref (not state) so rapid clicks
   // resolve to the LAST module — an in-flight settle callback bails if superseded.
   const pendingRef = useRef<string | null>(null);
@@ -216,12 +219,22 @@ const App: React.FC = () => {
     }
   };
 
-  // V3.6.7: a lens is a route STAMP. Selecting one shows route metadata only —
-  // no tabs, no controls. To change, the reader loads a different ?read= or
-  // returns to root. Never opens or scrolls anything.
+  // Selecting a lens stamps the route and collapses the picker. Never opens or
+  // scrolls anything.
   const selectLens = (id: AudienceId) => {
     setSelectedAudience(id);
     writeAudienceToUrl(id);
+    setLensPickerOpen(false);
+  };
+
+  // CHANGE LENS — reveal the four choices again, keeping the current selection
+  // until a new one is picked.
+  const changeLens = () => setLensPickerOpen(true);
+
+  const clearAudience = () => {
+    setSelectedAudience(null);
+    writeAudienceToUrl(null);
+    setLensPickerOpen(false);
   };
 
   // Module 00 — FRONT MATTER. The Reading Lens lives ONCE, in the strip above
@@ -427,15 +440,15 @@ const App: React.FC = () => {
           className="container mx-auto px-4 md:px-8 max-w-6xl mb-4 md:mb-6"
         >
           <div className="border-y border-black/10 py-3 md:py-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            {/* V3.6.7: the lens is a route STAMP, not a tab strip. With a lens
-                selected, the strip shows route metadata ONLY — no Change lens, no
-                Study all, no tabs. To change, load a different ?read= or root.
-                Lives ONCE here (module 00 renders no duplicate). */}
+            {/* The lens is a route STAMP. A selected lens collapses to route
+                metadata + a single CHANGE LENS control; the four choices return
+                only when the reader asks for them. Lives ONCE here (module 00
+                renders no duplicate). Never opens or scrolls anything. */}
             <div className="flex flex-col gap-1 min-w-0" aria-live="polite">
               <span className="font-mono text-micro uppercase tracking-[0.25em] text-black/40">
                 Reading Lens
               </span>
-              {selectedLens ? (
+              {selectedLens && !lensPickerOpen ? (
                 <div className="flex flex-col gap-1.5">
                   <span className="font-mono text-micro uppercase tracking-[0.22em] text-black/70">
                     Reading path · {selectedLens.label}
@@ -446,6 +459,14 @@ const App: React.FC = () => {
                   <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
                     {selectedLens.helper}
                   </span>
+                  <button
+                    type="button"
+                    onClick={changeLens}
+                    aria-label="Change reading lens"
+                    className="self-start mt-1 font-mono text-micro uppercase tracking-widest text-black/45 hover:text-black underline-offset-4 hover:underline transition-colors"
+                  >
+                    Change lens
+                  </button>
                 </div>
               ) : (
                 <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
@@ -453,23 +474,40 @@ const App: React.FC = () => {
                 </span>
               )}
             </div>
-            {/* Picker — visible ONLY when no lens is chosen. Once selected, the
-                choices are removed entirely (not hidden) so they leave the tab
-                order and the strip reads as a static stamp. */}
-            {!selectedAudience && (
+            {/* Picker — shown when no lens is chosen OR when CHANGE LENS reveals
+                the choices. Once a lens is selected the choices are removed
+                entirely (not hidden) so they leave the tab order. */}
+            {(!selectedAudience || lensPickerOpen) && (
               <div className="flex flex-wrap gap-2 shrink-0">
-                {AUDIENCES.map((a) => (
+                {AUDIENCES.map((a) => {
+                  const isActive = selectedAudience === a.id;
+                  return (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => selectLens(a.id)}
+                      aria-pressed={isActive}
+                      aria-label={`Set reading lens: ${a.label}`}
+                      className={`font-mono text-micro md:text-xs uppercase tracking-widest border px-3 py-1.5 transition-colors ${
+                        isActive
+                          ? 'bg-black text-white border-black'
+                          : 'bg-transparent text-black/60 border-black/25 hover:border-black hover:text-black'
+                      }`}
+                    >
+                      {a.label}
+                    </button>
+                  );
+                })}
+                {selectedAudience && (
                   <button
-                    key={a.id}
                     type="button"
-                    onClick={() => selectLens(a.id)}
-                    aria-pressed={false}
-                    aria-label={`Set reading lens: ${a.label}`}
-                    className="font-mono text-micro md:text-xs uppercase tracking-widest border px-3 py-1.5 bg-transparent text-black/60 border-black/25 hover:border-black hover:text-black transition-colors"
+                    onClick={clearAudience}
+                    aria-label="Clear reading lens"
+                    className="font-mono text-micro md:text-xs uppercase tracking-widest border border-black/20 px-3 py-1.5 text-black/45 hover:text-black hover:border-black transition-colors"
                   >
-                    {a.label}
+                    Clear
                   </button>
-                ))}
+                )}
               </div>
             )}
           </div>
