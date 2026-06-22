@@ -103,6 +103,32 @@
   --index-shadow: rgba(0, 0, 0, 0.55);
 }
 
+/* Exterior tab skins. The layer is capped to the visible header/tab zone, so
+   the opened reading panel keeps the primary stratum background underneath. */
+.module-tab-skin {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 0;
+  height: clamp(10rem, 22vw, 15.5rem);
+  max-height: 100%;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+[data-tab-skin='paper'] .module-tab-skin {
+  background-image: url('/tab-skins/paper.svg');
+}
+
+[data-tab-skin='blue'] .module-tab-skin {
+  background-image: url('/tab-skins/blue.svg');
+}
+
+[data-tab-skin='brown'] .module-tab-skin {
+  background-image: url('/tab-skins/brown.svg');
+}
+
 /* Module Index Class */
 .module-index {
   color: var(--index-fill);
