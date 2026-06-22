@@ -9,10 +9,11 @@ const WORK_LINKS = [
 
 interface FrontMatterContentProps {
   selectedAudience: AudienceId | null;
-  onAudience: (id: AudienceId) => void;
+  /** Whether the four lens choices are revealed (CHANGE LENS state). */
+  pickerOpen: boolean;
+  onSelect: (id: AudienceId) => void;
+  onChangeLens: () => void;
   onClear: () => void;
-  /** Open the active lens's first recommended module (START PATH). */
-  onStartPath: () => void;
 }
 
 /**
@@ -23,9 +24,10 @@ interface FrontMatterContentProps {
  */
 export const FrontMatterContent: React.FC<FrontMatterContentProps> = ({
   selectedAudience,
-  onAudience,
+  pickerOpen,
+  onSelect,
+  onChangeLens,
   onClear,
-  onStartPath,
 }) => {
   const selectedLens = selectedAudience
     ? AUDIENCES.find((a) => a.id === selectedAudience) ?? null
@@ -97,61 +99,73 @@ export const FrontMatterContent: React.FC<FrontMatterContentProps> = ({
         </div>
       </div>
 
-      {/* Row 4 — Reading Lens */}
+      {/* Row 4 — Reading Lens. V3.6.6: selected route metadata, not a tab strip.
+          A chosen lens collapses to the route stamp; the four choices return on
+          CHANGE LENS. Never opens a module; the Index handles navigation. */}
       <div className="pleat" style={{ transitionDelay: 'calc(var(--pleat-stagger) * 4)' }}>
         <div role="group" aria-label="Reading Lens">
-          <div className="flex items-baseline justify-between gap-3 mb-3">
-            <span className="font-mono text-micro uppercase tracking-[0.25em] text-black/40">Reading Lens</span>
-            {selectedAudience && (
-              <button
-                type="button"
-                onClick={onClear}
-                className="font-mono text-micro uppercase tracking-widest text-black/45 hover:text-black underline-offset-4 hover:underline transition-colors"
-                aria-label="Show all modules"
-              >
-                Study all
-              </button>
-            )}
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {AUDIENCES.map((a) => {
-              const isActive = selectedAudience === a.id;
-              return (
-                <button
-                  key={a.id}
-                  type="button"
-                  onClick={() => onAudience(a.id)}
-                  aria-pressed={isActive}
-                  className={`font-mono text-xs uppercase tracking-widest border px-4 py-2 transition-colors ${
-                    isActive
-                      ? 'bg-black text-white border-black'
-                      : 'bg-transparent text-black/70 border-black/30 hover:border-black hover:text-black'
-                  }`}
-                >
-                  {a.label}
-                </button>
-              );
-            })}
-          </div>
-          {/* Route card — the lens marks a recommended path; it never hides
-              modules. Path notation + helper + START PATH (opens the first
-              recommended module). Index marks the same modules RECOMMENDED. */}
-          {selectedLens && (
-            <div className="mt-3" aria-live="polite">
-              <p className="font-mono text-xs tracking-[0.3em] text-strata-blue mb-1.5">
+          <span className="font-mono text-micro uppercase tracking-[0.25em] text-black/40 block mb-3">Reading Lens</span>
+
+          {selectedLens && !pickerOpen ? (
+            <div aria-live="polite">
+              <p className="font-mono text-micro uppercase tracking-[0.22em] text-black/70 mb-1.5">
+                Reading path · {selectedLens.label}
+              </p>
+              <p className="font-mono text-sm tracking-[0.3em] text-strata-blue mb-1.5">
                 {selectedLens.modules.join(' → ')}
               </p>
               <p className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed">
                 {selectedLens.helper}
               </p>
-              <button
-                type="button"
-                onClick={onStartPath}
-                aria-label={`Start the ${selectedLens.label} reading path — opens module ${selectedLens.start}`}
-                className="self-start mt-3 font-mono text-micro uppercase tracking-widest border border-strata-blue/50 text-strata-blue px-4 py-2 hover:bg-strata-blue hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-blue transition-colors"
-              >
-                Start path →
-              </button>
+              <div className="flex gap-4 mt-3">
+                <button
+                  type="button"
+                  onClick={onChangeLens}
+                  aria-label="Change reading lens"
+                  className="font-mono text-micro uppercase tracking-widest text-black/70 hover:text-black underline-offset-4 hover:underline transition-colors"
+                >
+                  Change lens
+                </button>
+                <button
+                  type="button"
+                  onClick={onClear}
+                  aria-label="Show all modules"
+                  className="font-mono text-micro uppercase tracking-widest text-black/40 hover:text-black underline-offset-4 hover:underline transition-colors"
+                >
+                  Study all
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2 flex-wrap" aria-live="polite">
+              {AUDIENCES.map((a) => {
+                const isActive = selectedAudience === a.id;
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => onSelect(a.id)}
+                    aria-pressed={isActive}
+                    className={`font-mono text-xs uppercase tracking-widest border px-4 py-2 transition-colors ${
+                      isActive
+                        ? 'bg-black text-white border-black'
+                        : 'bg-transparent text-black/70 border-black/30 hover:border-black hover:text-black'
+                    }`}
+                  >
+                    {a.label}
+                  </button>
+                );
+              })}
+              {selectedAudience && (
+                <button
+                  type="button"
+                  onClick={onClear}
+                  aria-label="Show all modules"
+                  className="font-mono text-xs uppercase tracking-widest border border-black/20 px-4 py-2 text-black/45 hover:text-black hover:border-black transition-colors"
+                >
+                  Study all
+                </button>
+              )}
             </div>
           )}
         </div>

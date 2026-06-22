@@ -279,19 +279,19 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     } catch (e) {}
   });
 
-  it('reads ?read=hiring on mount, activates the pill, and shows the helper path', async () => {
+  it('reads ?read=hiring on mount and collapses to the route stamp (V3.6.6)', async () => {
     window.history.replaceState(null, '', '?read=hiring');
     render(<App />);
 
-    const pill = await screen.findByRole('button', { name: /^HIRING MANAGER$/i });
-    await waitFor(() => {
-      expect(pill.getAttribute('aria-pressed')).toBe('true');
-    });
+    const strip = await screen.findByTestId('reading-lens-strip');
+    // Collapsed: route stamp (path + helper) shown, the four choices hidden.
+    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 03 → 07 → 08');
+    expect(within(strip).getByText(/visual language, built evidence, and biography/i)).toBeInTheDocument();
+    expect(within(strip).queryByRole('button', { name: 'Set reading lens: CLIENT' })).toBeNull();
+    expect(within(strip).getByRole('button', { name: /Change reading lens/i })).toBeInTheDocument();
 
-    // Orientation aid — every module stays present, nothing collapses out.
+    // Nothing hidden, nothing auto-opened.
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
-    // Helper copy is visible in the root Reading Lens strip, even while 00 is folded.
-    expect(within(screen.getByTestId('reading-lens-strip')).getByText(/visual language, built evidence, and biography/i)).toBeInTheDocument();
     expect(document.querySelector('#module-00 .fold')?.getAttribute('data-open')).toBe('false');
   });
 
@@ -308,41 +308,46 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     expect(within(screen.getByTestId('reading-lens-strip')).getByText(/taste, systems, doctrine, and built work/i)).toBeInTheDocument();
   });
 
-  it('root Reading Lens strip visibly updates the shareable ?read= state', async () => {
+  it('CHANGE LENS reveals the choices again and selecting one updates the route + ?read=', async () => {
     window.history.replaceState(null, '', '?read=acad');
     render(<App />);
 
     const strip = await screen.findByTestId('reading-lens-strip');
-    const academic = within(strip).getByRole('button', { name: 'Set reading lens: ACADEMIC' });
+    // Collapsed on academic, choices hidden.
     await waitFor(() => {
-      expect(academic.getAttribute('aria-pressed')).toBe('true');
+      expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 01 → 04 → 05 → 06');
     });
-    expect(within(strip).getByText(/sourcing discipline, neighborhood map, doctrine, and library/i)).toBeInTheDocument();
+    expect(within(strip).queryByRole('button', { name: 'Set reading lens: COLLABORATOR' })).toBeNull();
     expect(document.querySelector('#module-00 .fold')?.getAttribute('data-open')).toBe('false');
 
-    fireEvent.click(within(strip).getByRole('button', { name: 'Set reading lens: COLLABORATOR' }));
+    // CHANGE LENS → the four choices return; pick a different one.
+    fireEvent.click(within(strip).getByRole('button', { name: /Change reading lens/i }));
+    const collab = await within(strip).findByRole('button', { name: 'Set reading lens: COLLABORATOR' });
+    fireEvent.click(collab);
 
     await waitFor(() => {
       expect(window.location.search).toContain('read=collab');
     });
+    // Re-collapsed to the new route, choices hidden again.
+    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
     expect(within(strip).getByText(/lenses, registers, neighboring practices, and source texts/i)).toBeInTheDocument();
+    expect(within(strip).queryByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeNull();
   });
 
-  it('clicking the active pill toggles it off and clears the helper', async () => {
+  it('STUDY ALL clears the active lens and restores the neutral prompt', async () => {
     window.history.replaceState(null, '', '?read=acad');
     render(<App />);
 
-    const pill = await screen.findByRole('button', { name: /^ACADEMIC$/i });
-    await waitFor(() => {
-      expect(pill.getAttribute('aria-pressed')).toBe('true');
-    });
-
-    fireEvent.click(pill);
+    const strip = await screen.findByTestId('reading-lens-strip');
+    const studyAll = await within(strip).findByRole('button', { name: /Clear reading lens/i });
+    fireEvent.click(studyAll);
 
     await waitFor(() => {
-      expect(pill.getAttribute('aria-pressed')).toBe('false');
+      expect(window.location.search).not.toContain('read=');
     });
-    expect(window.location.search).not.toContain('read=');
+    // Neutral prompt + the four choices return.
+    expect(within(strip).getByText(/choose a reading lens/i)).toBeInTheDocument();
+    expect(within(strip).getByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeInTheDocument();
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
   });
 
@@ -389,29 +394,24 @@ describe('Reading Lens (V3.6.1 orientation aid, not a filter)', () => {
     expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 03 → 07 → 08');
   });
 
-  it('offers a START PATH action targeting the lens first module', async () => {
+  it('exposes no START PATH action (removed in V3.6.6)', async () => {
     window.history.replaceState(null, '', '?read=collab');
     render(<App />);
 
-    const strip = await screen.findByTestId('reading-lens-strip');
-    const start = within(strip).getByTestId('start-path');
-    // Collaborator path 00 -> 02 -> … so START PATH opens module 02.
-    expect(start.getAttribute('aria-label')).toMatch(/opens module 02/i);
-    // No START PATH before a lens is chosen.
-    fireEvent.click(within(strip).getByRole('button', { name: 'Set reading lens: COLLABORATOR' })); // toggle off
-    await waitFor(() => {
-      expect(within(strip).queryByTestId('start-path')).toBeNull();
-    });
+    await screen.findByTestId('reading-lens-strip');
+    expect(screen.queryByTestId('start-path')).toBeNull();
+    expect(screen.queryByText(/start path/i)).toBeNull();
   });
 
   it('accepts the long-form ?read=collaborator alias', async () => {
     window.history.replaceState(null, '', '?read=collaborator');
     render(<App />);
 
-    const pill = await screen.findByRole('button', { name: /^COLLABORATOR$/i });
+    const strip = await screen.findByTestId('reading-lens-strip');
     await waitFor(() => {
-      expect(pill.getAttribute('aria-pressed')).toBe('true');
+      expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
     });
+    expect(within(strip).getByText(/Reading path · COLLABORATOR/i)).toBeInTheDocument();
   });
 
   it('Index rows expose accessible recommended/open state (PRD 9.3)', async () => {

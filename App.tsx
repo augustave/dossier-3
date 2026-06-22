@@ -168,6 +168,10 @@ const App: React.FC = () => {
   const [keepOpenIndex, setKeepOpenIndex] = useState<string | null>(null);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [selectedAudience, setSelectedAudience] = useState<AudienceId | null>(null);
+  // V3.6.6: once a lens is chosen the picker collapses to the route stamp. The
+  // four choices reappear only when the reader clicks CHANGE LENS. The lens is
+  // selected route metadata, not a persistent tab strip.
+  const [lensPickerOpen, setLensPickerOpen] = useState(false);
   // Latest scroll-first open request. A mutable ref (not state) so rapid clicks
   // resolve to the LAST module — an in-flight settle callback bails if superseded.
   const pendingRef = useRef<string | null>(null);
@@ -216,23 +220,22 @@ const App: React.FC = () => {
     }
   };
 
-  const handleAudience = (id: AudienceId) => {
-    const next = selectedAudience === id ? null : id;
-    setSelectedAudience(next);
-    writeAudienceToUrl(next);
+  // Selecting a lens stamps the route and collapses the picker. No toggle-off
+  // here — clearing is an explicit STUDY ALL. Never opens or scrolls anything.
+  const selectLens = (id: AudienceId) => {
+    setSelectedAudience(id);
+    writeAudienceToUrl(id);
+    setLensPickerOpen(false);
   };
+
+  // CHANGE LENS — reveal the four choices again without dropping the current
+  // selection until a new one is picked.
+  const changeLens = () => setLensPickerOpen(true);
 
   const clearAudience = () => {
     setSelectedAudience(null);
     writeAudienceToUrl(null);
-  };
-
-  // START PATH — open the active lens's first recommended module after the cover,
-  // through the normal scroll-first/open-second choreography. Never auto-fires;
-  // only on an explicit click. Nothing is hidden.
-  const startActivePath = () => {
-    const lens = AUDIENCES.find(a => a.id === selectedAudience);
-    if (lens) requestOpenModule(lens.start);
+    setLensPickerOpen(false);
   };
 
   // Dynamic responseDisplay for module 00 — carries audience-lens state that
@@ -240,12 +243,13 @@ const App: React.FC = () => {
   const frontMatterDisplay = useMemo(() => (
     <FrontMatterContent
       selectedAudience={selectedAudience}
-      onAudience={handleAudience}
+      pickerOpen={lensPickerOpen}
+      onSelect={selectLens}
+      onChangeLens={changeLens}
       onClear={clearAudience}
-      onStartPath={startActivePath}
     />
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [selectedAudience]);
+  ), [selectedAudience, lensPickerOpen]);
 
   // V3.6.1: the Reading Lens is an ORIENTATION AID, not a filter. Every module
   // stays on the page in narrative order, always. The lens only drives (a) the
@@ -446,14 +450,15 @@ const App: React.FC = () => {
           className="container mx-auto px-4 md:px-8 max-w-6xl mb-4 md:mb-6"
         >
           <div className="border-y border-black/10 py-3 md:py-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            {/* Route card — a lens is a route THROUGH the dossier, not a filter.
-                Selecting one marks a recommended path (00 -> … notation), surfaces
-                the helper, and offers START PATH. Nothing is ever hidden. */}
+            {/* V3.6.6: the lens is selected route metadata, not a tab strip.
+                A chosen lens collapses to a route stamp (label · path · helper);
+                the four choices return only on CHANGE LENS. Nothing auto-opens,
+                nothing is hidden — the Index is where navigation happens. */}
             <div className="flex flex-col gap-1 min-w-0" aria-live="polite">
               <span className="font-mono text-micro uppercase tracking-[0.25em] text-black/40">
                 Reading Lens
               </span>
-              {selectedLens ? (
+              {selectedLens && !lensPickerOpen ? (
                 <div className="flex flex-col gap-1.5">
                   <span className="font-mono text-micro uppercase tracking-[0.22em] text-black/70">
                     Reading path · {selectedLens.label}
@@ -464,51 +469,65 @@ const App: React.FC = () => {
                   <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
                     {selectedLens.helper}
                   </span>
-                  <button
-                    type="button"
-                    onClick={startActivePath}
-                    data-testid="start-path"
-                    aria-label={`Start the ${selectedLens.label} reading path — opens module ${selectedLens.start}`}
-                    className="self-start mt-1 font-mono text-micro uppercase tracking-widest border border-strata-blue/50 text-strata-blue px-3 py-1.5 hover:bg-strata-blue hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-blue transition-colors"
-                  >
-                    Start path →
-                  </button>
                 </div>
               ) : (
                 <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
-                  Choose a reading lens to mark a recommended path through the dossier.
+                  {lensPickerOpen ? 'Select a reading lens.' : 'Choose a reading lens to mark a recommended path through the dossier.'}
                 </span>
               )}
             </div>
-            <div className="flex flex-wrap gap-2">
-              {AUDIENCES.map((a) => {
-                const isActive = selectedAudience === a.id;
-                return (
+            <div className="flex flex-wrap gap-2 shrink-0">
+              {(!selectedAudience || lensPickerOpen) ? (
+                <>
+                  {AUDIENCES.map((a) => {
+                    const isActive = selectedAudience === a.id;
+                    return (
+                      <button
+                        key={a.id}
+                        type="button"
+                        onClick={() => selectLens(a.id)}
+                        aria-pressed={isActive}
+                        aria-label={`Set reading lens: ${a.label}`}
+                        className={`font-mono text-micro md:text-xs uppercase tracking-widest border px-3 py-1.5 transition-colors ${
+                          isActive
+                            ? 'bg-black text-white border-black'
+                            : 'bg-transparent text-black/60 border-black/25 hover:border-black hover:text-black'
+                        }`}
+                      >
+                        {a.label}
+                      </button>
+                    );
+                  })}
+                  {selectedAudience && (
+                    <button
+                      type="button"
+                      onClick={clearAudience}
+                      aria-label="Clear reading lens — study all modules"
+                      className="font-mono text-micro md:text-xs uppercase tracking-widest border border-black/20 px-3 py-1.5 text-black/45 hover:text-black hover:border-black transition-colors"
+                    >
+                      Study all
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
                   <button
-                    key={a.id}
                     type="button"
-                    onClick={() => handleAudience(a.id)}
-                    aria-pressed={isActive}
-                    aria-label={`Set reading lens: ${a.label}`}
-                    className={`font-mono text-micro md:text-xs uppercase tracking-widest border px-3 py-1.5 transition-colors ${
-                      isActive
-                        ? 'bg-black text-white border-black'
-                        : 'bg-transparent text-black/60 border-black/25 hover:border-black hover:text-black'
-                    }`}
+                    onClick={changeLens}
+                    aria-label="Change reading lens"
+                    className="font-mono text-micro md:text-xs uppercase tracking-widest border border-black/40 px-3 py-1.5 text-black/70 hover:bg-black hover:text-white hover:border-black transition-colors"
                   >
-                    {a.label}
+                    Change lens
                   </button>
-                );
-              })}
-              {selectedAudience && (
-                <button
-                  type="button"
-                  onClick={clearAudience}
-                  aria-label="Clear reading lens"
-                  className="font-mono text-micro md:text-xs uppercase tracking-widest border border-black/20 px-3 py-1.5 text-black/45 hover:text-black hover:border-black transition-colors"
-                >
-                  All
-                </button>
+                  <button
+                    type="button"
+                    onClick={clearAudience}
+                    aria-label="Clear reading lens — study all modules"
+                    className="font-mono text-micro md:text-xs uppercase tracking-widest border border-black/20 px-3 py-1.5 text-black/40 hover:text-black hover:border-black transition-colors"
+                  >
+                    Study all
+                  </button>
+                </>
               )}
             </div>
           </div>
