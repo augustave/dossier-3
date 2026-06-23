@@ -164,6 +164,44 @@ const reanchorModuleTop = (index: string) => {
   }
 };
 
+// Inline flag of the United States — matte, flat official colors, hairline
+// frame so it reads as an engraved jurisdiction mark on the cream colophon, not
+// a glossy emoji. 13 stripes, 50 stars on the 6/5 alternating grid.
+const UsFlag: React.FC<{ className?: string }> = ({ className }) => {
+  const W = 38, H = 20;
+  const stripe = H / 13;
+  const cantonW = 0.4 * W;
+  const cantonH = stripe * 7;
+  const mx = cantonW * 0.06, my = cantonH * 0.1;
+  const usableW = cantonW - 2 * mx, usableH = cantonH - 2 * my;
+  const stars: React.ReactNode[] = [];
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 11; col++) {
+      if ((col + row) % 2 !== 0) continue;
+      stars.push(
+        <circle
+          key={`${row}-${col}`}
+          cx={mx + (col / 10) * usableW}
+          cy={my + (row / 8) * usableH}
+          r={0.34}
+          fill="#FFFFFF"
+        />
+      );
+    }
+  }
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Flag of the United States" className={className}>
+      <rect width={W} height={H} fill="#FFFFFF" />
+      {Array.from({ length: 7 }).map((_, i) => (
+        <rect key={i} y={i * 2 * stripe} width={W} height={stripe} fill="#B31942" />
+      ))}
+      <rect width={cantonW} height={cantonH} fill="#0A3161" />
+      {stars}
+      <rect width={W} height={H} fill="none" stroke="#000000" strokeOpacity="0.12" strokeWidth="0.5" />
+    </svg>
+  );
+};
+
 const App: React.FC = () => {
   const [openModuleIndex, setOpenModuleIndex] = useState<string | null>(null);
   // Previous module held OPEN transiently during a switch (delayed close) so it
@@ -600,11 +638,13 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Seal — small metadata closing stamp, subordinate to the grid. */}
-              <div className="pt-5 border-t border-[#d6ccbb]">
+              {/* Seal — small metadata closing stamp + a matte US flag mark,
+                  subordinate to the grid. */}
+              <div className="pt-5 border-t border-[#d6ccbb] flex items-center justify-between gap-4">
                 <p className="font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[#8a8378]">
                   Doctrine · Evidence · Conversation
                 </p>
+                <UsFlag className="h-3.5 w-auto shrink-0" />
               </div>
            </div>
         </footer>
