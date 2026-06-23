@@ -549,29 +549,31 @@ const App: React.FC = () => {
         })}
 
 
-        {/* Footer — dossier colophon (V3.5.0). Three columns (Identity /
-            Correspondence / Actions) on the shared grid + a full-width closing
-            doctrine line. Contact paths come from contact.ts. */}
-        <footer className="w-full py-12 md:py-24 bg-white text-black border-t border-black/10 mt-12">
+        {/* Footer — dossier COLOPHON (V3.6.10). Warm cream "inside back cover":
+            three columns (Identity / Correspondence / Actions) + a small metadata
+            seal. The old large serif closing statement is retired — the end is
+            archival, not rhetorical. Cream #eee9dd reads as cover stock, a touch
+            deeper than the body cream (#F2EFE4); #d6ccbb hairline seams. */}
+        <footer className="w-full pt-16 pb-12 md:pt-20 md:pb-16 bg-[#eee9dd] text-[#111111] border-t border-[#d6ccbb]">
            <div className="container mx-auto px-4 md:px-8 max-w-6xl">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 mb-8">
                 {/* Identity */}
                 <div className="space-y-1">
                   <h3 className="font-sans font-bold tracking-tightest text-xl">CT DOSSIER</h3>
                   <p className="font-sans font-bold text-sm">EBENZ AUGUSTAVE</p>
-                  <p className="font-mono text-xs uppercase tracking-widest opacity-60">Art Director · Design Engineer</p>
-                  <p className="font-mono text-xs opacity-50 pt-2">{SITE_VERSION} · NO API</p>
-                  <p className="font-mono text-micro uppercase tracking-wide opacity-50">Practice dossier / visual-language archive</p>
-                  <p className="font-sans text-xs italic opacity-50 pt-1 max-w-xs leading-relaxed">Versioned because the practice is still being refined in public.</p>
+                  <p className="font-mono text-xs uppercase tracking-widest text-[#8a8378]">Art Director · Design Engineer</p>
+                  <p className="font-mono text-xs text-[#8a8378] pt-2">{SITE_VERSION} · NO API</p>
+                  <p className="font-mono text-micro uppercase tracking-wide text-[#8a8378]">Practice dossier / visual-language archive</p>
+                  <p className="font-sans text-xs italic text-[#8a8378] pt-1 max-w-xs leading-relaxed">Versioned because the practice is still being refined in public.</p>
                 </div>
 
                 {/* Correspondence */}
                 <div className="flex flex-col gap-3">
-                  <span className="font-mono text-xs uppercase tracking-widest opacity-50">CORRESPONDENCE</span>
+                  <span className="font-mono text-xs uppercase tracking-widest text-[#8a8378]">CORRESPONDENCE</span>
                   <a
                     href={`mailto:${CONTACT_EMAIL}`}
                     aria-label="Email Ebenz Augustave"
-                    className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
+                    className="font-mono text-sm border-b border-[#111111] w-fit hover:bg-[#111111] hover:text-[#eee9dd] transition-colors"
                   >
                     {CONTACT_EMAIL}
                   </a>
@@ -581,7 +583,7 @@ const App: React.FC = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Ebenz Augustave on LinkedIn"
-                      className="font-mono text-sm border-b border-black w-fit hover:bg-black hover:text-white transition-colors"
+                      className="font-mono text-sm border-b border-[#111111] w-fit hover:bg-[#111111] hover:text-[#eee9dd] transition-colors"
                     >
                       LinkedIn -&gt;
                     </a>
@@ -590,7 +592,7 @@ const App: React.FC = () => {
 
                 {/* Actions */}
                 <div className="flex flex-col gap-3">
-                  <span className="font-mono text-xs uppercase tracking-widest opacity-50">ACTIONS</span>
+                  <span className="font-mono text-xs uppercase tracking-widest text-[#8a8378]">ACTIONS</span>
                   <div className="flex flex-col items-start gap-2 font-mono text-sm uppercase tracking-widest">
                     <button onClick={() => setIsIndexOpen(true)} aria-label="Open dossier index" className="hover:underline">Index</button>
                     <a href={CONVERSATION_MAILTO} aria-label="Compose an inquiry — opens a prefilled email" className="hover:underline">Compose Inquiry</a>
@@ -598,12 +600,10 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Closing doctrine line */}
-              <div className="mt-12 pt-8 border-t border-black/10">
-                <p className="font-serif text-lg md:text-2xl leading-relaxed">
-                  The dossier is the doctrine.<br/>
-                  The portfolio sites are the evidence.<br/>
-                  The conversation is where fit is tested.
+              {/* Seal — small metadata closing stamp, subordinate to the grid. */}
+              <div className="pt-5 border-t border-[#d6ccbb]">
+                <p className="font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[#8a8378]">
+                  Doctrine · Evidence · Conversation
                 </p>
               </div>
            </div>

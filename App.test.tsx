@@ -101,9 +101,11 @@ describe('CT Dossier: recruiter-facing layout and IA', () => {
     // Version now appears in both the header chrome and the footer colophon.
     const expected = new RegExp(`v${COPY.meta.version.replace(/\./g, '\\.')} · NO API`, 'i');
     expect(screen.getAllByText(expected).length).toBeGreaterThanOrEqual(1);
-    // Colophon (V3.5.0): CORRESPONDENCE label + the closing doctrine line.
+    // Colophon (V3.6.10): CORRESPONDENCE label + the small closing seal. The old
+    // large serif closing sentences are retired.
     expect(screen.getByText(/CORRESPONDENCE/i)).toBeInTheDocument();
-    expect(screen.getByText(/The conversation is where fit is tested/i)).toBeInTheDocument();
+    expect(screen.getByText(/Doctrine · Evidence · Conversation/i)).toBeInTheDocument();
+    expect(screen.queryByText(/The conversation is where fit is tested/i)).not.toBeInTheDocument();
   });
 
   it('leads with the taste thesis and the art-director role line', () => {

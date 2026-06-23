@@ -1,0 +1,69 @@
+{
+  "shots": [
+    "/Users/taoconrad/Dev/GitHub 4/CT-DOSSIER copy/Founder/audits/2026-06-22-reading-lens-flow/01-root-full-stack.png",
+    "/Users/taoconrad/Dev/GitHub 4/CT-DOSSIER copy/Founder/audits/2026-06-22-reading-lens-flow/02-academic-route-filter.png",
+    "/Users/taoconrad/Dev/GitHub 4/CT-DOSSIER copy/Founder/audits/2026-06-22-reading-lens-flow/03-academic-index.png",
+    "/Users/taoconrad/Dev/GitHub 4/CT-DOSSIER copy/Founder/audits/2026-06-22-reading-lens-flow/04-change-lens-picker.png",
+    "/Users/taoconrad/Dev/GitHub 4/CT-DOSSIER copy/Founder/audits/2026-06-22-reading-lens-flow/05-neighborhood-open.png"
+  ],
+  "evidence": {
+    "indexText": "INDEX (05)",
+    "lensButtons": [
+      {
+        "label": "Set reading lens: HIRING MANAGER",
+        "pressed": "false",
+        "text": "HIRING MANAGER"
+      },
+      {
+        "label": "Set reading lens: CLIENT",
+        "pressed": "false",
+        "text": "CLIENT"
+      },
+      {
+        "label": "Set reading lens: COLLABORATOR",
+        "pressed": "false",
+        "text": "COLLABORATOR"
+      },
+      {
+        "label": "Set reading lens: ACADEMIC",
+        "pressed": "true",
+        "text": "ACADEMIC"
+      },
+      {
+        "label": "Clear reading lens",
+        "pressed": null,
+        "text": "Clear"
+      }
+    ],
+    "stripText": "Reading LensSelect a reading lens.HIRING MANAGERCLIENTCOLLABORATORACADEMICClear",
+    "url": "http://127.0.0.1:3100/?read=acad#module-04",
+    "visibleModules": [
+      {
+        "id": "module-00",
+        "open": "false",
+        "title": "FRONT MATTER"
+      },
+      {
+        "id": "module-01",
+        "open": "false",
+        "title": "TASTE"
+      },
+      {
+        "id": "module-04",
+        "open": "true",
+        "title": "7SW LDHFHBORHOOD"
+      },
+      {
+        "id": "module-05",
+        "open": "false",
+        "title": "DOCTRINE"
+      },
+      {
+        "id": "module-06",
+        "open": "false",
+        "title": "DOCTRINE LIBRARY"
+      }
+    ]
+  },
+  "errors": []
+}
