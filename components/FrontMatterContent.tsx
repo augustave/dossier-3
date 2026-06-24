@@ -7,10 +7,10 @@ const WORK_LINKS = [
 ];
 
 /**
- * Module 00 — FRONT MATTER content. Self-pleating (4 rows): headline+identity,
- * body, pullout, work links. Rendered bare by ModuleStrata (selfPleating path)
- * so its own .pleatfold drives the fold. V3.6.7: the Reading Lens lives ONCE in
- * the strip above the stack — module 00 no longer renders a duplicate lens block.
+ * Module 00 — FRONT MATTER content. Self-pleating (2 rows): headline, work links.
+ * Rendered bare by ModuleStrata (selfPleating path) so its own .pleatfold drives
+ * the fold. V3.7.6: identity sublines + body + pullout removed (owner) — the cover
+ * is now the taste thesis + where the built work lives.
  */
 export const FrontMatterContent: React.FC = () => {
   return (
@@ -21,43 +21,10 @@ export const FrontMatterContent: React.FC = () => {
         <h1 className="font-serif text-3xl md:text-[2.85rem] lg:text-5xl leading-[1.12] max-w-3xl">
           Taste is not preference.<br />Taste is a sourcing discipline.
         </h1>
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-black/50 mt-6">
-          Ebenz Augustave · Art Director · Design Engineer
-        </p>
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-black/40 mt-2">
-          Visual language for complex systems.
-        </p>
       </div>
 
-      {/* Row 1 — Body */}
+      {/* Row 1 — Built work links */}
       <div className="pleat" style={{ transitionDelay: 'calc(var(--pleat-stagger) * 1)' }}>
-        <div className="max-w-[800px] space-y-1.5">
-          <p className="font-sans text-base md:text-lg leading-relaxed">
-            <span className="font-bold">This is not a portfolio.</span> The built work lives elsewhere.
-          </p>
-          <p className="font-sans text-base md:text-lg leading-relaxed pt-2.5">
-            This documents the practice behind it: where my references come from, how the visual languages form, and why some outlast fashion.
-          </p>
-        </div>
-      </div>
-
-      {/* Row 2 — Pullout */}
-      <div className="pleat" style={{ transitionDelay: 'calc(var(--pleat-stagger) * 2)' }}>
-        <div className="max-w-[800px] border-l-2 border-black/30 pl-5">
-          <p className="font-sans text-base md:text-lg leading-relaxed">
-            <span className="font-bold">Useful when the capability is real, but the language has not caught up.</span>
-          </p>
-          <p className="font-sans text-base md:text-lg leading-relaxed mt-2.5">
-            I make complex products and emerging categories legible — through visual language, doctrine, and inspectable form.
-          </p>
-          <p className="font-mono text-micro uppercase tracking-[0.2em] text-black/45 mt-4">
-            For teams building complex systems that need direction, language, and form.
-          </p>
-        </div>
-      </div>
-
-      {/* Row 3 — Built work links */}
-      <div className="pleat" style={{ transitionDelay: 'calc(var(--pleat-stagger) * 3)' }}>
         <div>
           <div className="font-mono text-micro uppercase tracking-[0.25em] text-black/40 mb-4">
             Built work lives at
