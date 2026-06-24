@@ -282,7 +282,7 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
   it('root shows the bet + 5 folded route bands + all 9 modules; no default route', async () => {
     render(<App />);
     expect(await screen.findByTestId('crease-map')).toBeInTheDocument();
-    expect(screen.getByText(/I turn complex systems into visual languages/i)).toBeInTheDocument();
+    expect(screen.getByText(/THE BRAIN IS THE PRODUCT/i)).toBeInTheDocument();
     ['hiring', 'client', 'collab', 'acad', 'full'].forEach(v => expect(band(v)).toBeInTheDocument());
     expect(screen.queryByTestId('route-stamp')).toBeNull();
     expect(screen.queryByRole('button', { name: /Enter the recommended reading/i })).toBeNull();

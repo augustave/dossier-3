@@ -17,12 +17,8 @@ import { ROUTES, RouteValue } from '../constants';
 
 const COPY = {
   eyebrow: 'The bet',
-  spear:
-    'AI-Native Design Engineer & Art Director — I turn complex systems into visual languages.',
-  support:
-    "I am not trying to make complex things simple. I am trying to make them legible without making them smaller.",
-  forText: "teams whose thing is real, but the language around it hasn't caught up.",
-  notForText: 'trend-cycle branding, decoration, spectacle.',
+  role: 'AI-Native Design Engineer & Art Director',
+  claim: 'THE BRAIN IS THE PRODUCT',
 };
 
 /* Scoped fold motion — a lighter version of the dossier's pleat. Two folds:
@@ -86,18 +82,12 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
       {/* Bet — compact top fold (module 00 carries the dossier thesis below) */}
       <div className="crease-rise max-w-3xl">
         <span className={META}>{COPY.eyebrow}</span>
-        <h1 className="font-sans font-bold tracking-tight leading-tight text-subhead md:text-heading text-strata-black mt-1.5">
-          {COPY.spear}
+        <p className="font-sans font-semibold text-body md:text-lead text-strata-black opacity-secondary mt-1.5">
+          {COPY.role}
+        </p>
+        <h1 className="font-sans font-black tracking-tight leading-none text-heading md:text-display text-strata-black mt-1">
+          {COPY.claim}
         </h1>
-        <p className="font-sans text-caption md:text-body leading-relaxed text-strata-black opacity-tertiary max-w-[48ch] mt-3">
-          {COPY.support}
-        </p>
-        <p className="font-sans text-caption text-strata-black opacity-tertiary max-w-[54ch] mt-2">
-          <span className="font-mono text-micro uppercase tracking-ultra text-strata-clay whitespace-nowrap">For</span>{' '}
-          {COPY.forText}{' '}
-          <span className="font-mono text-micro uppercase tracking-ultra text-strata-clay whitespace-nowrap">Not for</span>{' '}
-          {COPY.notForText}
-        </p>
       </div>
 
       {/* Route system — folding bands */}
