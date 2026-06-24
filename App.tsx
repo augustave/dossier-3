@@ -3,6 +3,7 @@ import { CONTENT_MODULES, AudienceId, AUDIENCES } from './constants';
 import { ModuleStrata } from './components/ModuleStrata';
 import { ManifestOverlay } from './components/ManifestOverlay';
 import { FrontMatterContent } from './components/FrontMatterContent';
+import ThirtySecondView from './components/ThirtySecondView';
 import { ModuleType } from './types';
 import { CONTACT, hasLinkedIn } from './contact';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
@@ -209,6 +210,9 @@ const App: React.FC = () => {
   const [keepOpenIndex, setKeepOpenIndex] = useState<string | null>(null);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [selectedAudience, setSelectedAudience] = useState<AudienceId | null>(null);
+  // Move 1 (?read=30s): a thesis-first one-screen view rendered in place of the
+  // dossier stack. Detected on mount; exited via "Read the full dossier".
+  const [show30s, setShow30s] = useState(false);
   // Selected lens collapses to a route stamp; CHANGE LENS reveals the four
   // choices again so the reader can switch without touching the URL.
   const [lensPickerOpen, setLensPickerOpen] = useState(false);
@@ -238,15 +242,27 @@ const App: React.FC = () => {
   };
 
   // Read ?read= URL param on mount. Shareable views: ct-dossier/?read=hiring etc.
+  // ?read=30s opens the Move 1 thesis-first screen; any other value resolves to
+  // a lens (or falls through to the default dossier).
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      const read = normalizeAudienceId(params.get('read'));
+      const raw = params.get('read');
+      if (raw === '30s') { setShow30s(true); return; }
+      const read = normalizeAudienceId(raw);
       if (read) setSelectedAudience(read);
     } catch (e) {
       // URLSearchParams unsupported (test env, etc.) — fall through.
     }
   }, []);
+
+  // Move 1 exit — "Read the full dossier" swaps the 30s view for the hiring lens
+  // in place (no reload): apply the lens, rewrite ?read=, leave the 30s screen.
+  const readFullDossier = () => {
+    setShow30s(false);
+    setSelectedAudience('hiring');
+    writeAudienceToUrl('hiring');
+  };
 
   // Sync URL when audience changes. Uses replaceState so back-button isn't polluted.
   const writeAudienceToUrl = (next: AudienceId | null) => {
@@ -438,6 +454,11 @@ const App: React.FC = () => {
     // Let the overlay begin closing (it restores body scroll) before scroll-first.
     window.setTimeout(() => requestOpenModule(index), 60);
   };
+
+  // Move 1 — ?read=30s renders the thesis-first screen in place of the stack.
+  if (show30s) {
+    return <ThirtySecondView mailtoHref={CONVERSATION_MAILTO} onReadFull={readFullDossier} />;
+  }
 
   return (
     <div className="min-h-screen w-full relative">

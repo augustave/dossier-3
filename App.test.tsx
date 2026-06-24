@@ -557,3 +557,52 @@ describe('Doctrine Library (module 06)', () => {
     expect(within(m6()).getByText('Dirty Canvas')).toBeInTheDocument();
   });
 });
+
+describe('Move 1 — 30s thesis screen (?read=30s)', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = () => {};
+    window.location.hash = '';
+    try { window.history.replaceState(null, '', window.location.pathname); } catch (e) {}
+  });
+
+  it('renders the 30s screen for ?read=30s instead of the dossier stack', async () => {
+    window.history.replaceState(null, '', '?read=30s');
+    render(<App />);
+
+    expect(await screen.findByRole('region', { name: /30 second read/i })).toBeInTheDocument();
+    expect(screen.getByText(/I turn complex systems into visual languages/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Read the full dossier/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Compose inquiry/i })).toBeInTheDocument();
+    // The dossier stack is not rendered behind it.
+    expect(document.querySelector('section[id^="module-"]')).toBeNull();
+  });
+
+  it('the Compose inquiry CTA is the prefilled conversation mailto', async () => {
+    window.history.replaceState(null, '', '?read=30s');
+    render(<App />);
+    const compose = await screen.findByRole('link', { name: /Compose inquiry/i });
+    expect(compose.getAttribute('href')).toMatch(/^mailto:.+\?subject=.+&body=.+/);
+  });
+
+  it('"Read the full dossier" exits to the hiring lens (filtered stack)', async () => {
+    window.history.replaceState(null, '', '?read=30s');
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: /Read the full dossier/i }));
+
+    await waitFor(() => expect(window.location.search).toContain('read=hiring'));
+    expect(screen.queryByRole('region', { name: /30 second read/i })).toBeNull();
+    // Hiring route filters the stack to 00,03,07,08.
+    expect(getModuleToggle('module-03')).not.toBeNull();
+    expect(getModuleToggle('module-01')).toBeNull();
+  });
+
+  it('an unknown ?read= value falls back to the default dossier (no 30s, no blank)', async () => {
+    window.history.replaceState(null, '', '?read=zzz');
+    render(<App />);
+
+    expect(screen.queryByRole('region', { name: /30 second read/i })).toBeNull();
+    expect(getModuleToggle('module-00')).not.toBeNull();
+    expect(getModuleToggle('module-06')).not.toBeNull();
+  });
+});
