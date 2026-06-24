@@ -4,16 +4,17 @@ import { Fold } from './Fold';
 /**
  * Visual Languages (Module 03).
  *
- * Three authored visual operating languages (DOSSIER / DEADLIGHT / IAA) as
- * design-system specimens. A compact register filter sits ABOVE the cards
- * (clicking a register highlights the languages built on it); the full register
- * grammar exposition stays below as read-only "grammar underneath."
+ * Authored visual operating languages (DOSSIER / DEADLIGHT) as design-system
+ * specimens. Each card carries blue/orange/green register color tags + a
+ * matching top accent — the registers survive only as a color-identifier
+ * system. The REGISTER GRAMMAR exposition and the "Highlight by register"
+ * filter strip were removed (V3.7.x); per-card progressive disclosure (the
+ * "Full spec" fold) stays.
  *
  * Cards are calm by default — name, prose, source of authority, CTA — with the
  * spec (governing rules / includes / refuses) folded behind a per-card "Full
  * spec" toggle (progressive disclosure, matching the page's fold metaphor).
- * Each card carries a register-color top accent, consistent with the Doctrine
- * Library. Data lives in copy.v1_1.ts under modules.visualLanguages.
+ * Data lives in copy.v1_1.ts under modules.visualLanguages.
  */
 
 export interface LanguageCta {
@@ -37,26 +38,22 @@ export interface VisualLanguage {
   secondaryCta: LanguageCta | null;
 }
 
-export interface RegisterGrammar {
+// A register reduced to its color identifier (blue / orange / green). The
+// grammar exposition is gone; only name -> color survives, to color the tags.
+export interface RegisterColor {
   id: string;
-  code: string;
   name: string;
-  function: string;
-  question: string;
-  usedWhen: string;
   color: string;
 }
 
 interface VisualLanguagesProps {
   languages: VisualLanguage[];
-  registers: RegisterGrammar[];
-  grammarTitle: string;
-  grammarIntro: string;
+  registers: RegisterColor[];
 }
 
 // Resolve a CTA href: leave absolute http(s) URLs untouched; prefix relative
 // library paths with the deployment base (BASE_URL) so they resolve under the
-// /CT-DOSSIER/ GitHub Pages base instead of 404-ing at the site root.
+// deployment base instead of 404-ing at the site root.
 const assetHref = (href: string): string =>
   /^https?:\/\//.test(href) ? href : `${import.meta.env.BASE_URL}${href}`;
 
@@ -68,29 +65,18 @@ interface LanguageCardProps {
   lang: VisualLanguage;
   accent: string;
   tagColor: (name: string) => string;
-  dimmed: boolean;
-  highlight: string | null;
 }
 
-const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor, dimmed, highlight }) => {
+const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor }) => {
   const [open, setOpen] = useState(false);
   const specId = `vl-spec-${lang.id}`;
 
   return (
     <div
-      // 2px top accent in the primary register color (scannable variety + a tie
-      // to the register grammar). When a register filter is active, matching
-      // cards also get an inset ring in the active register's color — a positive
-      // highlight, not just dimming the rest.
-      style={{
-        borderTopColor: accent,
-        borderTopWidth: '2px',
-        // Inline opacity (not a Tailwind class): the dynamic `opacity-30` class
-        // wasn't being emitted, so the filter dim never applied. Inline is robust.
-        opacity: dimmed ? 0.3 : 1,
-        boxShadow: highlight ? `inset 0 0 0 1px ${highlight}` : undefined,
-      }}
-      className="border border-white/15 bg-black/20 p-5 md:p-6 transition-opacity duration-300"
+      // 2px top accent in the primary register color — scannable variety + the
+      // blue/orange/green color-identifier tie to the register tags below.
+      style={{ borderTopColor: accent, borderTopWidth: '2px' }}
+      className="border border-white/15 bg-black/20 p-5 md:p-6"
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-1 md:gap-4 mb-1">
@@ -101,7 +87,7 @@ const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor, dim
         {lang.type} · {lang.context}
       </div>
 
-      {/* Register tags */}
+      {/* Register tags — blue/orange/green color identifiers. */}
       <div className="flex flex-wrap gap-2 mb-4">
         {lang.registers.map((tag) => (
           <span
@@ -184,52 +170,15 @@ const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor, dim
   );
 };
 
-export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
-  languages,
-  registers,
-  grammarTitle,
-  grammarIntro,
-}) => {
-  // Active register NAME being highlighted, or null for all.
-  const [active, setActive] = useState<string | null>(null);
-
+export const VisualLanguages: React.FC<VisualLanguagesProps> = ({ languages, registers }) => {
+  // Map a register name to its color identifier (blue / orange / green).
   const colorFor = (registerName: string): string => {
     const r = registers.find(reg => reg.name.toLowerCase() === registerName.toLowerCase());
     return r?.color ?? 'rgba(255,255,255,0.35)';
   };
 
-  const usesActive = (lang: VisualLanguage): boolean =>
-    active === null || lang.registers.some(r => r.toLowerCase() === active.toLowerCase());
-
-  const toggle = (name: string) => setActive(prev => (prev === name ? null : name));
-
-  const chip = (label: string, color: string | null, isActive: boolean, onClick: () => void) => (
-    <button
-      key={label}
-      type="button"
-      aria-pressed={isActive}
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      className={`font-mono text-micro uppercase tracking-widest border px-3 py-2 flex items-center gap-1.5 transition-colors ${
-        isActive ? 'bg-white text-black border-white' : 'bg-transparent text-white/70 border-white/25 hover:border-white/60 hover:text-white'
-      }`}
-    >
-      {color && <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: color }} />}
-      {label}
-    </button>
-  );
-
   return (
     <div className="space-y-5">
-      {/* Filter strip — discoverable above the cards (mirrors the Doctrine
-          Library chips). Highlights the languages built on a register. */}
-      <div className="space-y-2">
-        <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary">Highlight by register</div>
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Highlight languages by register">
-          {chip('ALL', null, active === null, () => setActive(null))}
-          {registers.map(r => chip(r.name, r.color, active === r.name, () => toggle(r.name)))}
-        </div>
-      </div>
-
       {/* Language specimen cards — each an origami pleat row (alternating
           mountain/valley), unfolding flat when the module opens. */}
       <div className="pleatfold pleatfold--specimen space-y-5">
@@ -239,32 +188,9 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({
               lang={lang}
               accent={colorFor(lang.registers[0])}
               tagColor={colorFor}
-              dimmed={!usesActive(lang)}
-              highlight={active !== null && usesActive(lang) ? colorFor(active) : null}
             />
           </div>
         ))}
-      </div>
-
-      {/* Register grammar — read-only exposition; the "grammar underneath" the
-          languages. Filtering lives in the chip strip above. */}
-      <div className="pt-6 mt-2 border-t border-white/20">
-        <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">{grammarTitle}</h4>
-        <p className="font-sans text-sm md:text-base opacity-secondary leading-relaxed max-w-2xl mb-5">{grammarIntro}</p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {registers.map((r) => (
-            <div key={r.id} className="p-4 border border-white/15">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ backgroundColor: r.color }} />
-                <span className="font-mono text-xs uppercase tracking-widest">{r.code} · {r.name}</span>
-              </div>
-              <div className="font-mono text-micro uppercase tracking-wide opacity-tertiary mb-2">{r.function}</div>
-              <p className="font-serif italic text-base mb-2">{r.question}</p>
-              <p className="font-sans text-xs opacity-muted leading-relaxed">{r.usedWhen}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

@@ -411,7 +411,7 @@ describe('Visual Languages (module 03)', () => {
     window.location.hash = '#module-03';
   });
 
-  it('renders the three authored visual language cards and the register grammar', async () => {
+  it('renders the two authored visual language cards (no IAA, no register filter)', async () => {
     render(<App />);
     const m3 = () => document.getElementById('module-03') as HTMLElement;
 
@@ -419,25 +419,13 @@ describe('Visual Languages (module 03)', () => {
       expect(within(m3()).getByText(/^DOSSIER$/)).toBeInTheDocument();
     });
     expect(within(m3()).getByText(/^DEADLIGHT$/)).toBeInTheDocument();
-    expect(within(m3()).getByText(/^IAA$/)).toBeInTheDocument();
+    // IAA card removed.
+    expect(within(m3()).queryByText(/^IAA$/)).not.toBeInTheDocument();
 
-    // Register grammar present as toggle buttons, not a tab strip.
-    expect(within(m3()).getByRole('button', { name: /MONASTERY/i })).toBeInTheDocument();
-    expect(within(m3()).getByRole('button', { name: /FORGE/i })).toBeInTheDocument();
-    expect(within(m3()).getByRole('button', { name: /ORACLE/i })).toBeInTheDocument();
-  });
-
-  it('toggles a register highlight when its grammar chip is clicked', async () => {
-    render(<App />);
-    const m3 = () => document.getElementById('module-03') as HTMLElement;
-
-    const forge = await within(m3()).findByRole('button', { name: /FORGE/i });
-    expect(forge.getAttribute('aria-pressed')).toBe('false');
-    fireEvent.click(forge);
-    expect(forge.getAttribute('aria-pressed')).toBe('true');
-    // Clicking again clears it.
-    fireEvent.click(forge);
-    expect(forge.getAttribute('aria-pressed')).toBe('false');
+    // REGISTER GRAMMAR filter strip removed — no register toggle buttons. The
+    // registers survive only as colored tags (spans), still labelled.
+    expect(within(m3()).queryByRole('button', { name: /MONASTERY/i })).not.toBeInTheDocument();
+    expect(within(m3()).getAllByText(/FORGE/i).length).toBeGreaterThan(0);
   });
 });
 
@@ -458,8 +446,9 @@ describe('Doctrine Library (module 06)', () => {
       expect(within(m6()).getByText('Design Under Fire')).toBeInTheDocument();
     });
     expect(within(m6()).getByText('The Watchman Builder')).toBeInTheDocument();
-    expect(within(m6()).getByText('IAA Manifesto')).toBeInTheDocument();
-    expect(within(m6()).getByText('IAA Brand Architecture')).toBeInTheDocument();
+    // IAA papers removed from the shelf.
+    expect(within(m6()).queryByText('IAA Manifesto')).not.toBeInTheDocument();
+    expect(within(m6()).queryByText('IAA Brand Architecture')).not.toBeInTheDocument();
   });
 
   it('filters the shelf when a register chip is clicked', async () => {

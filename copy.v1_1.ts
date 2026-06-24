@@ -7,7 +7,7 @@
    Section spine, in render order:
      01 TASTE            — where the work is sourced
      02 SEEING           — the cognitive lenses (was WORLD MODEL)
-     03 VISUAL LANGUAGES — how taste becomes authored systems (language cards + register grammar)
+     03 VISUAL LANGUAGES — how taste becomes authored systems (language cards)
      04 NEIGHBORHOOD     — adjacent practices (holds the old FIELD POSITION chart)
      05 DOCTRINE         — what the work obeys and refuses (was PRACTICE)
      06 DOCTRINE LIBRARY — the written source texts behind the practice
@@ -95,9 +95,10 @@ export const CT_DOSSIER_COPY_V120 = {
     },
 
     // 03 — VISUAL LANGUAGES (V3.2, was DIRECTION). Proves taste becomes
-    // authored, reusable visual operating languages. Three language cards
-    // (DOSSIER / DEADLIGHT / IAA) are the centerpiece; the registers
-    // (Monastery / Forge / Oracle) are demoted to grammar tags underneath.
+    // authored, reusable visual operating languages. Two language cards
+    // (DOSSIER / DEADLIGHT) are the centerpiece; the registers (Monastery /
+    // Forge / Oracle) survive only as blue/orange/green color tags on the
+    // cards — the REGISTER GRAMMAR exposition + filter strip were removed.
     visualLanguages: {
       title: "VISUAL LANGUAGES",
       prompt: "HOW TASTE BECOMES SYSTEMS",
@@ -113,7 +114,6 @@ export const CT_DOSSIER_COPY_V120 = {
       // file deployed yet → no broken link). V3.4.1 asset wiring.
       //   DOSSIER   -> library/dossier-visual-operating-language-v4.pdf  (wired)
       //   DEADLIGHT -> deadlight.vercel.app (external); rulebook PDF not deployed
-      //   IAA       -> manifesto / brand-architecture files not deployed (suppressed)
       languages: [
         {
           id: "dossier",
@@ -166,62 +166,15 @@ export const CT_DOSSIER_COPY_V120 = {
           cta: { label: "VIEW DEADLIGHT", href: "https://deadlight.vercel.app/" },
           secondaryCta: null,
         },
-        {
-          id: "iaa",
-          name: "IAA",
-          label: "Identity Architecture Agent",
-          type: "Brand doctrine + identity architecture system",
-          context: "Personal brand / art direction / cognitive identity",
-          registers: ["Monastery", "Forge"],
-          shortCopy:
-            "A brand architecture system that turns biography, taste, pressure, and memory into a coherent identity. IAA is where the practice turns back on itself: it doesn't ask what style I like — it asks what keeps appearing across the work, and what that reveals.",
-          governingRules: ["Mass over swagger", "Lineage over trend", "Constraint as input", "Taste with a load rating"],
-          includes: [
-            "Brand architecture", "Voice principles", "Taste doctrine",
-            "Personal mythology refinement", "Visual authority rules", "Positioning language",
-            "Refusal logic", "Creative identity map",
-          ],
-          sourceOfAuthority: "Lineage. Pressure. Authorship.",
-          refuses: [
-            "Generic personal branding", "Trend-cycle identity", "Empty mystique",
-            "Technology without taste", "Style without worldview", "Over-explaining what should be felt",
-          ],
-          cta: null,
-          secondaryCta: null,
-        },
       ],
 
-      registersGrammarTitle: "REGISTER GRAMMAR",
-      registersGrammarIntro:
-        "The registers are not themes. They are sources of authority — they explain where a visual language gets its weight.",
+      // Register color identifiers (blue / orange / green) — kept as the card
+      // tag + accent palette after the REGISTER GRAMMAR exposition and filter
+      // strip were removed. colorFor() in VisualLanguages maps name -> color.
       registers: [
-        {
-          id: "monastery",
-          code: "MN",
-          name: "MONASTERY",
-          function: "Memory / Preservation / Restraint",
-          question: "What deserves to survive?",
-          usedWhen: "When the work needs quiet authority, archival logic, editorial pacing, and cultural memory.",
-          color: "#204C8D",
-        },
-        {
-          id: "forge",
-          code: "FG",
-          name: "FORGE",
-          function: "Pressure / Endurance / Material Force",
-          question: "What survives pressure?",
-          usedWhen: "When the work needs weight, consequence, durability, and visible constraint.",
-          color: "#FF4F00",
-        },
-        {
-          id: "oracle",
-          code: "OR",
-          name: "ORACLE",
-          function: "Signal / Perception / Invisible Systems",
-          question: "What remains unseen?",
-          usedWhen: "When the work needs to reveal hidden structures, signals, networks, patterns, or latent systems.",
-          color: "#42FC04",
-        },
+        { id: "monastery", name: "MONASTERY", color: "#204C8D" }, // blue
+        { id: "forge", name: "FORGE", color: "#FF4F00" },         // orange
+        { id: "oracle", name: "ORACLE", color: "#42FC04" },       // green
       ],
     },
 
@@ -391,28 +344,6 @@ export const CT_DOSSIER_COPY_V120 = {
           why: "The brand doctrine. It explains why a brand system should behave like a living rule-set with soul, not a static cage.",
           ctaLabel: "READ ESSAY",
           href: "https://dirty.artdirector.rocks/",
-        },
-        {
-          id: "iaa-manifesto",
-          title: "IAA Manifesto",
-          subtitle: "Mass Over Swagger",
-          type: "Manifesto",
-          registers: ["Monastery", "Forge"],
-          description: "A working manifesto on taste, pressure, restraint, discomfort, and the difference between work built to be admired and work built to survive.",
-          why: "The identity doctrine. It names the emotional and philosophical source of the practice: taste with a load rating.",
-          ctaLabel: "READ MANIFESTO",
-          href: null, // /library/iaa-manifesto.md
-        },
-        {
-          id: "iaa-brand-architecture",
-          title: "IAA Brand Architecture",
-          subtitle: "Cognitive Brand Architecture",
-          type: "Brand architecture document",
-          registers: ["Monastery", "Forge", "Oracle"],
-          description: "A structured identity document mapping the practice across themes, methods, psychic architecture, market translation, and proprietary frameworks.",
-          why: "The meta-system. It codifies Anthropological Moodboarding, Invariance Auditing, the Evidence Engine, and Generative Discomfort.",
-          ctaLabel: "VIEW ARCHITECTURE",
-          href: null, // /library/iaa-brand-architecture.md
         },
         {
           id: "rubric-design-system",

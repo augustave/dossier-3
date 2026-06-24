@@ -204,7 +204,8 @@ export const CONTENT_MODULES: ModuleData[] = [
   },
 
   // 03 — VISUAL LANGUAGES (V3.2). Authored visual operating languages are the
-  // centerpiece; the registers are demoted to grammar tags beneath them.
+  // centerpiece; the registers survive only as blue/orange/green color tags on
+  // the cards (REGISTER GRAMMAR exposition + filter strip removed).
   {
     id: ModuleType.VISUAL_LANGUAGES,
     index: "03",
@@ -227,8 +228,6 @@ export const CONTENT_MODULES: ModuleData[] = [
           <VisualLanguages
             languages={COPY.modules.visualLanguages.languages}
             registers={COPY.modules.visualLanguages.registers}
-            grammarTitle={COPY.modules.visualLanguages.registersGrammarTitle}
-            grammarIntro={COPY.modules.visualLanguages.registersGrammarIntro}
           />
         </div>
       </div>
