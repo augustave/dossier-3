@@ -374,6 +374,30 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     expect(items).toHaveLength(9);
     items.forEach(row => expect(within(row).queryByText(/^recommended$/i)).not.toBeInTheDocument());
   });
+
+  it('Back steps within the dossier: module → route → overview (popstate resync)', async () => {
+    window.history.replaceState(null, '', '?read=client#module-03');
+    render(<App />);
+    // Deep-link opens 03 + stamps the client route.
+    await waitFor(() => expect(getModuleToggle('module-03')?.getAttribute('aria-expanded')).toBe('true'));
+    await screen.findByTestId('route-stamp');
+
+    // Back to ?read=client → module closes, route persists (not an exit).
+    act(() => {
+      window.history.pushState(null, '', '?read=client');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await waitFor(() => expect(getModuleToggle('module-03')?.getAttribute('aria-expanded')).toBe('false'));
+    expect(screen.getByTestId('route-stamp')).toBeInTheDocument();
+
+    // Back to / → route clears, neutral overview (bands return).
+    act(() => {
+      window.history.pushState(null, '', '/');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await waitFor(() => expect(screen.queryByTestId('route-stamp')).toBeNull());
+    expect(screen.getByTestId('route-band-client')).toBeInTheDocument();
+  });
 });
 
 

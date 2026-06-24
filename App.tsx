@@ -227,14 +227,16 @@ const App: React.FC = () => {
     closeInteractionCleanupRef.current = null;
   };
 
-  // Sync ?read= with the selected route. replaceState so the back-button isn't
-  // polluted. Defined before the mount effect uses it (closure).
-  const writeRouteToUrl = (next: RouteValue | null) => {
+  // Sync ?read= with the selected route. A user selection PUSHES a history entry
+  // (so Back steps back through routes); mount cleanup (?read=30s strip) REPLACES.
+  // Defined before the mount effect uses it (closure).
+  const writeRouteToUrl = (next: RouteValue | null, replace = false) => {
     try {
       const url = new URL(window.location.href);
       if (next) url.searchParams.set('read', next);
       else url.searchParams.delete('read');
-      history.replaceState(null, document.title, url.toString());
+      const method = replace ? 'replaceState' : 'pushState';
+      history[method](null, document.title, url.toString());
     } catch (e) {
       // jsdom in tests doesn't always support URL — silently no-op.
     }
@@ -246,7 +248,7 @@ const App: React.FC = () => {
     try {
       const params = new URLSearchParams(window.location.search);
       const raw = params.get('read');
-      if (raw === '30s') { writeRouteToUrl(null); return; }
+      if (raw === '30s') { writeRouteToUrl(null, true); return; }
       const route = normalizeRouteValue(raw);
       if (route) setSelectedRoute(route);
     } catch (e) {
@@ -297,16 +299,24 @@ const App: React.FC = () => {
       // a fresh file, never resuming the prior scroll/module on refresh.
       try { window.scrollTo(0, 0); } catch (e) {}
     }
-    // Our own opens use replaceState (no hashchange). This fires only on EXTERNAL
-    // hash changes (typed URL, back/forward) — route them through the SAME
-    // scroll-first + settle path as a click so the fold never plays mid-scroll.
-    const onHash = () => {
+    // Back/forward — resync the whole app state FROM the URL (our own pushes
+    // don't fire popstate, so this only runs on real history navigation). One
+    // handler covers both ?read= (route) and #module- (open/close), so Back
+    // steps back within the dossier: module → route → overview → exit.
+    const onPop = () => {
+      let route: RouteValue | null = null;
+      try { route = normalizeRouteValue(new URLSearchParams(window.location.search).get('read')); } catch (e) {}
+      setSelectedRoute(route);
       const h = window.location.hash;
-      if (!h.startsWith('#module-')) return;
-      requestOpenModule(h.replace('#module-', ''));
+      if (h.startsWith('#module-')) {
+        const idx = h.replace('#module-', '');
+        if (openRef.current !== idx) requestOpenModule(idx, false); // URL already correct
+      } else if (openRef.current) {
+        closeModule(false);
+      }
     };
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -318,31 +328,40 @@ const App: React.FC = () => {
       if (e.key !== 'Escape') return;
       if (isIndexOpen) { setIsIndexOpen(false); return; }
       if (openModuleIndex) {
-        clearCloseTimer();
-        setKeepOpenIndex(null);
-        setOpenModuleIndex(null);
-        openRef.current = null;
-        try {
-          history.pushState("", document.title, window.location.pathname + window.location.search);
-        } catch (e) {}
+        closeModule(true);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isIndexOpen, openModuleIndex]);
 
-  // Write the module hash WITHOUT a native jump or hashchange (replaceState),
-  // so it never fights the smooth scroll or re-enters openFromHash.
+  // Write the module hash WITHOUT a native jump. pushState (not replace) so Back
+  // closes the module; preserves any ?read= already in the URL.
   const writeModuleHash = (index: string) => {
     try {
-      history.replaceState(null, document.title, `${window.location.pathname}${window.location.search}#module-${index}`);
+      history.pushState(null, document.title, `${window.location.pathname}${window.location.search}#module-${index}`);
     } catch (e) {}
+  };
+
+  // Close the open module. `writeUrl` pushes the hash-less URL (a real Back step);
+  // a popstate-driven close passes false (the URL is already correct).
+  const closeModule = (writeUrl: boolean) => {
+    pendingRef.current = null;
+    clearCloseTimer();
+    setKeepOpenIndex(null);
+    setOpenModuleIndex(null);
+    openRef.current = null;
+    if (writeUrl) {
+      try {
+        history.pushState('', document.title, window.location.pathname + window.location.search);
+      } catch (e) {}
+    }
   };
 
   // Scroll-first open: bring the module onstage, let the scroll settle, THEN flip
   // it open so the pleat cascade plays in view. pendingRef guards rapid re-clicks
   // — only the latest requested module actually opens.
-  const requestOpenModule = (index: string) => {
+  const requestOpenModule = (index: string, writeUrl = true) => {
     pendingRef.current = index;
     const commit = () => {
       if (pendingRef.current !== index) return; // superseded by a later request
@@ -383,7 +402,7 @@ const App: React.FC = () => {
       }
       setOpenModuleIndex(index);
       openRef.current = index;
-      writeModuleHash(index);
+      if (writeUrl) writeModuleHash(index);
     };
     const scrolled = scrollModuleIntoView(index);
     // Scrolled with motion → open once the scroll settles. Already in view (or
@@ -395,14 +414,7 @@ const App: React.FC = () => {
   const handleToggle = (index: string) => {
     // Clicking the already-open module folds it immediately — no scroll-first.
     if (openModuleIndex === index) {
-      pendingRef.current = null;
-      clearCloseTimer();
-      setKeepOpenIndex(null);
-      setOpenModuleIndex(null);
-      openRef.current = null;
-      try {
-        history.pushState("", document.title, window.location.pathname + window.location.search);
-      } catch (e) {}
+      closeModule(true);
       return;
     }
     if (pendingRef.current === index) return; // dedupe an in-flight request
