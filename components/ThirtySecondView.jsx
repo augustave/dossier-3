@@ -2,18 +2,17 @@
  * ThirtySecondView.jsx — CT DOSSIER · Move 1 (`?read=30s`)
  * ---------------------------------------------------------------------------
  * Thesis-first screen rendered in place of the dossier stack when ?read=30s.
- * The lower CTA row is a FOLDING LENS SELECTOR ("Read as —"): each lens is one
- * Record Card in two states — folded (label + descriptor + ▸) and unfolded
- * (detail + fields + "Enter this reading →"). Accordion (one open at a time),
- * fully reversible, respects prefers-reduced-motion. "Enter" routes to the lens.
+ * On-doctrine skin: the app's type system (Inter / Playfair / JetBrains Mono via
+ * Tailwind), matte strata-cream paper + ink, and matte button treatment (no neon
+ * fill). The lower CTA row is a FOLDING LENS SELECTOR ("Read as —"): each lens
+ * is one Record Card — folded (label + descriptor + ▸) / unfolded (detail +
+ * Path/Best-if/Time + "Enter this reading →"). Accordion, reversible, respects
+ * prefers-reduced-motion.
  *
  * Props (all optional):
- *   onEnter(value) — called by a card's "Enter this reading". When provided, App
- *                    applies the lens + exits 30s in place (no reload).
+ *   onEnter(value) — applies the lens + exits 30s in place (App handles it).
  *   mailtoHref     — Compose Inquiry mailto (App passes CONVERSATION_MAILTO).
  *   plus DEFAULTS copy fields below.
- *
- * Analytics fire only if window.va / window.plausible exists — otherwise no-op.
  * ---------------------------------------------------------------------------
  */
 
@@ -43,8 +42,7 @@ const DEFAULTS = {
 };
 
 /* ------------------------- lens cards (data-driven) ---------------------- */
-const titleCase = (s) =>
-  s.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase());
+const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase());
 
 // "Recommended path: taste, systems, and built work." -> "taste · systems · built work"
 const toDescriptor = (helper) =>
@@ -98,7 +96,6 @@ function track(event, props = {}) {
 }
 
 /* --------------------------- read the ?read param ------------------------ */
-/** Reads the current `?read=` value and re-renders if it changes (SPA-safe). */
 export function useReadParam() {
   const subscribe = (cb) => {
     window.addEventListener("popstate", cb);
@@ -125,72 +122,26 @@ function setLens(value, reloadFallback = true) {
   }
 }
 
-/* -------------------------------- styles --------------------------------- */
-/* Matte doctrine: paper #F2EFE4 (strata-cream), ink near-black, one signature
-   green accent (#42FC04) reserved for the primary CTA. No gloss, no gradient. */
-const CSS = `
-#ct-30s-root{
-  --paper:#F2EFE4; --ink:#15140F; --ink2:#52503f; --line:#cdc8b4; --green:#42FC04;
-  position:fixed; inset:0; background:var(--paper); color:var(--ink);
-  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
-  display:flex; flex-direction:column; padding:clamp(20px,5vw,56px);
-  overflow:auto; z-index:50; -webkit-font-smoothing:antialiased;
-}
-#ct-30s-root .mono{font-family:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
-  font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink2);}
-#ct-30s-root .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
-#ct-30s-root .core{flex:1; display:flex; flex-direction:column; justify-content:center; max-width:64ch; margin:0 auto; width:100%;}
-#ct-30s-root .bet{font-size:clamp(26px,4.4vw,46px); line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:10px 0 0;}
-#ct-30s-root .support{font-size:clamp(14px,2vw,18px); color:var(--ink); max-width:48ch; margin:16px 0 0;}
-#ct-30s-root .fornot{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:26px 0 0;}
-#ct-30s-root .fornot > div{border-top:2px solid var(--ink); padding-top:8px;}
-#ct-30s-root .fornot .lab{font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink2); margin-bottom:5px;}
-#ct-30s-root .fornot .val{font-size:14px; line-height:1.4;}
-
-/* Folding lens selector */
-#ct-30s-root .lenses{margin:30px 0 0; border-top:1px solid var(--line); perspective:900px;}
-#ct-30s-root .lenstitle{margin:14px 0 4px;}
-#ct-30s-root .lens{border-bottom:1px solid var(--line);}
-#ct-30s-root .lens__head{width:100%; display:flex; align-items:baseline; justify-content:space-between; gap:14px;
-  background:transparent; border:0; cursor:pointer; text-align:left; padding:13px 2px; color:var(--ink); font:inherit;}
-#ct-30s-root .lens__l{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; min-width:0;}
-#ct-30s-root .lens__label{font-family:ui-monospace,monospace; font-size:13px; letter-spacing:.1em; text-transform:uppercase; font-weight:700;}
-#ct-30s-root .lens__desc{font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.06em; color:var(--ink2); text-transform:uppercase;}
-#ct-30s-root .lens__chev{font-family:ui-monospace,monospace; font-size:12px; color:var(--ink2); transition:transform .25s ease; flex:0 0 auto;}
-#ct-30s-root .lens[data-open="true"] .lens__chev{transform:rotate(90deg);}
-#ct-30s-root .lens__panel{display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s ease;}
-#ct-30s-root .lens[data-open="true"] .lens__panel{grid-template-rows:1fr;}
-#ct-30s-root .lens__inner{overflow:hidden; transform-origin:top center; transform:rotateX(-7deg); opacity:.0; transition:transform .3s ease,opacity .25s ease;}
-#ct-30s-root .lens[data-open="true"] .lens__inner{transform:rotateX(0); opacity:1;}
-#ct-30s-root .lens__detail{font-size:14px; line-height:1.5; max-width:54ch; padding:2px 0 12px;}
-#ct-30s-root .lens__fields{display:flex; flex-wrap:wrap; gap:5px 22px; padding:0 0 14px;}
-#ct-30s-root .lens__field{display:flex; gap:8px; font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.05em;}
-#ct-30s-root .lens__field b{color:var(--ink2); text-transform:uppercase; font-weight:700; white-space:nowrap;}
-#ct-30s-root .lens__enter{font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase;
-  padding:11px 18px; border:2px solid var(--green); background:var(--green); color:var(--ink); cursor:pointer;
-  margin:0 0 16px; transition:background .12s,color .12s,border-color .12s;}
-#ct-30s-root .lens__enter:hover{background:var(--ink); border-color:var(--ink); color:var(--paper);}
-
-#ct-30s-root .compose{margin:18px 0 0;}
-#ct-30s-root .compose a{font-family:ui-monospace,monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase;
-  color:var(--ink); text-decoration:none; border-bottom:1px solid var(--ink); padding-bottom:2px;}
-#ct-30s-root .compose a:hover{background:var(--ink); color:var(--paper); border-color:var(--ink);}
-#ct-30s-root .foot{margin-top:24px;}
-
-#ct-30s-root *:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
-@media (max-width:560px){ #ct-30s-root .fornot{grid-template-columns:1fr;} }
-@media (prefers-reduced-motion:no-preference){
-  #ct-30s-root .bet{animation:ct-rise .5s ease both;}
-  #ct-30s-root .support{animation:ct-rise .5s .08s ease both;}
-  #ct-30s-root .fornot{animation:ct-rise .5s .16s ease both;}
-  #ct-30s-root .lenses{animation:ct-rise .5s .24s ease both;}
-}
+/* ------ scoped CSS: ONLY the fold motion (Tailwind can't tween grid-rows) -- */
+const FOLD_CSS = `
+#ct-30s-root .lenses{perspective:1000px;}
+#ct-30s-root .lens-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease;}
+#ct-30s-root .lens[data-open="true"] .lens-panel{grid-template-rows:1fr;}
+#ct-30s-root .lens-inner{overflow:hidden;transform-origin:top center;transform:rotateX(-7deg);opacity:0;transition:transform .32s ease,opacity .25s ease;}
+#ct-30s-root .lens[data-open="true"] .lens-inner{transform:none;opacity:1;}
+#ct-30s-root .lens-chev{transition:transform .25s ease;}
+#ct-30s-root .lens[data-open="true"] .lens-chev{transform:rotate(90deg);}
 @media (prefers-reduced-motion:reduce){
-  #ct-30s-root .lens__panel{transition:none;}
-  #ct-30s-root .lens__inner{transition:none; transform:none;}
-  #ct-30s-root .lens__chev{transition:none;}
+  #ct-30s-root .lens-panel,#ct-30s-root .lens-inner,#ct-30s-root .lens-chev{transition:none;}
+  #ct-30s-root .lens-inner{transform:none;}
 }
-@keyframes ct-rise{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+@media (prefers-reduced-motion:no-preference){
+  #ct-30s-root .rise{animation:ct-rise .5s ease both;}
+  #ct-30s-root .rise-1{animation:ct-rise .5s .08s ease both;}
+  #ct-30s-root .rise-2{animation:ct-rise .5s .16s ease both;}
+  #ct-30s-root .rise-3{animation:ct-rise .5s .24s ease both;}
+}
+@keyframes ct-rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 `;
 
 /* ------------------------------- component ------------------------------- */
@@ -208,13 +159,12 @@ export default function ThirtySecondView(props) {
       `?subject=${encodeURIComponent(c.inquirySubject)}` +
       `&body=${encodeURIComponent(c.inquiryBody)}`;
 
-  const toggle = (value) => {
+  const toggle = (value) =>
     setOpen((cur) => {
       const next = cur === value ? null : value;
       if (next) track("lens_unfold", { lens: value });
       return next;
     });
-  };
 
   const enter = (value) => {
     track("lens_selected", { from: "30s", to: value });
@@ -222,64 +172,81 @@ export default function ThirtySecondView(props) {
     else setLens(value);
   };
 
-  return (
-    <div id="ct-30s-root" role="region" aria-label="CT Dossier — 30 second read">
-      <style>{CSS}</style>
+  const label = "font-mono text-micro uppercase tracking-[0.25em] text-black/40";
 
-      <div className="top">
-        <span className="mono">CT DOSSIER · 30s</span>
-        <span className="mono">Ebenz Augustave</span>
+  return (
+    <div
+      id="ct-30s-root"
+      role="region"
+      aria-label="CT Dossier — 30 second read"
+      className="fixed inset-0 z-50 overflow-auto bg-strata-cream text-strata-black flex flex-col px-6 py-8 md:px-12 md:py-12"
+    >
+      <style>{FOLD_CSS}</style>
+
+      <div className="flex items-baseline justify-between gap-3 flex-wrap">
+        <span className={label}>CT DOSSIER · 30s</span>
+        <span className={label}>Ebenz Augustave</span>
       </div>
 
-      <div className="core">
-        <span className="mono">The bet</span>
-        <h1 className="bet">{c.spear}</h1>
-        <p className="support">{c.support}</p>
+      <div className="flex-1 flex flex-col justify-center w-full max-w-3xl mx-auto py-8">
+        <span className={`${label} rise`}>The bet</span>
+        <h1 className="rise font-sans font-black tracking-tightest leading-[1.04] text-3xl md:text-5xl lg:text-[3.4rem] mt-2">
+          {c.spear}
+        </h1>
+        <p className="rise-1 font-sans text-base md:text-lg leading-relaxed text-black/80 max-w-[48ch] mt-5">
+          {c.support}
+        </p>
 
-        <div className="fornot">
-          <div>
-            <div className="lab">For</div>
-            <div className="val">{c.forText}</div>
+        <div className="rise-2 grid grid-cols-1 sm:grid-cols-2 gap-5 mt-8">
+          <div className="border-t-2 border-black pt-2">
+            <div className={`${label} text-black/45 mb-1.5`}>For</div>
+            <div className="font-sans text-sm md:text-base leading-snug">{c.forText}</div>
           </div>
-          <div>
-            <div className="lab">Not for</div>
-            <div className="val">{c.notForText}</div>
+          <div className="border-t-2 border-black pt-2">
+            <div className={`${label} text-black/45 mb-1.5`}>Not for</div>
+            <div className="font-sans text-sm md:text-base leading-snug">{c.notForText}</div>
           </div>
         </div>
 
         {/* Folding lens selector — pick the reading written for you. */}
-        <div className="lenses">
-          <div className="mono lenstitle">Read as —</div>
+        <div className="lenses rise-3 mt-8 border-t border-black/15">
+          <div className={`${label} mt-3.5 mb-1`}>Read as —</div>
           {LENS_CARDS.map((lens) => {
             const isOpen = open === lens.value;
             const panelId = `lens-panel-${lens.value}`;
             return (
-              <div className="lens" key={lens.value} data-open={isOpen}>
+              <div className="lens border-b border-black/15" key={lens.value} data-open={isOpen}>
                 <button
                   type="button"
-                  className="lens__head"
+                  className="w-full flex items-baseline justify-between gap-4 bg-transparent text-left py-3 group focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-black rounded-sm"
                   aria-expanded={isOpen}
                   aria-controls={panelId}
                   onClick={() => toggle(lens.value)}
                 >
-                  <span className="lens__l">
-                    <span className="lens__label">{lens.label}</span>
-                    <span className="lens__desc">{lens.desc}</span>
+                  <span className="flex items-baseline gap-3 md:gap-4 flex-wrap min-w-0">
+                    <span className="font-mono text-sm font-bold uppercase tracking-[0.1em]">{lens.label}</span>
+                    <span className="font-mono text-micro uppercase tracking-[0.08em] text-black/45">{lens.desc}</span>
                   </span>
-                  <span className="lens__chev" aria-hidden="true">▸</span>
+                  <span className="lens-chev font-mono text-xs text-black/40 shrink-0" aria-hidden="true">▸</span>
                 </button>
-                <div className="lens__panel" id={panelId} role="region" aria-label={`${lens.label} reading`}>
-                  <div className="lens__inner">
-                    <p className="lens__detail">{lens.detail}</p>
-                    <div className="lens__fields">
+                <div className="lens-panel" id={panelId} role="region" aria-label={`${lens.label} reading`}>
+                  <div className="lens-inner">
+                    <p className="font-sans text-sm md:text-base leading-relaxed text-black/80 max-w-[54ch] pt-0.5 pb-3">
+                      {lens.detail}
+                    </p>
+                    <div className="flex flex-wrap gap-x-6 gap-y-1.5 pb-3.5">
                       {lens.fields.map(([k, v]) => (
-                        <span className="lens__field" key={k}>
-                          <b>{k}</b>
+                        <span className="flex gap-2 font-mono text-micro tracking-[0.05em]" key={k}>
+                          <b className="text-black/45 uppercase font-semibold whitespace-nowrap">{k}</b>
                           <span>{v}</span>
                         </span>
                       ))}
                     </div>
-                    <button type="button" className="lens__enter" onClick={() => enter(lens.value)}>
+                    <button
+                      type="button"
+                      onClick={() => enter(lens.value)}
+                      className="font-mono text-xs uppercase tracking-widest border border-black/40 px-4 py-2 mb-4 hover:bg-strata-black hover:text-strata-cream hover:border-strata-black focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-black transition-colors"
+                    >
                       Enter this reading →
                     </button>
                   </div>
@@ -289,14 +256,18 @@ export default function ThirtySecondView(props) {
           })}
         </div>
 
-        <div className="compose">
-          <a href={mailto} onClick={() => track("cta_click_compose", { read: "30s" })}>
+        <div className="mt-5">
+          <a
+            href={mailto}
+            onClick={() => track("cta_click_compose", { read: "30s" })}
+            className="inline-block font-mono text-xs uppercase tracking-widest border-b border-black/60 pb-0.5 hover:bg-strata-black hover:text-strata-cream hover:border-strata-black transition-colors"
+          >
             Compose inquiry →
           </a>
         </div>
       </div>
 
-      <div className="foot mono">{c.footer}</div>
+      <div className={label}>{c.footer}</div>
     </div>
   );
 }
