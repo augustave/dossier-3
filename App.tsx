@@ -256,12 +256,14 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Move 1 exit — "Read the full dossier" swaps the 30s view for the hiring lens
-  // in place (no reload): apply the lens, rewrite ?read=, leave the 30s screen.
-  const readFullDossier = () => {
+  // Move 1 exit — a lens card's "Enter this reading" swaps the 30s view for that
+  // lens in place (no reload). 'full' (and any unknown value) clears the lens and
+  // shows the complete dossier rather than a blank screen.
+  const enterReading = (value: string) => {
     setShow30s(false);
-    setSelectedAudience('hiring');
-    writeAudienceToUrl('hiring');
+    const id = value === 'full' ? null : normalizeAudienceId(value);
+    setSelectedAudience(id);
+    writeAudienceToUrl(id);
   };
 
   // Sync URL when audience changes. Uses replaceState so back-button isn't polluted.
@@ -457,7 +459,7 @@ const App: React.FC = () => {
 
   // Move 1 — ?read=30s renders the thesis-first screen in place of the stack.
   if (show30s) {
-    return <ThirtySecondView mailtoHref={CONVERSATION_MAILTO} onReadFull={readFullDossier} />;
+    return <ThirtySecondView mailtoHref={CONVERSATION_MAILTO} onEnter={enterReading} />;
   }
 
   return (

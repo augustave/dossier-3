@@ -565,13 +565,20 @@ describe('Move 1 — 30s thesis screen (?read=30s)', () => {
     try { window.history.replaceState(null, '', window.location.pathname); } catch (e) {}
   });
 
-  it('renders the 30s screen for ?read=30s instead of the dossier stack', async () => {
+  const enterButton = (value: string) =>
+    within(document.getElementById(`lens-panel-${value}`) as HTMLElement)
+      .getByRole('button', { name: /Enter this reading/i });
+
+  it('renders the 30s screen with the folding lens selector instead of the stack', async () => {
     window.history.replaceState(null, '', '?read=30s');
     render(<App />);
 
     expect(await screen.findByRole('region', { name: /30 second read/i })).toBeInTheDocument();
     expect(screen.getByText(/I turn complex systems into visual languages/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Read the full dossier/i })).toBeInTheDocument();
+    // Folding lens selector: a card header per lens, Hiring open by default.
+    expect(screen.getByRole('button', { name: /^Hiring Manager/i }).getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('button', { name: /^Client/i }).getAttribute('aria-expanded')).toBe('false');
+    expect(screen.getByRole('button', { name: /^Full Dossier/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Compose inquiry/i })).toBeInTheDocument();
     // The dossier stack is not rendered behind it.
     expect(document.querySelector('section[id^="module-"]')).toBeNull();
@@ -584,17 +591,47 @@ describe('Move 1 — 30s thesis screen (?read=30s)', () => {
     expect(compose.getAttribute('href')).toMatch(/^mailto:.+\?subject=.+&body=.+/);
   });
 
-  it('"Read the full dossier" exits to the hiring lens (filtered stack)', async () => {
+  it('cards accordion — opening one folds the others (single open)', async () => {
     window.history.replaceState(null, '', '?read=30s');
     render(<App />);
 
-    fireEvent.click(await screen.findByRole('button', { name: /Read the full dossier/i }));
+    const hiring = await screen.findByRole('button', { name: /^Hiring Manager/i });
+    const client = screen.getByRole('button', { name: /^Client/i });
+    expect(hiring.getAttribute('aria-expanded')).toBe('true');
+
+    fireEvent.click(client);
+    expect(client.getAttribute('aria-expanded')).toBe('true');
+    expect(hiring.getAttribute('aria-expanded')).toBe('false');
+
+    // Reversible — clicking the open card's header folds it back to neutral.
+    fireEvent.click(client);
+    expect(client.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('"Enter this reading" on the Hiring card routes to the hiring lens (filtered stack)', async () => {
+    window.history.replaceState(null, '', '?read=30s');
+    render(<App />);
+    await screen.findByRole('region', { name: /30 second read/i });
+
+    fireEvent.click(enterButton('hiring'));
 
     await waitFor(() => expect(window.location.search).toContain('read=hiring'));
     expect(screen.queryByRole('region', { name: /30 second read/i })).toBeNull();
-    // Hiring route filters the stack to 00,03,07,08.
     expect(getModuleToggle('module-03')).not.toBeNull();
     expect(getModuleToggle('module-01')).toBeNull();
+  });
+
+  it('"Enter this reading" on Full Dossier clears the lens (all modules, no ?read=)', async () => {
+    window.history.replaceState(null, '', '?read=30s');
+    render(<App />);
+    await screen.findByRole('region', { name: /30 second read/i });
+
+    fireEvent.click(enterButton('full'));
+
+    await waitFor(() => expect(screen.queryByRole('region', { name: /30 second read/i })).toBeNull());
+    expect(window.location.search).not.toContain('read=');
+    ['00', '01', '02', '03', '04', '05', '06', '07', '08'].forEach(idx =>
+      expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
   });
 
   it('an unknown ?read= value falls back to the default dossier (no 30s, no blank)', async () => {
