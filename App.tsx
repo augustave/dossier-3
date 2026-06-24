@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { CONTENT_MODULES, AudienceId, AUDIENCES } from './constants';
+import { CONTENT_MODULES, RouteValue, ROUTES, isRouteValue } from './constants';
 import { ModuleStrata } from './components/ModuleStrata';
 import { ManifestOverlay } from './components/ManifestOverlay';
 import { FrontMatterContent } from './components/FrontMatterContent';
-import ThirtySecondView from './components/ThirtySecondView';
+import { CreaseMap } from './components/CreaseMap';
 import { ModuleType } from './types';
 import { CONTACT, hasLinkedIn } from './contact';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
@@ -44,28 +44,19 @@ const RENDERED_MODULES = CONTENT_MODULES
   .filter(m => m.id !== ModuleType.MANIFEST)
   .sort((a, b) => a.index.localeCompare(b.index));
 const TOTAL_MODULE_COUNT = RENDERED_MODULES.length;
-const formatModuleCount = (count: number) => String(count).padStart(2, '0');
+const INDEX_COUNT = String(TOTAL_MODULE_COUNT).padStart(2, '0');
 
-const AUDIENCE_IDS = AUDIENCES.map(a => a.id);
-const isAudienceId = (s: string | null): s is AudienceId =>
-  s !== null && (AUDIENCE_IDS as string[]).includes(s);
-
-// ?read= accepts the canonical ids AND their long-form spellings, so a shared
-// /?read=collaborator or /?read=academic resolves the same lens as the short id.
-const READ_ALIASES: Record<string, AudienceId> = {
+// ?read= accepts the canonical route ids AND their long-form spellings, so a
+// shared /?read=collaborator or /?read=academic resolves the same route.
+const ROUTE_ALIASES: Record<string, RouteValue> = {
   collaborator: 'collab',
   academic: 'acad',
 };
-const normalizeAudienceId = (s: string | null): AudienceId | null => {
+const normalizeRouteValue = (s: string | null): RouteValue | null => {
   if (s === null) return null;
-  if (isAudienceId(s)) return s;
-  return READ_ALIASES[s] ?? null;
+  if (isRouteValue(s)) return s;
+  return ROUTE_ALIASES[s] ?? null;
 };
-
-// Reading-path notation: "00 -> 03 -> 07 -> 08".
-const formatPath = (modules: string[]) => modules.join(' → ');
-const titleCaseLabel = (label: string) =>
-  label.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 
 // Fixed-masthead clearance — matches each section's scroll-mt-[100px].
 const MASTHEAD_OFFSET = 100;
@@ -209,13 +200,8 @@ const App: React.FC = () => {
   // doesn't collapse and steal vertical space while the target scrolls + folds.
   const [keepOpenIndex, setKeepOpenIndex] = useState<string | null>(null);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
-  const [selectedAudience, setSelectedAudience] = useState<AudienceId | null>(null);
-  // Move 1 (?read=30s): a thesis-first one-screen view rendered in place of the
-  // dossier stack. Detected on mount; exited via "Read the full dossier".
-  const [show30s, setShow30s] = useState(false);
-  // Selected lens collapses to a route stamp; CHANGE LENS reveals the four
-  // choices again so the reader can switch without touching the URL.
-  const [lensPickerOpen, setLensPickerOpen] = useState(false);
+  // V3.6.8 Crease Map: the selected reading route (or null = neutral overview).
+  const [selectedRoute, setSelectedRoute] = useState<RouteValue | null>(null);
   // Latest scroll-first open request. A mutable ref (not state) so rapid clicks
   // resolve to the LAST module — an in-flight settle callback bails if superseded.
   const pendingRef = useRef<string | null>(null);
@@ -241,33 +227,9 @@ const App: React.FC = () => {
     closeInteractionCleanupRef.current = null;
   };
 
-  // Read ?read= URL param on mount. Shareable views: ct-dossier/?read=hiring etc.
-  // ?read=30s opens the Move 1 thesis-first screen; any other value resolves to
-  // a lens (or falls through to the default dossier).
-  useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const raw = params.get('read');
-      if (raw === '30s') { setShow30s(true); return; }
-      const read = normalizeAudienceId(raw);
-      if (read) setSelectedAudience(read);
-    } catch (e) {
-      // URLSearchParams unsupported (test env, etc.) — fall through.
-    }
-  }, []);
-
-  // Move 1 exit — a lens card's "Enter this reading" swaps the 30s view for that
-  // lens in place (no reload). 'full' (and any unknown value) clears the lens and
-  // shows the complete dossier rather than a blank screen.
-  const enterReading = (value: string) => {
-    setShow30s(false);
-    const id = value === 'full' ? null : normalizeAudienceId(value);
-    setSelectedAudience(id);
-    writeAudienceToUrl(id);
-  };
-
-  // Sync URL when audience changes. Uses replaceState so back-button isn't polluted.
-  const writeAudienceToUrl = (next: AudienceId | null) => {
+  // Sync ?read= with the selected route. replaceState so the back-button isn't
+  // polluted. Defined before the mount effect uses it (closure).
+  const writeRouteToUrl = (next: RouteValue | null) => {
     try {
       const url = new URL(window.location.href);
       if (next) url.searchParams.set('read', next);
@@ -278,45 +240,41 @@ const App: React.FC = () => {
     }
   };
 
-  // Selecting a lens stamps the route and collapses the picker. Never opens or
-  // scrolls anything.
-  const selectLens = (id: AudienceId) => {
-    setSelectedAudience(id);
-    writeAudienceToUrl(id);
-    setLensPickerOpen(false);
+  // Read ?read= on mount. ?read=30s is RETIRED (V3.6.8) — strip it back to the
+  // neutral overview at /. Any route value (incl long-form aliases) selects it.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get('read');
+      if (raw === '30s') { writeRouteToUrl(null); return; }
+      const route = normalizeRouteValue(raw);
+      if (route) setSelectedRoute(route);
+    } catch (e) {
+      // URLSearchParams unsupported (test env, etc.) — fall through.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Crease Map selection — stamp the route + sync ?read=. Never filters, opens,
+  // or scrolls. null clears to the neutral overview.
+  const selectRoute = (next: RouteValue | null) => {
+    setSelectedRoute(next);
+    writeRouteToUrl(next);
   };
 
-  // CHANGE LENS — reveal the four choices again, keeping the current selection
-  // until a new one is picked.
-  const changeLens = () => setLensPickerOpen(true);
-
-  const clearAudience = () => {
-    setSelectedAudience(null);
-    writeAudienceToUrl(null);
-    setLensPickerOpen(false);
-  };
-
-  // Module 00 — FRONT MATTER. The Reading Lens lives ONCE, in the strip above
-  // the stack; module 00 no longer renders a duplicate lens block.
+  // Module 00 — FRONT MATTER. The route lives ONCE, in the Crease Map above the
+  // stack; module 00 renders no duplicate.
   const frontMatterDisplay = useMemo(() => <FrontMatterContent />, []);
 
-  const selectedLens = useMemo(
-    () => (selectedAudience ? AUDIENCES.find(a => a.id === selectedAudience) ?? null : null),
-    [selectedAudience]
+  // V3.6.8: the route is an ORIENTATION AID, never a filter. ALL modules always
+  // render; the active route only drives the Index RECOMMENDED markers.
+  const visibleModules = RENDERED_MODULES;
+  const activeRoute = useMemo(
+    () => (selectedRoute ? ROUTES.find(r => r.value === selectedRoute) ?? null : null),
+    [selectedRoute]
   );
-
-  // V3.6.9: the Reading Lens FILTERS the stack. A selected lens shows ONLY its
-  // route's modules (00 always included); no lens shows the full archive. The
-  // Index mirrors the same set so a click can't target a hidden module.
-  const visibleModules = useMemo(
-    () => (selectedLens ? RENDERED_MODULES.filter(m => selectedLens.modules.includes(m.index)) : RENDERED_MODULES),
-    [selectedLens]
-  );
-  const visibleIndices = useMemo(() => visibleModules.map(m => m.index), [visibleModules]);
-  const selectedLensLabel = selectedLens ? titleCaseLabel(selectedLens.label) : null;
-  const indexCountLabel = selectedLens
-    ? `${formatModuleCount(visibleModules.length)} / ${formatModuleCount(TOTAL_MODULE_COUNT)}`
-    : formatModuleCount(TOTAL_MODULE_COUNT);
+  const recommendedIndices = activeRoute ? activeRoute.modules : [];
+  const recommendedLabel = activeRoute && activeRoute.modules.length ? activeRoute.label : undefined;
 
   // Deep-link init — open the target module if a #module-XX hash is present.
   // On root load with no hash: dossier starts fully folded (null). The first
@@ -457,11 +415,6 @@ const App: React.FC = () => {
     window.setTimeout(() => requestOpenModule(index), 60);
   };
 
-  // Move 1 — ?read=30s renders the thesis-first screen in place of the stack.
-  if (show30s) {
-    return <ThirtySecondView mailtoHref={CONVERSATION_MAILTO} onEnter={enterReading} />;
-  }
-
   return (
     <div className="min-h-screen w-full relative">
       
@@ -487,7 +440,7 @@ const App: React.FC = () => {
                   onClick={() => setIsIndexOpen(true)}
                   className="font-mono text-xs uppercase tracking-widest border border-black/40 px-3 py-1 hover:bg-black hover:text-white hover:border-black transition-colors text-black"
                >
-                  INDEX ({indexCountLabel})
+                  INDEX ({INDEX_COUNT})
                </button>
              </div>
              <div className="hidden md:block font-mono text-micro text-right text-black/50">
@@ -499,94 +452,9 @@ const App: React.FC = () => {
 
       {/* pt-24/pt-32 clears the fixed masthead. Module 00 is first in the stack. */}
       <main className="w-full pt-24 md:pt-32">
-        <section
-          aria-label="Reading Lens"
-          data-testid="reading-lens-strip"
-          className="container mx-auto px-4 md:px-8 max-w-6xl mb-4 md:mb-6"
-        >
-          <div className="border-y border-black/10 py-3 md:py-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            {/* The lens is a route STAMP. A selected lens collapses to route
-                metadata + a single CHANGE LENS control; the four choices return
-                only when the reader asks for them. Lives ONCE here (module 00
-                renders no duplicate). Never opens or scrolls anything. */}
-            <div className="flex flex-col gap-1 min-w-0" aria-live="polite">
-              <span className="font-mono text-micro uppercase tracking-[0.25em] text-black/40">
-                Reading Lens
-              </span>
-              {selectedLens && !lensPickerOpen ? (
-                <div className="flex flex-col gap-1.5">
-                  <span className="font-mono text-micro uppercase tracking-[0.22em] text-black/70">
-                    {selectedLensLabel} route · {visibleModules.length} of {TOTAL_MODULE_COUNT} modules shown
-                  </span>
-                  <span className="font-mono text-xs md:text-sm tracking-[0.3em] text-strata-blue" data-testid="reading-lens-path">
-                    {formatPath(selectedLens.modules)}
-                  </span>
-                  <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
-                    {selectedLens.helper}
-                  </span>
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={changeLens}
-                      aria-label="Change reading lens"
-                      className="min-h-10 border border-black/25 px-3 py-2 font-mono text-micro uppercase tracking-widest text-black/60 hover:text-black hover:border-black transition-colors"
-                    >
-                      Change lens
-                    </button>
-                    <button
-                      type="button"
-                      onClick={clearAudience}
-                      aria-label="Show all modules"
-                      className="min-h-10 border border-black/25 px-3 py-2 font-mono text-micro uppercase tracking-widest text-black/60 hover:text-black hover:border-black transition-colors"
-                    >
-                      All modules
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <span className="font-mono text-micro uppercase tracking-[0.18em] text-black/55 leading-relaxed" data-testid="active-reading-lens">
-                  {selectedLens ? `${selectedLensLabel} selected · choose another route.` : 'Select a reading lens.'}
-                </span>
-              )}
-            </div>
-            {/* Picker — shown when no lens is chosen OR when CHANGE LENS reveals
-                the choices. Once a lens is selected the choices are removed
-                entirely (not hidden) so they leave the tab order. */}
-            {(!selectedAudience || lensPickerOpen) && (
-              <div className="flex flex-wrap gap-2 shrink-0">
-                {AUDIENCES.map((a) => {
-                  const isActive = selectedAudience === a.id;
-                  return (
-                    <button
-                      key={a.id}
-                      type="button"
-                      onClick={() => selectLens(a.id)}
-                      aria-pressed={isActive}
-                      aria-label={`Set reading lens: ${a.label}`}
-                      className={`min-h-10 font-mono text-micro md:text-xs uppercase tracking-widest border px-3 py-2 transition-colors ${
-                        isActive
-                          ? 'bg-black text-white border-black'
-                          : 'bg-transparent text-black/60 border-black/25 hover:border-black hover:text-black'
-                      }`}
-                    >
-                      {a.label}
-                    </button>
-                  );
-                })}
-                {selectedAudience && (
-                  <button
-                    type="button"
-                    onClick={clearAudience}
-                    aria-label="Clear reading lens"
-                    className="min-h-10 font-mono text-micro md:text-xs uppercase tracking-widest border border-black/20 px-3 py-2 text-black/45 hover:text-black hover:border-black transition-colors"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </section>
+        {/* The dossier's TOP FOLD — bet + folding route bands. Selecting a route
+            stamps it + drives the Index markers; it never filters. */}
+        <CreaseMap selectedRoute={selectedRoute} onSelectRoute={selectRoute} />
 
         {/* Render visible modules. Module 00 gets its dynamic responseDisplay
             injected here (carries lens state). stackIndex/stackCount drive the
@@ -679,11 +547,8 @@ const App: React.FC = () => {
         onClose={() => setIsIndexOpen(false)}
         onNavigate={handleIndexNavigate}
         activeIndex={openModuleIndex}
-        visibleIndices={visibleIndices}
-        routeLabel={selectedLensLabel}
-        routeCount={visibleModules.length}
-        totalCount={TOTAL_MODULE_COUNT}
-        onClearRoute={clearAudience}
+        recommendedIndices={recommendedIndices}
+        recommendedLabel={recommendedLabel}
       />
     </div>
   );

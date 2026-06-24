@@ -268,218 +268,110 @@ describe('Inquiry dialog (component, contactEmail branches)', () => {
   });
 });
 
-describe('Reading Lens (V3.6.9 route filter)', () => {
-  // Every module index that must always remain on the page — the lens never hides.
+describe('Crease Map (V3.6.8 route bands, no filter)', () => {
   const ALL = ['00', '01', '02', '03', '04', '05', '06', '07', '08'];
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
     window.location.hash = '';
-    // Reset search params before each test.
-    try {
-      window.history.replaceState(null, '', window.location.pathname);
-    } catch (e) {}
+    try { window.history.replaceState(null, '', window.location.pathname); } catch (e) {}
   });
 
-  it('reads ?read=hiring on mount and collapses to a route stamp with CHANGE LENS', async () => {
-    window.history.replaceState(null, '', '?read=hiring');
+  const band = (value: string) => screen.getByTestId(`route-band-${value}`);
+
+  it('root shows the bet + 5 folded route bands + all 9 modules; no default route', async () => {
     render(<App />);
-
-    const strip = await screen.findByTestId('reading-lens-strip');
-    expect(within(strip).getByText(/Hiring Manager route · 4 of 9 modules shown/i)).toBeInTheDocument();
-    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 03 → 07 → 08');
-    expect(within(strip).getByText(/visual language, built evidence, and biography/i)).toBeInTheDocument();
-    // Stamp + a single CHANGE LENS control — the four tabs are gone.
-    expect(within(strip).queryByRole('button', { name: 'Set reading lens: CLIENT' })).toBeNull();
-    expect(within(strip).queryByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeNull();
-    expect(within(strip).getByRole('button', { name: /Change reading lens/i })).toBeInTheDocument();
-    expect(within(strip).getByRole('button', { name: /Show all modules/i })).toBeInTheDocument();
-    expect(screen.getByText(/INDEX \(04 \/ 09\)/i)).toBeInTheDocument();
-    expect(screen.queryByTestId('start-path')).toBeNull();
-
-    // Lens FILTERS the stack — only the route's modules render; nothing auto-opens.
-    ['00', '03', '07', '08'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
-    ['01', '02', '04', '05', '06'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).toBeNull());
-    expect(document.querySelector('#module-00 .fold')?.getAttribute('data-open')).toBe('false');
-  });
-
-  it('CHANGE LENS reveals the four choices again and lets the reader switch', async () => {
-    window.history.replaceState(null, '', '?read=hiring');
-    render(<App />);
-
-    const strip = await screen.findByTestId('reading-lens-strip');
-    // Reveal the picker; current selection preserved, URL unchanged.
-    fireEvent.click(within(strip).getByRole('button', { name: /Change reading lens/i }));
-    expect(within(strip).getByText(/Hiring Manager selected · choose another route/i)).toBeInTheDocument();
-    const collab = await within(strip).findByRole('button', { name: 'Set reading lens: COLLABORATOR' });
-    expect(within(strip).getByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeInTheDocument();
-    expect(within(strip).getByRole('button', { name: 'Set reading lens: HIRING MANAGER' }).getAttribute('aria-pressed')).toBe('true');
-    expect(window.location.search).toContain('read=hiring');
-
-    // Switch lens → re-collapses to the new route stamp.
-    fireEvent.click(collab);
-    await waitFor(() => {
-      expect(window.location.search).toContain('read=collab');
-    });
-    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
-    expect(within(strip).queryByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeNull();
-  });
-
-  it('with no lens shows the picker; selecting one writes ?read= and removes the picker', async () => {
-    render(<App />);
-
-    const strip = await screen.findByTestId('reading-lens-strip');
-    expect(within(strip).getByText(/select a reading lens/i)).toBeInTheDocument();
-    const client = within(strip).getByRole('button', { name: 'Set reading lens: CLIENT' });
-    fireEvent.click(client);
-
-    await waitFor(() => {
-      expect(window.location.search).toContain('read=client');
-    });
-    // Stamp only — the picker is gone (not merely hidden).
-    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
-    expect(within(strip).queryByRole('button', { name: 'Set reading lens: HIRING MANAGER' })).toBeNull();
-    // Client route filters the stack to 00,01,03,05,07.
-    ['00', '01', '03', '05', '07'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
-    ['02', '04', '06', '08'].forEach(idx => expect(getModuleToggle(`module-${idx}`)).toBeNull());
-  });
-
-  it('root All modules clears the active route and restores the full stack', async () => {
-    window.history.replaceState(null, '', '?read=acad');
-    render(<App />);
-
-    const strip = await screen.findByTestId('reading-lens-strip');
-    expect(screen.getByText(/INDEX \(05 \/ 09\)/i)).toBeInTheDocument();
-    fireEvent.click(within(strip).getByRole('button', { name: /Show all modules/i }));
-
-    await waitFor(() => {
-      expect(window.location.search).not.toContain('read=');
-    });
-    expect(screen.getByText(/INDEX \(09\)/i)).toBeInTheDocument();
+    expect(await screen.findByTestId('crease-map')).toBeInTheDocument();
+    expect(screen.getByText(/I turn complex systems into visual languages/i)).toBeInTheDocument();
+    ['hiring', 'client', 'collab', 'acad', 'full'].forEach(v => expect(band(v)).toBeInTheDocument());
+    expect(screen.queryByTestId('route-stamp')).toBeNull();
+    expect(screen.queryByRole('button', { name: /Enter the recommended reading/i })).toBeNull();
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
   });
 
-  it('renders the Reading Lens / Reading Path block exactly once (no module-00 duplicate)', async () => {
-    window.history.replaceState(null, '', '?read=hiring');
+  it('selecting a band stamps the route (?read=), folds the others away, keeps all modules', async () => {
     render(<App />);
+    await screen.findByTestId('crease-map');
 
-    await screen.findByTestId('reading-lens-strip');
-    expect(screen.getAllByTestId('reading-lens-path')).toHaveLength(1);
-    expect(screen.getAllByText(/Hiring Manager route · 4 of 9 modules shown/i)).toHaveLength(1);
+    fireEvent.click(band('client'));
+
+    await waitFor(() => expect(window.location.search).toContain('read=client'));
+    const stamp = screen.getByTestId('route-stamp');
+    expect(within(stamp).getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
+    expect(screen.queryByTestId('route-band-hiring')).toBeNull();
+    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    expect(document.querySelector('.fold[data-open="true"]')).toBeNull();
   });
 
-  it('the Index lists ONLY the active route modules (lens filters)', async () => {
-    window.history.replaceState(null, '', '?read=hiring');
+  it('the stamp folds back to the overview (reversible; route persists)', async () => {
+    render(<App />);
+    await screen.findByTestId('crease-map');
+    fireEvent.click(band('hiring'));
+    const stamp = await screen.findByTestId('route-stamp');
+
+    fireEvent.click(stamp);
+
+    expect(await screen.findByTestId('route-band-client')).toBeInTheDocument();
+    expect(window.location.search).toContain('read=hiring');
+  });
+
+  it('?read=client deep-link shows the stamp + all 9 modules; Index marks RECOMMENDED, hides nothing', async () => {
+    window.history.replaceState(null, '', '?read=client');
     render(<App />);
 
-    fireEvent.click(screen.getByText(/INDEX \(/i));
+    const stamp = await screen.findByTestId('route-stamp');
+    expect(within(stamp).getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
+    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+
+    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
     const items = await screen.findAllByTestId('manifest-item');
-    const indices = items.map(r => r.getAttribute('data-index')).sort();
-    // Hiring route is 00,03,07,08 — the off-route modules are not listed.
-    expect(indices).toEqual(['00', '03', '07', '08']);
-    expect(screen.getByTestId('index-route-context')).toHaveTextContent(/Hiring Manager route · 4 of 9 modules shown/i);
-  });
-
-  it('All modules inside the Index clears the route and restores INDEX (09)', async () => {
-    window.history.replaceState(null, '', '?read=acad');
-    render(<App />);
-
-    fireEvent.click(screen.getByText(/INDEX \(05 \/ 09\)/i));
-    expect(await screen.findByTestId('index-route-context')).toHaveTextContent(/Academic route · 5 of 9 modules shown/i);
-    fireEvent.click(screen.getByRole('button', { name: /Show all modules from Index/i }));
-
-    await waitFor(() => {
-      expect(window.location.search).not.toContain('read=');
+    expect(items).toHaveLength(9);
+    const recd = ['00', '01', '03', '05', '07'];
+    items.forEach(row => {
+      const idx = row.getAttribute('data-index')!;
+      const marker = within(row).queryByText(/^recommended$/i);
+      if (recd.includes(idx)) expect(marker).toBeInTheDocument();
+      else expect(marker).not.toBeInTheDocument();
     });
-    expect(screen.getByText(/INDEX \(09\)/i)).toBeInTheDocument();
-    const items = await screen.findAllByTestId('manifest-item');
-    expect(items).toHaveLength(9);
-  });
-
-  it('with no lens the Index lists every module', async () => {
-    render(<App />);
-
-    fireEvent.click(screen.getByText(/INDEX \(/i));
-    const items = await screen.findAllByTestId('manifest-item');
-    expect(items).toHaveLength(9);
-  });
-
-  it('shows the reading-path notation for the active lens (V3.6.5 route card)', async () => {
-    window.history.replaceState(null, '', '?read=hiring');
-    render(<App />);
-
-    const strip = await screen.findByTestId('reading-lens-strip');
-    expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 03 → 07 → 08');
-  });
-
-  it('exposes no START PATH action (removed in V3.6.6)', async () => {
-    window.history.replaceState(null, '', '?read=collab');
-    render(<App />);
-
-    await screen.findByTestId('reading-lens-strip');
-    expect(screen.queryByTestId('start-path')).toBeNull();
-    expect(screen.queryByText(/start path/i)).toBeNull();
   });
 
   it('accepts the long-form ?read=collaborator alias', async () => {
     window.history.replaceState(null, '', '?read=collaborator');
     render(<App />);
-
-    const strip = await screen.findByTestId('reading-lens-strip');
-    await waitFor(() => {
-      expect(within(strip).getByTestId('reading-lens-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
-    });
-    expect(within(strip).getByText(/Collaborator route · 5 of 9 modules shown/i)).toBeInTheDocument();
+    const stamp = await screen.findByTestId('route-stamp');
+    expect(within(stamp).getByTestId('route-stamp-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
   });
 
-  it('opens module 04 using the masthead-safe scroll offset', async () => {
-    const originalScrollTo = window.scrollTo;
-    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
-    const scrollTo = vi.fn();
-    Object.defineProperty(window, 'scrollTo', { configurable: true, writable: true, value: scrollTo });
-    Element.prototype.getBoundingClientRect = function () {
-      if ((this as Element).id === 'module-04') {
-        return {
-          x: 0,
-          y: 640,
-          top: 640,
-          left: 0,
-          right: 100,
-          bottom: 760,
-          width: 100,
-          height: 120,
-          toJSON: () => ({}),
-        } as DOMRect;
-      }
-      return originalGetBoundingClientRect.call(this);
-    };
-
-    try {
-      window.history.replaceState(null, '', '?read=acad');
-      render(<App />);
-      scrollTo.mockClear();
-
-      fireEvent.click(getModuleToggle('module-04')!);
-
-      expect(scrollTo).toHaveBeenCalledWith({ top: 540, behavior: 'smooth' });
-    } finally {
-      Object.defineProperty(window, 'scrollTo', { configurable: true, writable: true, value: originalScrollTo });
-      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
-    }
-  });
-
-  it('Index row exposes accessible open state; off-route rows are absent', async () => {
-    window.history.replaceState(null, '', '?read=hiring');
+  it('Full Dossier route stamps ?read=full and marks NOTHING recommended (neutral)', async () => {
+    window.history.replaceState(null, '', '?read=full');
     render(<App />);
-
-    fireEvent.click(screen.getByText(/INDEX \(/i));
+    await screen.findByTestId('route-stamp');
+    ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
     const items = await screen.findAllByTestId('manifest-item');
-    const row07 = items.find(r => r.getAttribute('data-index') === '07')!;
-    expect(row07.getAttribute('aria-label')).toBe('07 PORTFOLIOS');
-    // 01 TASTE is off the hiring route — not listed at all.
-    expect(items.find(r => r.getAttribute('data-index') === '01')).toBeUndefined();
+    expect(items).toHaveLength(9);
+    items.forEach(row => expect(within(row).queryByText(/^recommended$/i)).not.toBeInTheDocument());
+  });
+
+  it('?read=30s is retired — redirects to the neutral overview (param stripped)', async () => {
+    window.history.replaceState(null, '', '?read=30s');
+    render(<App />);
+    await screen.findByTestId('crease-map');
+    expect(screen.queryByTestId('route-stamp')).toBeNull();
+    expect(screen.getByTestId('route-band-hiring')).toBeInTheDocument();
+    await waitFor(() => expect(window.location.search).not.toContain('read='));
+  });
+
+  it('with no route the Index lists all 9 with no recommended markers', async () => {
+    render(<App />);
+    await screen.findByTestId('crease-map');
+    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    const items = await screen.findAllByTestId('manifest-item');
+    expect(items).toHaveLength(9);
+    items.forEach(row => expect(within(row).queryByText(/^recommended$/i)).not.toBeInTheDocument());
   });
 });
+
 
 describe('Visual Languages (module 03)', () => {
   beforeEach(() => {
@@ -555,106 +447,5 @@ describe('Doctrine Library (module 06)', () => {
       expect(within(m6()).queryByText('Design Under Fire')).not.toBeInTheDocument();
     });
     expect(within(m6()).getByText('Dirty Canvas')).toBeInTheDocument();
-  });
-});
-
-describe('Move 1 — 30s thesis screen (?read=30s)', () => {
-  beforeEach(() => {
-    Element.prototype.scrollIntoView = () => {};
-    window.location.hash = '';
-    try { window.history.replaceState(null, '', window.location.pathname); } catch (e) {}
-  });
-
-  const enterButton = (value: string) =>
-    within(document.getElementById(`lens-panel-${value}`) as HTMLElement)
-      .getByRole('button', { name: /Enter this reading/i });
-
-  it('renders the landing — one primary door + subordinate folding rack, no stack', async () => {
-    window.history.replaceState(null, '', '?read=30s');
-    render(<App />);
-
-    expect(await screen.findByRole('region', { name: /30 second read/i })).toBeInTheDocument();
-    expect(screen.getByText(/I turn complex systems into visual languages/i)).toBeInTheDocument();
-    // ONE primary door (routes to the recommended reading).
-    expect(screen.getByRole('button', { name: /Enter the recommended reading/i })).toBeInTheDocument();
-    // Hiring is promoted to the door, so it is NOT a rack card; the rest are, all folded.
-    expect(screen.queryByRole('button', { name: /^Hiring Manager/i })).toBeNull();
-    expect(screen.getByRole('button', { name: /^Client/i }).getAttribute('aria-expanded')).toBe('false');
-    expect(screen.getByRole('button', { name: /^Full Dossier/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Compose inquiry/i })).toBeInTheDocument();
-    // The dossier stack is not rendered behind it.
-    expect(document.querySelector('section[id^="module-"]')).toBeNull();
-  });
-
-  it('the Compose inquiry CTA is the prefilled conversation mailto', async () => {
-    window.history.replaceState(null, '', '?read=30s');
-    render(<App />);
-    const compose = await screen.findByRole('link', { name: /Compose inquiry/i });
-    expect(compose.getAttribute('href')).toMatch(/^mailto:.+\?subject=.+&body=.+/);
-  });
-
-  it('surfaces the external work sites as a quiet footnote (links out, not a grid)', async () => {
-    window.history.replaceState(null, '', '?read=30s');
-    render(<App />);
-    await screen.findByRole('region', { name: /30 second read/i });
-    ['artdirector.rocks', 'brandproduct.dev', 'defense.observer'].forEach(d => {
-      const link = screen.getByRole('link', { name: d });
-      expect(link.getAttribute('href')).toBe(`https://${d}/`);
-      expect(link.getAttribute('target')).toBe('_blank');
-    });
-  });
-
-  it('cards accordion — opening one folds the others; reversible (single open)', async () => {
-    window.history.replaceState(null, '', '?read=30s');
-    render(<App />);
-
-    const client = await screen.findByRole('button', { name: /^Client/i });
-    const collab = screen.getByRole('button', { name: /^Collaborator/i });
-    expect(client.getAttribute('aria-expanded')).toBe('false'); // all folded by default
-
-    fireEvent.click(client);
-    expect(client.getAttribute('aria-expanded')).toBe('true');
-
-    fireEvent.click(collab);
-    expect(collab.getAttribute('aria-expanded')).toBe('true');
-    expect(client.getAttribute('aria-expanded')).toBe('false');
-
-    fireEvent.click(collab); // reversible back to neutral
-    expect(collab.getAttribute('aria-expanded')).toBe('false');
-  });
-
-  it('the primary door routes to the hiring lens (filtered stack)', async () => {
-    window.history.replaceState(null, '', '?read=30s');
-    render(<App />);
-    await screen.findByRole('region', { name: /30 second read/i });
-
-    fireEvent.click(screen.getByRole('button', { name: /Enter the recommended reading/i }));
-
-    await waitFor(() => expect(window.location.search).toContain('read=hiring'));
-    expect(screen.queryByRole('region', { name: /30 second read/i })).toBeNull();
-    expect(getModuleToggle('module-03')).not.toBeNull();
-    expect(getModuleToggle('module-01')).toBeNull();
-  });
-
-  it('"Enter this reading" on Full Dossier clears the lens (all modules, no ?read=)', async () => {
-    window.history.replaceState(null, '', '?read=30s');
-    render(<App />);
-    await screen.findByRole('region', { name: /30 second read/i });
-
-    fireEvent.click(enterButton('full'));
-
-    await waitFor(() => expect(screen.queryByRole('region', { name: /30 second read/i })).toBeNull());
-    expect(window.location.search).not.toContain('read=');
-    ['00', '01', '02', '03', '04', '05', '06', '07', '08'].forEach(idx =>
-      expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
-  });
-
-  it('an unknown ?read= value falls back to the default dossier (no 30s, no blank)', async () => {
-    window.history.replaceState(null, '', '?read=zzz');
-    render(<App />);
-
-    expect(screen.queryByRole('region', { name: /30 second read/i })).toBeNull();
-    expect(getModuleToggle('module-00')).not.toBeNull();
-    expect(getModuleToggle('module-06')).not.toBeNull();
   });
 });

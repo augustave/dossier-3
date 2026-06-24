@@ -28,6 +28,57 @@ export const AUDIENCES: Audience[] = [
     helper: 'Recommended path: sourcing discipline, neighborhood map, doctrine, and library.' }
 ];
 
+// V3.6.8 Crease Map: each reading route is a folding band. A fold-context prefix
+// (mountain / valley / flat sheet) echoes the dossier's own pleat language. The
+// route is an ORIENTATION AID — it stamps a path + marks the Index, never filters.
+export type RouteValue = AudienceId | 'full';
+
+export interface RouteBand {
+  value: RouteValue;
+  label: string;
+  prefix: 'MOUNTAIN' | 'VALLEY' | 'FLAT SHEET';
+  path: string;        // "00 → 03 → 07 → 08"
+  time: string;        // "~5 min"
+  helper: string;
+  bestIf: string;
+  /** Modules the Index marks RECOMMENDED for this route ([] = neutral, e.g. full). */
+  modules: string[];
+}
+
+const ROUTE_META: Record<RouteValue, { prefix: RouteBand['prefix']; time: string; bestIf: string }> = {
+  hiring: { prefix: 'MOUNTAIN',   time: '~5 min',  bestIf: 'you need to understand fit quickly' },
+  client: { prefix: 'VALLEY',     time: '~6 min',  bestIf: 'your thing is real but illegible' },
+  collab: { prefix: 'MOUNTAIN',   time: '~6 min',  bestIf: 'you want to think or build together' },
+  acad:   { prefix: 'VALLEY',     time: '~7 min',  bestIf: 'you want the framework and its sources' },
+  full:   { prefix: 'FLAT SHEET', time: '~12 min', bestIf: 'you have time to read the whole archive' },
+};
+
+export const ROUTES: RouteBand[] = [
+  ...AUDIENCES.map((a): RouteBand => ({
+    value: a.id,
+    label: a.label,
+    prefix: ROUTE_META[a.id].prefix,
+    path: a.modules.join(' → '),
+    time: ROUTE_META[a.id].time,
+    helper: a.helper,
+    bestIf: ROUTE_META[a.id].bestIf,
+    modules: a.modules,
+  })),
+  {
+    value: 'full',
+    label: 'FULL DOSSIER',
+    prefix: 'FLAT SHEET',
+    path: '00 → 08',
+    time: ROUTE_META.full.time,
+    helper: 'Every module, unfiltered, in narrative order — the complete read.',
+    bestIf: ROUTE_META.full.bestIf,
+    modules: [],
+  },
+];
+
+export const isRouteValue = (s: string | null): s is RouteValue =>
+  s !== null && ROUTES.some((r) => r.value === s);
+
 export const COLORS = {
   blue: 'bg-strata-blue text-white border-white/20 theme-blue',
   cream: 'bg-strata-cream text-strata-black border-strata-black/20',
