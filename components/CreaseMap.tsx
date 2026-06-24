@@ -75,9 +75,9 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
           {COPY.support}
         </p>
         <p className="font-sans text-caption text-strata-black opacity-tertiary max-w-[54ch] mt-2">
-          <span className="font-mono text-micro uppercase tracking-ultra text-strata-clay mr-1.5 whitespace-nowrap">For</span>
+          <span className="font-mono text-micro uppercase tracking-ultra text-strata-clay whitespace-nowrap">For</span>{' '}
           {COPY.forText}{' '}
-          <span className="font-mono text-micro uppercase tracking-ultra text-strata-clay mr-1.5 whitespace-nowrap">Not for</span>
+          <span className="font-mono text-micro uppercase tracking-ultra text-strata-clay whitespace-nowrap">Not for</span>{' '}
           {COPY.notForText}
         </p>
       </div>
@@ -105,7 +105,7 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
                       <span className="font-mono text-micro uppercase tracking-wider text-strata-black opacity-muted">{r.prefix}</span>
                       <span className="font-sans font-semibold text-caption tracking-tight text-strata-black opacity-secondary group-hover:opacity-primary">{r.label}</span>
                     </span>
-                    <span className="font-mono text-micro text-strata-black opacity-muted shrink-0">{r.path} · {r.time.toUpperCase()}</span>
+                    <span className="font-mono text-micro text-strata-black opacity-muted shrink-0">{r.path}{r.tag ? ` · ${r.tag}` : ''} · {r.time.toUpperCase()}</span>
                   </button>
                 );
               })}

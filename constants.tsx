@@ -38,6 +38,8 @@ export interface RouteBand {
   label: string;
   prefix: 'MOUNTAIN' | 'VALLEY' | 'FLAT SHEET';
   path: string;        // "00 → 03 → 07 → 08"
+  /** Optional band note between path and time (e.g. "COMPLETE READ" for full). */
+  tag?: string;
   time: string;        // "~5 min"
   helper: string;
   bestIf: string;
@@ -68,7 +70,8 @@ export const ROUTES: RouteBand[] = [
     value: 'full',
     label: 'FULL DOSSIER',
     prefix: 'FLAT SHEET',
-    path: '00 → 08',
+    path: '00–08',
+    tag: 'COMPLETE READ',
     time: ROUTE_META.full.time,
     helper: 'Every module, unfiltered, in narrative order — the complete read.',
     bestIf: ROUTE_META.full.bestIf,
