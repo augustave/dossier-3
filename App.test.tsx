@@ -569,14 +569,16 @@ describe('Move 1 — 30s thesis screen (?read=30s)', () => {
     within(document.getElementById(`lens-panel-${value}`) as HTMLElement)
       .getByRole('button', { name: /Enter this reading/i });
 
-  it('renders the 30s screen with the folding lens selector instead of the stack', async () => {
+  it('renders the landing — one primary door + subordinate folding rack, no stack', async () => {
     window.history.replaceState(null, '', '?read=30s');
     render(<App />);
 
     expect(await screen.findByRole('region', { name: /30 second read/i })).toBeInTheDocument();
     expect(screen.getByText(/I turn complex systems into visual languages/i)).toBeInTheDocument();
-    // Folding lens selector: a card header per lens, Hiring open by default.
-    expect(screen.getByRole('button', { name: /^Hiring Manager/i }).getAttribute('aria-expanded')).toBe('true');
+    // ONE primary door (routes to the recommended reading).
+    expect(screen.getByRole('button', { name: /Enter the recommended reading/i })).toBeInTheDocument();
+    // Hiring is promoted to the door, so it is NOT a rack card; the rest are, all folded.
+    expect(screen.queryByRole('button', { name: /^Hiring Manager/i })).toBeNull();
     expect(screen.getByRole('button', { name: /^Client/i }).getAttribute('aria-expanded')).toBe('false');
     expect(screen.getByRole('button', { name: /^Full Dossier/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Compose inquiry/i })).toBeInTheDocument();
@@ -591,29 +593,42 @@ describe('Move 1 — 30s thesis screen (?read=30s)', () => {
     expect(compose.getAttribute('href')).toMatch(/^mailto:.+\?subject=.+&body=.+/);
   });
 
-  it('cards accordion — opening one folds the others (single open)', async () => {
+  it('surfaces the external work sites as a quiet footnote (links out, not a grid)', async () => {
+    window.history.replaceState(null, '', '?read=30s');
+    render(<App />);
+    await screen.findByRole('region', { name: /30 second read/i });
+    ['artdirector.rocks', 'brandproduct.dev', 'defense.observer'].forEach(d => {
+      const link = screen.getByRole('link', { name: d });
+      expect(link.getAttribute('href')).toBe(`https://${d}/`);
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+  });
+
+  it('cards accordion — opening one folds the others; reversible (single open)', async () => {
     window.history.replaceState(null, '', '?read=30s');
     render(<App />);
 
-    const hiring = await screen.findByRole('button', { name: /^Hiring Manager/i });
-    const client = screen.getByRole('button', { name: /^Client/i });
-    expect(hiring.getAttribute('aria-expanded')).toBe('true');
+    const client = await screen.findByRole('button', { name: /^Client/i });
+    const collab = screen.getByRole('button', { name: /^Collaborator/i });
+    expect(client.getAttribute('aria-expanded')).toBe('false'); // all folded by default
 
     fireEvent.click(client);
     expect(client.getAttribute('aria-expanded')).toBe('true');
-    expect(hiring.getAttribute('aria-expanded')).toBe('false');
 
-    // Reversible — clicking the open card's header folds it back to neutral.
-    fireEvent.click(client);
+    fireEvent.click(collab);
+    expect(collab.getAttribute('aria-expanded')).toBe('true');
     expect(client.getAttribute('aria-expanded')).toBe('false');
+
+    fireEvent.click(collab); // reversible back to neutral
+    expect(collab.getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('"Enter this reading" on the Hiring card routes to the hiring lens (filtered stack)', async () => {
+  it('the primary door routes to the hiring lens (filtered stack)', async () => {
     window.history.replaceState(null, '', '?read=30s');
     render(<App />);
     await screen.findByRole('region', { name: /30 second read/i });
 
-    fireEvent.click(enterButton('hiring'));
+    fireEvent.click(screen.getByRole('button', { name: /Enter the recommended reading/i }));
 
     await waitFor(() => expect(window.location.search).toContain('read=hiring'));
     expect(screen.queryByRole('region', { name: /30 second read/i })).toBeNull();

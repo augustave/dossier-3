@@ -36,6 +36,7 @@ module.exports = {
         subhead: ['24px', { lineHeight: '1.4' }],
         heading: ['32px', { lineHeight: '1.3' }],
         display: ['40px', { lineHeight: '1.2' }],
+        hero: ['54px', { lineHeight: '1.04' }],
       },
       opacity: {
         primary: '1',

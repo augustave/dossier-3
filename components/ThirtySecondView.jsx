@@ -1,18 +1,24 @@
 /**
  * ThirtySecondView.jsx — CT DOSSIER · Move 1 (`?read=30s`)
  * ---------------------------------------------------------------------------
- * Thesis-first screen rendered in place of the dossier stack when ?read=30s.
- * On-doctrine skin: the app's type system (Inter / Playfair / JetBrains Mono via
- * Tailwind), matte strata-cream paper + ink, and matte button treatment (no neon
- * fill). The lower CTA row is a FOLDING LENS SELECTOR ("Read as —"): each lens
- * is one Record Card — folded (label + descriptor + ▸) / unfolded (detail +
- * Path/Best-if/Time + "Enter this reading →"). Accordion, reversible, respects
- * prefers-reduced-motion.
+ * Thesis-first LANDING rendered in place of the dossier stack when ?read=30s.
+ * Structure (V2, "Thesis-First, One Door" — design-panel winner):
+ *   1. masthead strip
+ *   2. BET ZONE (vertically dominant): kicker + spear (display) + support +
+ *      an inline For/Not "fit line" (no separate block)
+ *   3. ONE primary door — the only filled / only strata-blue element:
+ *      "Enter the recommended reading →" routes to the hiring lens, with a
+ *      mono route sub-label previewing the path.
+ *   4. subordinate "Or read as —" folding lens rack (client / collaborator /
+ *      academic / full dossier). Hiring lives in the door, not the rack.
+ *   5. quiet footer: Compose inquiry + Built work lives elsewhere (links out).
  *
- * Props (all optional):
- *   onEnter(value) — applies the lens + exits 30s in place (App handles it).
- *   mailtoHref     — Compose Inquiry mailto (App passes CONVERSATION_MAILTO).
- *   plus DEFAULTS copy fields below.
+ * Doctrine: matte only (no glow/gradient/shadow/scale); strata-blue is the lone
+ * accent and the lone fill; mono = metadata, Inter = titles/actions; strata-clay
+ * earns exactly one job (the For/Not ticks). The folding accordion is preserved
+ * verbatim (transformation-without-addition, reversibility, aria, reduced-motion).
+ *
+ * Props (all optional): onEnter(value), mailtoHref, + DEFAULTS copy fields.
  * ---------------------------------------------------------------------------
  */
 
@@ -25,9 +31,10 @@ const DEFAULTS = {
     "AI-Native Design Engineer & Art Director — I turn complex systems into visual languages.",
   support:
     "I am not trying to make complex things simple. I am trying to make them legible without making them smaller.",
-  forText: "Teams whose thing is real, but the language around it hasn't caught up.",
-  notForText: "Trend-cycle branding. Decoration. Spectacle.",
-  defaultOpen: "hiring", // which card is unfolded on load (null = all folded)
+  forText: "teams whose thing is real, but the language around it hasn't caught up.",
+  notForText: "trend-cycle branding, decoration, spectacle.",
+  recommended: "hiring", // the lens the primary door routes to
+  defaultOpen: null, // all rack cards folded by default (hiring is the door)
   email: "ebenz.aug@gmail.com",
   inquirySubject: "CT DOSSIER — fit",
   inquiryBody: [
@@ -40,6 +47,9 @@ const DEFAULTS = {
   ].join("\n"),
   footer: "CT DOSSIER · This is not a portfolio. The built work lives elsewhere.",
 };
+
+// Built work lives elsewhere — a footnote exit, never a competing module.
+const WORK_SITES = ["artdirector.rocks", "brandproduct.dev", "defense.observer"];
 
 /* ------------------------- lens cards (data-driven) ---------------------- */
 const titleCase = (s) => s.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase());
@@ -59,18 +69,24 @@ const PER_LENS = {
   acad: { bestIf: "you want the framework and its sources", time: "~7 min" },
 };
 
+const toCard = (a) => ({
+  label: titleCase(a.label),
+  value: a.id,
+  desc: toDescriptor(a.helper),
+  detail: a.helper,
+  fields: [
+    ["Path", a.modules.join(" → ")],
+    ["Best if", (PER_LENS[a.id] || {}).bestIf || "—"],
+    ["Time", (PER_LENS[a.id] || {}).time || "—"],
+  ],
+});
+
+const RECOMMENDED = AUDIENCES.find((a) => a.id === DEFAULTS.recommended);
+const RECOMMENDED_CARD = RECOMMENDED ? toCard(RECOMMENDED) : null;
+
+// Rack = every lens EXCEPT the recommended one (it lives in the door) + Full.
 const LENS_CARDS = [
-  ...AUDIENCES.map((a) => ({
-    label: titleCase(a.label),
-    value: a.id,
-    desc: toDescriptor(a.helper),
-    detail: a.helper,
-    fields: [
-      ["Path", a.modules.join(" → ")],
-      ["Best if", (PER_LENS[a.id] || {}).bestIf || "—"],
-      ["Time", (PER_LENS[a.id] || {}).time || "—"],
-    ],
-  })),
+  ...AUDIENCES.filter((a) => a.id !== DEFAULTS.recommended).map(toCard),
   {
     label: "Full Dossier",
     value: "full",
@@ -172,80 +188,102 @@ export default function ThirtySecondView(props) {
     else setLens(value);
   };
 
-  const label = "font-mono text-micro uppercase tracking-[0.25em] text-black/40";
+  // Shared token shorthands (named tokens, not raw utilities).
+  const META = "font-mono text-micro uppercase tracking-ultra text-strata-black opacity-subtle";
+  const KEY = "font-mono text-micro uppercase tracking-wider text-strata-black opacity-muted";
+  const routePath = RECOMMENDED_CARD ? RECOMMENDED_CARD.fields[0][1] : "";
+  const routeTime = (PER_LENS[c.recommended] || {}).time || "";
 
   return (
     <div
       id="ct-30s-root"
       role="region"
       aria-label="CT Dossier — 30 second read"
-      className="fixed inset-0 z-50 overflow-auto bg-strata-cream text-strata-black flex flex-col px-6 py-8 md:px-12 md:py-12"
+      className="fixed inset-0 z-50 overflow-auto bg-strata-cream text-strata-black flex flex-col px-6 py-8 md:px-12 md:py-10"
     >
       <style>{FOLD_CSS}</style>
 
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
-        <span className={label}>CT DOSSIER · 30s</span>
-        <span className={label}>Ebenz Augustave</span>
+        <span className={META}>CT DOSSIER · 30s</span>
+        <span className={META}>Ebenz Augustave</span>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center w-full max-w-3xl mx-auto py-8">
-        <span className={`${label} rise`}>The bet</span>
-        <h1 className="rise font-sans font-black tracking-tightest leading-[1.04] text-3xl md:text-5xl lg:text-[3.4rem] mt-2">
+      <div className="flex-1 flex flex-col justify-center w-full max-w-3xl mx-auto py-6">
+        {/* BET ZONE — vertically dominant */}
+        <span className="rise font-mono text-micro uppercase tracking-ultra text-strata-black opacity-subtle">The bet</span>
+        <h1 className="rise font-sans font-black tracking-tightest leading-[1.04] text-heading md:text-display lg:text-hero text-strata-black mt-2">
           {c.spear}
         </h1>
-        <p className="rise-1 font-sans text-base md:text-lg leading-relaxed text-black/80 max-w-[48ch] mt-5">
+        <p className="rise-1 font-sans text-body-lg leading-relaxed text-strata-black opacity-tertiary max-w-[46ch] mt-4">
           {c.support}
         </p>
+        {/* Fit line — one inline qualifier, NOT a separate block */}
+        <p className="rise-1 font-sans text-caption text-strata-black opacity-tertiary max-w-[52ch] mt-3">
+          <span className="font-mono text-micro uppercase tracking-ultra text-strata-clay mr-1.5 whitespace-nowrap">For</span>
+          {c.forText}{" "}
+          <span className="font-mono text-micro uppercase tracking-ultra text-strata-clay mr-1.5 whitespace-nowrap">Not for</span>
+          {c.notForText}
+        </p>
 
-        <div className="rise-2 grid grid-cols-1 sm:grid-cols-2 gap-5 mt-8">
-          <div className="border-t-2 border-black pt-2">
-            <div className={`${label} text-black/45 mb-1.5`}>For</div>
-            <div className="font-sans text-sm md:text-base leading-snug">{c.forText}</div>
-          </div>
-          <div className="border-t-2 border-black pt-2">
-            <div className={`${label} text-black/45 mb-1.5`}>Not for</div>
-            <div className="font-sans text-sm md:text-base leading-snug">{c.notForText}</div>
-          </div>
+        {/* PRIMARY DOOR — the only filled / only strata-blue element */}
+        <div className="rise-2 mt-8">
+          <button
+            type="button"
+            onClick={() => enter(c.recommended)}
+            className="font-sans font-bold text-body-lg text-white bg-strata-blue px-6 py-3.5 transition-colors hover:bg-strata-black focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-black focus-visible:ring-offset-2 focus-visible:ring-offset-strata-cream"
+          >
+            Enter the recommended reading →
+          </button>
+          {RECOMMENDED_CARD && (
+            <p className={`${KEY} mt-2.5`}>
+              {RECOMMENDED_CARD.label} path · {routePath} · {routeTime}
+            </p>
+          )}
         </div>
 
-        {/* Folding lens selector — pick the reading written for you. */}
-        <div className="lenses rise-3 mt-8 border-t border-black/15">
-          <div className={`${label} mt-3.5 mb-1`}>Read as —</div>
+        {/* SUBORDINATE RACK — the folding lens selector */}
+        <div className="lenses rise-3 mt-9 border-t border-strata-black opacity-ghost" />
+        <div className="rise-3 lenses">
+          <div className={`${KEY} mt-3.5 mb-1`}>Or read as —</div>
           {LENS_CARDS.map((lens) => {
             const isOpen = open === lens.value;
             const panelId = `lens-panel-${lens.value}`;
             return (
-              <div className="lens border-b border-black/15" key={lens.value} data-open={isOpen}>
+              <div className="lens border-b border-strata-black/10" key={lens.value} data-open={isOpen}>
                 <button
                   type="button"
-                  className="w-full flex items-baseline justify-between gap-4 bg-transparent text-left py-3 group focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-black rounded-sm"
+                  className="group w-full flex items-baseline justify-between gap-4 bg-transparent text-left py-3 pl-3 -ml-3 border-l-2 border-transparent transition-colors hover:bg-strata-black/5 hover:border-strata-black/40 focus:outline-none focus-visible:bg-strata-black/5 focus-visible:border-strata-black/40"
                   aria-expanded={isOpen}
                   aria-controls={panelId}
                   onClick={() => toggle(lens.value)}
                 >
                   <span className="flex items-baseline gap-3 md:gap-4 flex-wrap min-w-0">
-                    <span className="font-mono text-sm font-bold uppercase tracking-[0.1em]">{lens.label}</span>
-                    <span className="font-mono text-micro uppercase tracking-[0.08em] text-black/45">{lens.desc}</span>
+                    <span className="font-sans font-semibold text-caption tracking-tight text-strata-black opacity-secondary group-hover:opacity-primary">
+                      {lens.label}
+                    </span>
+                    <span className="font-mono text-micro uppercase tracking-wider text-strata-black opacity-muted">
+                      {lens.desc}
+                    </span>
                   </span>
-                  <span className="lens-chev font-mono text-xs text-black/40 shrink-0" aria-hidden="true">▸</span>
+                  <span className="lens-chev font-mono text-micro text-strata-black opacity-muted group-hover:opacity-secondary shrink-0" aria-hidden="true">▸</span>
                 </button>
                 <div className="lens-panel" id={panelId} role="region" aria-label={`${lens.label} reading`}>
                   <div className="lens-inner">
-                    <p className="font-sans text-sm md:text-base leading-relaxed text-black/80 max-w-[54ch] pt-0.5 pb-3">
+                    <p className="font-sans text-caption leading-relaxed text-strata-black opacity-tertiary max-w-[54ch] pt-0.5 pb-3">
                       {lens.detail}
                     </p>
                     <div className="flex flex-wrap gap-x-6 gap-y-1.5 pb-3.5">
                       {lens.fields.map(([k, v]) => (
-                        <span className="flex gap-2 font-mono text-micro tracking-[0.05em]" key={k}>
-                          <b className="text-black/45 uppercase font-semibold whitespace-nowrap">{k}</b>
-                          <span>{v}</span>
+                        <span className="flex gap-2 font-mono text-micro tracking-wide" key={k}>
+                          <b className={KEY}>{k}</b>
+                          <span className="text-strata-black opacity-secondary">{v}</span>
                         </span>
                       ))}
                     </div>
                     <button
                       type="button"
                       onClick={() => enter(lens.value)}
-                      className="font-mono text-xs uppercase tracking-widest border border-black/40 px-4 py-2 mb-4 hover:bg-strata-black hover:text-strata-cream hover:border-strata-black focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-black transition-colors"
+                      className="font-mono text-micro uppercase tracking-wider text-strata-black border border-strata-black/40 px-4 py-2 mb-4 transition-colors hover:bg-strata-black hover:text-strata-cream focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-black"
                     >
                       Enter this reading →
                     </button>
@@ -256,18 +294,35 @@ export default function ThirtySecondView(props) {
           })}
         </div>
 
-        <div className="mt-5">
+        {/* QUIET FOOTER ROW — conversion + work exit, both ink-on-cream */}
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
           <a
             href={mailto}
             onClick={() => track("cta_click_compose", { read: "30s" })}
-            className="inline-block font-mono text-xs uppercase tracking-widest border-b border-black/60 pb-0.5 hover:bg-strata-black hover:text-strata-cream hover:border-strata-black transition-colors"
+            className="inline-block font-mono text-micro uppercase tracking-wider text-strata-black border-b border-strata-black/50 pb-0.5 transition-colors hover:bg-strata-black hover:text-strata-cream w-fit"
           >
             Compose inquiry →
           </a>
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className={KEY}>Built work lives elsewhere</span>
+            {WORK_SITES.map((d, i) => (
+              <span key={d} className="flex items-baseline gap-2">
+                <a
+                  href={`https://${d}/`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-micro text-strata-black opacity-secondary border-b border-strata-black/40 transition-colors hover:bg-strata-black hover:text-strata-cream"
+                >
+                  {d}
+                </a>
+                {i < WORK_SITES.length - 1 && <span className="font-mono text-micro text-strata-black opacity-faint">·</span>}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className={label}>{c.footer}</div>
+      <div className={META}>{c.footer}</div>
     </div>
   );
 }
