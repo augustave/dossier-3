@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { ROUTES, RouteValue } from '../constants';
 
 /**
- * CreaseMap — V3.6.8. The dossier's TOP FOLD and route selector. Replaces the
- * old reading-lens strip (no hero button, no default lens, no Change Lens / Study
- * All / Start Path). Two reversible sub-states:
- *   • OVERVIEW   — compact bet + "Read as —" + five folding route bands.
- *   • SELECTED   — the chosen route unfolds into a route stamp; the others fold
- *                  away. Clicking the stamp folds back to the overview.
- * The row IS the interaction. Selecting a route only stamps it + drives the Index
- * RECOMMENDED markers — it NEVER filters; all 9 modules stay rendered below.
- * Matte doctrine: mono = metadata, Inter = the bet, strata-clay only on For/Not.
+ * CreaseMap — V3.6.8. The dossier's TOP FOLD and route selector. Replaces the old
+ * reading-lens strip (no hero button, no default route, no Change Lens / Study All
+ * / Start Path). The route is an ORIENTATION AID — it stamps a path + drives the
+ * Index RECOMMENDED markers, and NEVER filters; all 9 modules stay rendered below.
+ *
+ * Fold-native interaction (the dossier's own pleat language, lighter):
+ *   • OVERVIEW — five route bands, each a folded row.
+ *   • SELECT   — the chosen band UNFOLDS into its route stamp (grid-rows 0fr→1fr +
+ *                a rotateX crease) while the OTHER rows fold away (collapse to 0).
+ *   • FOLD BACK — clicking the open band's header re-folds it; the others unfold
+ *                back to the overview (reversible, no trap).
  */
 
 const COPY = {
@@ -18,19 +20,31 @@ const COPY = {
   spear:
     'AI-Native Design Engineer & Art Director — I turn complex systems into visual languages.',
   support:
-    'I am not trying to make complex things simple. I am trying to make them legible without making them smaller.',
+    "I am not trying to make complex things simple. I am trying to make them legible without making them smaller.",
   forText: "teams whose thing is real, but the language around it hasn't caught up.",
   notForText: 'trend-cycle branding, decoration, spectacle.',
 };
 
-/* Scoped fold motion — a lighter version of the dossier's pleat. The band lifts
-   like a crease on hover; the stamp/bands rise on enter. All off under reduced
-   motion. */
+/* Scoped fold motion — a lighter version of the dossier's pleat. Two folds:
+   the whole row (fold away when another route is stamped) and the detail panel
+   (unfold into the stamp, with a rotateX crease). All off under reduced motion. */
 const CREASE_CSS = `
 #crease-map-root .crease-rise{animation:crease-rise .45s ease both;}
 @keyframes crease-rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+#crease-map-root .band-row{display:grid;grid-template-rows:1fr;transition:grid-template-rows .34s ease,opacity .3s ease;}
+#crease-map-root .band-row[data-open="false"]{grid-template-rows:0fr;opacity:0;pointer-events:none;}
+#crease-map-root .band-row > .band-row-inner{overflow:hidden;min-height:0;}
+
+#crease-map-root .band-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease;}
+#crease-map-root .band-panel[data-open="true"]{grid-template-rows:1fr;}
+#crease-map-root .band-panel > .band-panel-inner{overflow:hidden;min-height:0;transform-origin:top center;transform:rotateX(-7deg);opacity:0;transition:transform .34s ease,opacity .28s ease;}
+#crease-map-root .band-panel[data-open="true"] > .band-panel-inner{transform:none;opacity:1;}
+
 @media (prefers-reduced-motion:reduce){
   #crease-map-root .crease-rise{animation:none;}
+  #crease-map-root .band-row,#crease-map-root .band-panel{transition:none;}
+  #crease-map-root .band-panel > .band-panel-inner{transition:none;transform:none;}
   #crease-map-root .crease-band{transition:none !important;}
   #crease-map-root .crease-band:hover{transform:none !important;}
 }
@@ -45,15 +59,19 @@ interface CreaseMapProps {
 }
 
 export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRoute }) => {
-  // When a route is active, the overview collapses to its stamp; expanding folds
-  // the five bands back open so the reader can switch (no trap — PRD §3.3).
+  // While a route is stamped, `expanded` folds the five bands back open so the
+  // reader can switch (no trap — PRD §3.3).
   const [expanded, setExpanded] = useState(false);
-  const active = ROUTES.find((r) => r.value === selectedRoute) ?? null;
-  const showOverview = !active || expanded;
+  const hasRoute = ROUTES.some((r) => r.value === selectedRoute);
+  const showOverview = !hasRoute || expanded;
 
-  const pick = (value: RouteValue) => {
-    onSelectRoute(value);
-    setExpanded(false);
+  const onBandClick = (value: RouteValue) => {
+    if (value === selectedRoute && !showOverview) {
+      setExpanded(true); // fold the stamp back to the overview
+    } else {
+      onSelectRoute(value);
+      setExpanded(false); // unfold this band into its stamp; fold the others away
+    }
   };
 
   return (
@@ -65,7 +83,7 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
     >
       <style>{CREASE_CSS}</style>
 
-      {/* Bet — compact top fold (not a full hero; module 00 carries the dossier thesis) */}
+      {/* Bet — compact top fold (module 00 carries the dossier thesis below) */}
       <div className="crease-rise max-w-3xl">
         <span className={META}>{COPY.eyebrow}</span>
         <h1 className="font-sans font-bold tracking-tight leading-tight text-subhead md:text-heading text-strata-black mt-1.5">
@@ -82,52 +100,64 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
         </p>
       </div>
 
-      {/* Route system */}
+      {/* Route system — folding bands */}
       <div className="mt-7 border-t border-strata-black/10 pt-3" aria-live="polite">
-        {showOverview ? (
-          <>
-            <div className={`${KEY} mb-1`}>Read as —</div>
-            <div role="list">
-              {ROUTES.map((r) => {
-                const isActive = r.value === selectedRoute;
-                return (
+        <div className={`${KEY} mb-1`}>Read as —</div>
+        <div role="list">
+          {ROUTES.map((r) => {
+            const isActive = r.value === selectedRoute;
+            const rowOpen = showOverview || isActive;   // non-active rows fold away when stamped
+            const panelOpen = isActive && !showOverview; // the selected stamp is unfolded
+            const panelId = `route-panel-${r.value}`;
+            return (
+              <div
+                key={r.value}
+                className="band-row"
+                data-open={rowOpen}
+                data-testid={`band-row-${r.value}`}
+              >
+                <div className="band-row-inner">
                   <button
-                    key={r.value}
                     type="button"
                     role="listitem"
                     data-testid={`route-band-${r.value}`}
                     aria-pressed={isActive}
+                    aria-expanded={panelOpen}
+                    aria-controls={panelId}
                     aria-label={`Read as ${r.label} — ${r.path}, ${r.time}`}
-                    onClick={() => pick(r.value)}
+                    onClick={() => onBandClick(r.value)}
                     className="crease-band group w-full flex items-baseline justify-between gap-4 text-left py-3 pl-3 -ml-3 border-l-2 border-transparent border-b border-strata-black/10 transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:bg-strata-black/5 hover:border-l-strata-black/40 focus:outline-none focus-visible:bg-strata-black/5 focus-visible:border-l-strata-black/40"
                   >
                     <span className="flex items-baseline gap-3 md:gap-4 flex-wrap min-w-0">
                       <span className="font-mono text-micro uppercase tracking-wider text-strata-black opacity-muted">{r.prefix}</span>
                       <span className="font-sans font-semibold text-caption tracking-tight text-strata-black opacity-secondary group-hover:opacity-primary">{r.label}</span>
                     </span>
-                    <span className="font-mono text-micro text-strata-black opacity-muted shrink-0">{r.path}{r.tag ? ` · ${r.tag}` : ''} · {r.time.toUpperCase()}</span>
+                    <span className="font-mono text-micro text-strata-black opacity-muted shrink-0">
+                      <span data-testid={panelOpen ? 'route-stamp-path' : undefined}>{r.path}</span>
+                      {r.tag ? ` · ${r.tag}` : ''} · {r.time.toUpperCase()}
+                    </span>
                   </button>
-                );
-              })}
-            </div>
-          </>
-        ) : (
-          // Selected route stamp — the band unfolded. Click to fold back.
-          <button
-            type="button"
-            data-testid="route-stamp"
-            aria-label={`${active.label} route selected — fold back to all routes`}
-            onClick={() => setExpanded(true)}
-            className="crease-rise group w-full text-left pl-3 -ml-3 border-l-2 border-strata-black/30 py-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-strata-black"
-          >
-            <div className={KEY}>Reading path · {active.label}</div>
-            <div className="font-mono text-caption tracking-[0.22em] text-strata-black mt-1" data-testid="route-stamp-path">{active.path}</div>
-            <div className="font-sans text-caption text-strata-black opacity-tertiary mt-1.5 max-w-[54ch]">{active.helper}</div>
-            <div className={`${KEY} mt-1.5`}>Best if · {active.bestIf}</div>
-            <div className={KEY}>Time · {active.time}</div>
-            <div className="font-mono text-micro uppercase tracking-wider text-strata-black opacity-faint group-hover:opacity-muted transition-opacity mt-2">Fold back to all routes ↺</div>
-          </button>
-        )}
+
+                  {/* Detail panel — the band unfolded into a route stamp. */}
+                  <div className="band-panel" id={panelId} data-open={panelOpen} role="region" aria-label={`${r.label} reading`}>
+                    <div className="band-panel-inner" data-testid={panelOpen ? 'route-stamp' : undefined}>
+                      <p className="font-sans text-caption text-strata-black opacity-tertiary max-w-[54ch] pt-2">{r.helper}</p>
+                      <p className={`${KEY} mt-2`}>Best if · {r.bestIf}</p>
+                      <button
+                        type="button"
+                        onClick={() => setExpanded(true)}
+                        aria-label="Fold back to all routes"
+                        className="font-mono text-micro uppercase tracking-wider text-strata-black opacity-faint hover:opacity-muted transition-opacity mt-2 pb-2"
+                      >
+                        Fold back to all routes ↺
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

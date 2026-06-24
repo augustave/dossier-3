@@ -297,8 +297,10 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
 
     await waitFor(() => expect(window.location.search).toContain('read=client'));
     const stamp = screen.getByTestId('route-stamp');
-    expect(within(stamp).getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
-    expect(screen.queryByTestId('route-band-hiring')).toBeNull();
+    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
+    // Non-selected bands stay mounted but fold away (row collapsed, not unmounted).
+    expect(screen.getByTestId('band-row-hiring').getAttribute('data-open')).toBe('false');
+    expect(screen.getByTestId('band-row-client').getAttribute('data-open')).toBe('true');
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
     expect(document.querySelector('.fold[data-open="true"]')).toBeNull();
   });
@@ -307,11 +309,13 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     render(<App />);
     await screen.findByTestId('crease-map');
     fireEvent.click(band('hiring'));
-    const stamp = await screen.findByTestId('route-stamp');
+    await screen.findByTestId('route-stamp');
 
-    fireEvent.click(stamp);
+    // Clicking the open band's header re-folds it back to the overview.
+    fireEvent.click(band('hiring'));
 
-    expect(await screen.findByTestId('route-band-client')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('band-row-client').getAttribute('data-open')).toBe('true'));
+    expect(screen.queryByTestId('route-stamp')).toBeNull();
     expect(window.location.search).toContain('read=hiring');
   });
 
@@ -320,7 +324,7 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     render(<App />);
 
     const stamp = await screen.findByTestId('route-stamp');
-    expect(within(stamp).getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
+    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
 
     fireEvent.click(screen.getByText(/INDEX \(09\)/i));
@@ -339,7 +343,7 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     window.history.replaceState(null, '', '?read=collaborator');
     render(<App />);
     const stamp = await screen.findByTestId('route-stamp');
-    expect(within(stamp).getByTestId('route-stamp-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
+    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
   });
 
   it('Full Dossier route stamps ?read=full and marks NOTHING recommended (neutral)', async () => {
