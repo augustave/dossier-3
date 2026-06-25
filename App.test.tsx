@@ -131,18 +131,34 @@ describe('Manifest overlay', () => {
     window.location.hash = '';
   });
 
-  it('opens from the INDEX button and renders the module order (00–08)', async () => {
+  it('opens from the INDEX button and renders the module order (00–07)', async () => {
     render(<App />);
-    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
 
     const items = await screen.findAllByTestId('manifest-item');
     const order = items.map(el => el.getAttribute('data-index'));
-    expect(order).toEqual(['00', '01', '02', '03', '04', '05', '06', '07', '08']);
+    expect(order).toEqual(['00', '01', '02', '03', '04', '05', '06', '07']);
+  });
+
+  it('module 02 is FIELD OF VIEW — Three Lenses + neighborhood map merged, marker ME', async () => {
+    window.location.hash = '#module-02';
+    render(<App />);
+    const m2 = () => document.getElementById('module-02') as HTMLElement;
+    await waitFor(() => expect(m2()).not.toBeNull());
+
+    // Both halves now live in module 02.
+    expect(within(m2()).getByText('SYSTEMS')).toBeInTheDocument();                      // a Three-Lens marker
+    expect(within(m2()).getByText(/A MAP OF NEIGHBORING PRACTICES/i)).toBeInTheDocument(); // the chart
+    expect(within(m2()).getAllByText('ME').length).toBeGreaterThan(0);                  // diagram marker + legend (was VEN)
+    expect(within(m2()).queryByText('VEN')).not.toBeInTheDocument();
+
+    // The chart no longer lives in a standalone NEIGHBORHOOD module — it appears once.
+    expect(screen.getAllByText(/A MAP OF NEIGHBORING PRACTICES/i)).toHaveLength(1);
   });
 
   it('closes when the Close Index button is clicked', async () => {
     render(<App />);
-    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
 
     const closeBtn = await screen.findByRole('button', { name: /Close Index/i });
     fireEvent.click(closeBtn);
@@ -269,7 +285,7 @@ describe('Inquiry dialog (component, contactEmail branches)', () => {
 });
 
 describe('Crease Map (V3.6.8 route bands, no filter)', () => {
-  const ALL = ['00', '01', '02', '03', '04', '05', '06', '07', '08'];
+  const ALL = ['00', '01', '02', '03', '04', '05', '06', '07'];
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
@@ -297,7 +313,7 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
 
     await waitFor(() => expect(window.location.search).toContain('read=client'));
     expect(screen.getByTestId('route-stamp')).toBeInTheDocument();
-    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
+    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 04 → 06');
     // Every route band stays visible (clickable seam) — none folds away.
     ['hiring', 'client', 'collab', 'acad', 'full'].forEach(v => expect(band(v)).toBeInTheDocument());
     // Only the selected route's detail panel is open.
@@ -329,13 +345,13 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     render(<App />);
 
     const stamp = await screen.findByTestId('route-stamp');
-    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
+    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 04 → 06');
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
 
-    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
     const items = await screen.findAllByTestId('manifest-item');
-    expect(items).toHaveLength(9);
-    const recd = ['00', '01', '03', '05', '07'];
+    expect(items).toHaveLength(8);
+    const recd = ['00', '01', '03', '04', '06'];
     items.forEach(row => {
       const idx = row.getAttribute('data-index')!;
       const marker = within(row).queryByText(/^recommended$/i);
@@ -348,7 +364,7 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     window.history.replaceState(null, '', '?read=collaborator');
     render(<App />);
     const stamp = await screen.findByTestId('route-stamp');
-    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
+    expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 02 → 03 → 05');
   });
 
   it('Full Dossier is the neutral flat sheet — clicking it clears ?read, no stamp, nothing recommended', async () => {
@@ -363,9 +379,9 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     expect(screen.queryByTestId('route-stamp')).toBeNull();
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
 
-    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
     const items = await screen.findAllByTestId('manifest-item');
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(8);
     items.forEach(row => expect(within(row).queryByText(/^recommended$/i)).not.toBeInTheDocument());
   });
 
@@ -389,9 +405,9 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
   it('with no route the Index lists all 9 with no recommended markers', async () => {
     render(<App />);
     await screen.findByTestId('crease-map');
-    fireEvent.click(screen.getByText(/INDEX \(09\)/i));
+    fireEvent.click(screen.getByText(/INDEX \(08\)/i));
     const items = await screen.findAllByTestId('manifest-item');
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(8);
     items.forEach(row => expect(within(row).queryByText(/^recommended$/i)).not.toBeInTheDocument());
   });
 
@@ -442,25 +458,27 @@ describe('Visual Languages (module 03)', () => {
     // IAA card removed.
     expect(within(m3()).queryByText(/^IAA$/)).not.toBeInTheDocument();
 
-    // REGISTER GRAMMAR filter strip removed — no register toggle buttons. The
-    // registers survive only as colored tags (spans), still labelled.
+    // Register taxonomy fully removed from the UI — no filter buttons AND no
+    // named FORGE/ORACLE/MONASTERY text chips (registers survive only as the
+    // card's colored top accent).
     expect(within(m3()).queryByRole('button', { name: /MONASTERY/i })).not.toBeInTheDocument();
-    expect(within(m3()).getAllByText(/FORGE/i).length).toBeGreaterThan(0);
+    expect(within(m3()).queryByText(/^FORGE$/i)).not.toBeInTheDocument();
+    expect(within(m3()).queryByText(/^ORACLE$/i)).not.toBeInTheDocument();
   });
 });
 
-describe('Doctrine Library (module 06)', () => {
+describe('Doctrine Library (module 05)', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => {};
     try {
       window.history.replaceState(null, '', window.location.pathname);
     } catch (e) {}
-    window.location.hash = '#module-06';
+    window.location.hash = '#module-05';
   });
 
   it('renders the doctrine shelf with its source-text cards (no register filter)', async () => {
     render(<App />);
-    const m6 = () => document.getElementById('module-06') as HTMLElement;
+    const m6 = () => document.getElementById('module-05') as HTMLElement;
 
     await waitFor(() => {
       expect(within(m6()).getByText('Design Under Fire')).toBeInTheDocument();

@@ -6,10 +6,10 @@ import React from 'react';
  * The shelf of written source texts behind the practice: essays, working
  * papers, rulebooks, manifestos. Typographic archive-record cards, not a blog
  * feed. CTAs are suppressed when a card's href is null (the file isn't in
- * /public/library/ yet) so no broken links render. The register filter strip
- * was removed (V3.7.x) — the registers survive only as blue/orange/green color
- * accents + tags on the cards. Data lives in copy.v1_1.ts under
- * modules.doctrineLibrary.
+ * /public/library/ yet) so no broken links render. The register taxonomy is no
+ * longer surfaced as text — the named FORGE/ORACLE/MONASTERY chips + filter were
+ * removed; registers survive ONLY as the card's blue/orange/green top-accent
+ * color. Data lives in copy.v1_1.ts under modules.doctrineLibrary.
  */
 
 export interface DoctrineDoc {
@@ -19,7 +19,6 @@ export interface DoctrineDoc {
   type: string;
   registers: string[];
   description: string;
-  why: string;
   ctaLabel: string;
   href: string | null;
 }
@@ -61,27 +60,15 @@ export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, pending
             style={{ borderTopColor: accentFor(doc.registers), borderTopWidth: '2px', transitionDelay: `calc(var(--pleat-stagger) * ${i})` }}
             className="pleat border border-white/15 bg-black/20 p-5 md:p-6 flex flex-col"
           >
-            {/* Metadata row */}
+            {/* Metadata row — type only (named register chips removed). */}
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <span className="font-mono text-micro uppercase tracking-widest opacity-secondary">{doc.type}</span>
-              <span className="opacity-30">·</span>
-              {doc.registers.map((r) => (
-                <span key={r} className="font-mono text-micro uppercase tracking-wide border border-white/20 px-1.5 py-0.5 opacity-secondary">
-                  {r}
-                </span>
-              ))}
             </div>
 
             <h5 className="font-serif text-xl md:text-2xl leading-tight mb-1">{doc.title}</h5>
             <p className="font-mono text-xs uppercase tracking-wide opacity-muted mb-4 leading-relaxed">{doc.subtitle}</p>
 
-            <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4">{doc.description}</p>
-
-            {/* "Why it matters" note — label dropped; the indent + italic mark it
-                as a secondary annotation distinct from the description above. */}
-            <p className="font-sans italic text-sm opacity-muted leading-relaxed border-l-2 border-white/20 pl-3 mb-5">
-              {doc.why}
-            </p>
+            <p className="font-sans text-sm opacity-secondary leading-relaxed mb-5">{doc.description}</p>
 
             {/* Footer always filled: live CTA, or an archival catalog line when
                 the document isn't published yet (never a broken/empty button). */}

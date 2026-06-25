@@ -109,13 +109,15 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
                     ? 'Full Dossier — every module, no recommended route'
                     : `Read as ${r.label} — ${r.path}, ${r.time}`}
                   onClick={() => onBandClick(r.value)}
-                  className="crease-band group w-full flex items-baseline justify-between gap-4 text-left py-3 pl-3 -ml-3 border-l-2 border-transparent border-b border-strata-black/10 transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:bg-strata-black/5 hover:border-l-strata-black/40 focus:outline-none focus-visible:bg-strata-black/5 focus-visible:border-l-strata-black/40"
+                  className="crease-band group w-full grid grid-cols-[1fr_auto] items-baseline gap-4 text-left py-3 pl-3 -ml-3 border-l-2 border-transparent border-b border-strata-black/10 transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:bg-strata-black/5 hover:border-l-strata-black/40 focus:outline-none focus-visible:bg-strata-black/5 focus-visible:border-l-strata-black/40"
                 >
-                  <span className="flex items-baseline gap-3 md:gap-4 flex-wrap min-w-0">
-                    <span className="font-mono text-micro uppercase tracking-wider text-strata-black opacity-muted">{r.prefix}</span>
-                    <span className="font-sans font-semibold text-caption tracking-tight text-strata-black opacity-secondary group-hover:opacity-primary">{r.label}</span>
+                  {/* Left column — fold type + audience */}
+                  <span className="flex items-baseline gap-3 md:gap-4 min-w-0">
+                    <span className="font-mono text-micro uppercase tracking-wider text-strata-black opacity-muted shrink-0">{r.prefix}</span>
+                    <span className="font-sans font-semibold text-caption tracking-tight text-strata-black opacity-secondary group-hover:opacity-primary truncate">{r.label}</span>
                   </span>
-                  <span className="font-mono text-micro text-strata-black opacity-muted shrink-0">
+                  {/* Right column — module path + time */}
+                  <span className="font-mono text-micro text-strata-black opacity-muted shrink-0 text-right">
                     <span data-testid={panelOpen ? 'route-stamp-path' : undefined}>{r.path}</span>
                     {r.tag ? ` · ${r.tag}` : ''} · {r.time.toUpperCase()}
                   </span>

@@ -64,17 +64,16 @@ const SPEC_CAP = 6;
 interface LanguageCardProps {
   lang: VisualLanguage;
   accent: string;
-  tagColor: (name: string) => string;
 }
 
-const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor }) => {
+const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent }) => {
   const [open, setOpen] = useState(false);
   const specId = `vl-spec-${lang.id}`;
 
   return (
     <div
-      // 2px top accent in the primary register color — scannable variety + the
-      // blue/orange/green color-identifier tie to the register tags below.
+      // 2px top accent in the primary register color (blue/orange/green) — the
+      // only surviving register signal; the named text chips were removed.
       style={{ borderTopColor: accent, borderTopWidth: '2px' }}
       className="border border-white/15 bg-black/20 p-5 md:p-6"
     >
@@ -85,20 +84,6 @@ const LanguageCard: React.FC<LanguageCardProps> = ({ lang, accent, tagColor }) =
       </div>
       <div className="font-mono text-micro uppercase tracking-wide opacity-muted mb-4">
         {lang.type} · {lang.context}
-      </div>
-
-      {/* Register tags — blue/orange/green color identifiers. */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {lang.registers.map((tag) => (
-          <span
-            key={tag}
-            className="font-mono text-micro uppercase tracking-widest border px-2 py-1 flex items-center gap-1.5"
-            style={{ borderColor: `${tagColor(tag)}66` }}
-          >
-            <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: tagColor(tag) }} />
-            {tag}
-          </span>
-        ))}
       </div>
 
       {/* Short copy — leads the card. */}
@@ -187,7 +172,6 @@ export const VisualLanguages: React.FC<VisualLanguagesProps> = ({ languages, reg
             <LanguageCard
               lang={lang}
               accent={colorFor(lang.registers[0])}
-              tagColor={colorFor}
             />
           </div>
         ))}

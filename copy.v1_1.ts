@@ -6,13 +6,12 @@
    dossier. Primary subject is taste; technology is supporting evidence.
    Section spine, in render order:
      01 TASTE            — where the work is sourced
-     02 SEEING           — the cognitive lenses (was WORLD MODEL)
+     02 FIELD OF VIEW    — Three Lenses + the neighborhood map (merged SEEING + NEIGHBORHOOD)
      03 VISUAL LANGUAGES — how taste becomes authored systems (language cards)
-     04 NEIGHBORHOOD     — adjacent practices (holds the old FIELD POSITION chart)
-     05 DOCTRINE         — what the work obeys and refuses (was PRACTICE)
-     06 DOCTRINE LIBRARY — the written source texts behind the practice
-     07 PORTFOLIOS       — where the built work lives
-     08 OPERATING BIOGRAPHY — the human root of the practice (V3.5.1, was ENGAGEMENT MODELS)
+     04 DOCTRINE         — what the work obeys and refuses (was PRACTICE)
+     05 DOCTRINE LIBRARY — the written source texts behind the practice
+     06 PORTFOLIOS       — where the built work lives
+     07 OPERATING BIOGRAPHY — the human root of the practice (V3.5.1, was ENGAGEMENT MODELS)
    Voice: calmer than the v2 Meservey register — declarative, first person
    where it's natural, no self-mythologizing, no recruiter/role language. */
 
@@ -52,11 +51,12 @@ export const CT_DOSSIER_COPY_V120 = {
         "A useful design reference isn't necessarily beautiful. It's something that solved a problem so well that people kept coming back to it.",
     },
 
-    // 02 — SEEING. The cognitive framework. Reflective, not performative.
-    // Keeps the three picks (Levin / Hughes / Johnson) but reframes them as
-    // recurring lenses rather than people to recruit.
+    // 02 — FIELD OF VIEW (merged: SEEING's Three Lenses + NEIGHBORHOOD's map).
+    // The cognitive framework + where the practice sits. Keeps the three picks
+    // (Levin / Hughes / Johnson) reframed as recurring lenses. The module reads
+    // these `seeing` fields plus the `neighborhood` chart data below.
     seeing: {
-      title: "SEEING",
+      title: "FIELD OF VIEW",
       prompt: "HOW I LOOK AT THINGS",
       hero:
         "Different disciplines name the same problem differently. I work in the overlap.",
@@ -223,8 +223,7 @@ export const CT_DOSSIER_COPY_V120 = {
       fieldPositionVen: {
         x: 72,
         y: 78,
-        label: "VEN",
-        sub: "Doctrine + agent orchestration",
+        label: "ME",
       },
     },
 
@@ -291,7 +290,6 @@ export const CT_DOSSIER_COPY_V120 = {
           type: "Working paper",
           registers: ["Forge", "Systems"],
           description: "A working paper on systems failure, iterative adaptation, and design laws under maximum pressure.",
-          why: "The Forge doctrine. It argues that design principles are domain-invariant: the failures that kill products, campaigns, spacecraft, and organizations often rhyme.",
           ctaLabel: "READ PAPER",
           href: "library/design-under-fire-stalingrad.pdf",
         },
@@ -302,7 +300,6 @@ export const CT_DOSSIER_COPY_V120 = {
           type: "Strategic doctrine",
           registers: ["Forge", "Oracle"],
           description: "A strategy document for creative work where trust, compliance, and operational credibility become first-class product features.",
-          why: "The bridge between visual language and institutional trust. It explains why defense creative must function as a risk-managed evidence system, not just marketing.",
           ctaLabel: "READ STRATEGY",
           href: "library/creative-strategy-5-4.pdf",
         },
@@ -313,7 +310,6 @@ export const CT_DOSSIER_COPY_V120 = {
           type: "Article",
           registers: ["Oracle"],
           description: "A speculative article on brand design for machine intelligence, algorithmic identity, non-human perception, and visual systems beyond human-centric aesthetics.",
-          why: "The Oracle doctrine. It explains the recurring interest in signal, fragmentation, non-human perception, organic–technological fusion, and the #42FC04 signature.",
           ctaLabel: "READ ARTICLE",
           href: null, // /library/a-new-visual-language-for-the-age-of-agi.md
         },
@@ -324,7 +320,6 @@ export const CT_DOSSIER_COPY_V120 = {
           type: "Brand essay",
           registers: ["Monastery", "Oracle"],
           description: "An essay on brand as emotional contract, live API, creative partner, and unfinished system.",
-          why: "The brand doctrine. It explains why a brand system should behave like a living rule-set with soul, not a static cage.",
           ctaLabel: "READ ESSAY",
           href: "https://dirty.artdirector.rocks/",
         },
@@ -335,7 +330,6 @@ export const CT_DOSSIER_COPY_V120 = {
           type: "Archive / brand study",
           registers: ["Oracle", "Monastery"],
           description: "A working archive on how algorithmic systems reshape brand identity — collecting the patterns where computation and brand development meet.",
-          why: "The applied edge of the Oracle doctrine: brand-building when the audience, the medium, and the maker are increasingly non-human.",
           ctaLabel: "VIEW ARCHIVE",
           href: "https://branding.artdirector.rocks/",
         },
@@ -346,7 +340,6 @@ export const CT_DOSSIER_COPY_V120 = {
           type: "Essay",
           registers: ["Monastery", "Forge"],
           description: "An essay drawing product-design lessons from a childhood with the author's father — where what you observe and what's actually there rarely match.",
-          why: "The personal root of the practice's discipline: perception under pressure, and the habit of testing assumptions before trusting them.",
           ctaLabel: "READ ESSAY",
           href: "https://medium.com/@ebenz.aug/my-first-cpo-1587997fe93f",
         },
