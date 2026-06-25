@@ -341,16 +341,9 @@ export const CONTENT_MODULES: ModuleData[] = [
     title: COPY.modules.doctrine.title,
     promptText: COPY.modules.doctrine.prompt,
     themeColor: 'cream',
-    responseText: COPY.modules.doctrine.hero,
+    responseText: COPY.modules.doctrine.short,
     responseDisplay: (
       <div className="space-y-8">
-        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.doctrine.hero}
-        </p>
-        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
-          {COPY.modules.doctrine.intro}
-        </p>
-
         <div>
           <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.doctrine.layersTitle}</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -378,11 +371,7 @@ export const CONTENT_MODULES: ModuleData[] = [
           </ul>
         </div>
 
-        <p className="font-sans text-base md:text-lg opacity-secondary leading-relaxed border-t border-current/10 pt-4">
-          {COPY.modules.doctrine.handoff}
-        </p>
-
-        <p className="font-serif text-lg md:text-xl italic opacity-tertiary">
+        <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-current/10 pt-6">
           {COPY.modules.doctrine.short}
         </p>
       </div>

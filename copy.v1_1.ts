@@ -233,9 +233,6 @@ export const CT_DOSSIER_COPY_V120 = {
     doctrine: {
       title: "DOCTRINE",
       prompt: "WHAT THE WORK OBEYS AND REFUSES",
-      hero: "My work isn't held together by style. It's held together by rules.",
-      intro:
-        "A doctrine is what I obey when taste, pressure, and execution start to conflict. It sets what the work can become — and what it refuses.",
       layersTitle: "DIRECTION · FORM · TRUST",
       layers: [
         {
@@ -268,8 +265,6 @@ export const CT_DOSSIER_COPY_V120 = {
         "Calm under load is a designed property.",
         "The work should know what it refuses.",
       ],
-      // Handoff into the Doctrine Library — renders before the short close.
-      handoff: "The library below is where those rules are argued in longer form.",
       short: "One head for the eye, the system, and the artifact.",
     },
 
