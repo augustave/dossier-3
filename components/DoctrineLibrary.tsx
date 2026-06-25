@@ -1,13 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 
 /**
  * Doctrine Library (Module 06, V3.3 — CT-PRD-MARY-01.3).
  *
  * The shelf of written source texts behind the practice: essays, working
  * papers, rulebooks, manifestos. Typographic archive-record cards, not a blog
- * feed. A lightweight register filter narrows the shelf. CTAs are suppressed
- * when a card's href is null (the file isn't in /public/library/ yet) so no
- * broken links render. Data lives in copy.v1_1.ts under modules.doctrineLibrary.
+ * feed. CTAs are suppressed when a card's href is null (the file isn't in
+ * /public/library/ yet) so no broken links render. The register filter strip
+ * was removed (V3.7.x) — the registers survive only as blue/orange/green color
+ * accents + tags on the cards. Data lives in copy.v1_1.ts under
+ * modules.doctrineLibrary.
  */
 
 export interface DoctrineDoc {
@@ -24,17 +26,13 @@ export interface DoctrineDoc {
 
 interface DoctrineLibraryProps {
   cards: DoctrineDoc[];
-  allLabel: string;
   pendingNote: string;
 }
 
-// Canonical chip order: the three register-grammar sources first, then secondary
-// tags. Only tags actually present on cards render, so the taxonomy can't drift.
-const CHIP_ORDER = ['Monastery', 'Forge', 'Oracle', 'Systems', 'Brand', 'Defense', 'Codex'];
-
 // Register accent colors — mirrored from modules.visualLanguages.registers so the
-// library and Visual Languages share one color language. A card's accent is the
-// first of its registers that has a color (Systems/etc. fall through to a sibling).
+// library and Visual Languages share one color language (blue / orange / green).
+// A card's accent is the first of its registers that has a color (Systems/etc.
+// fall through to a sibling).
 const REGISTER_COLOR: Record<string, string> = {
   Monastery: '#204C8D',
   Forge: '#FF4F00',
@@ -46,58 +44,16 @@ const accentFor = (registers: string[]): string => {
 };
 
 // Resolve a CTA href: absolute http(s) untouched; relative library paths get the
-// deployment base (BASE_URL) so they resolve under the /CT-DOSSIER/ Pages base.
+// deployment base (BASE_URL) so they resolve under the deployment base.
 const assetHref = (href: string): string =>
   /^https?:\/\//.test(href) ? href : `${import.meta.env.BASE_URL}${href}`;
 
-export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, allLabel, pendingNote }) => {
-  // null = show all; otherwise filter to cards carrying this register tag.
-  const [filter, setFilter] = useState<string | null>(null);
-
-  const tags = useMemo(() => {
-    const present = new Set<string>();
-    cards.forEach(c => c.registers.forEach(r => present.add(r)));
-    const ordered = CHIP_ORDER.filter(t => present.has(t));
-    // Append any present tag not in the canonical list (defensive, keeps it visible).
-    present.forEach(t => { if (!ordered.includes(t)) ordered.push(t); });
-    return ordered;
-  }, [cards]);
-
-  const visible = filter ? cards.filter(c => c.registers.includes(filter)) : cards;
-  const status = filter
-    ? `Showing ${visible.length} of ${cards.length} source texts tagged ${filter}.`
-    : `Showing all ${cards.length} source texts.`;
-
-  const chip = (label: string, active: boolean, onClick: () => void) => (
-    <button
-      key={label}
-      type="button"
-      aria-pressed={active}
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      className={`font-mono text-micro uppercase tracking-widest border px-3 py-2 transition-colors ${
-        active ? 'bg-white text-black border-white' : 'bg-transparent text-white/70 border-white/25 hover:border-white/60 hover:text-white'
-      }`}
-    >
-      {label}
-    </button>
-  );
-
+export const DoctrineLibrary: React.FC<DoctrineLibraryProps> = ({ cards, pendingNote }) => {
   return (
     <div className="space-y-5">
-      {/* Filter chips + a single combined shelf/status line */}
-      <div className="space-y-3">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter the library by register">
-          {chip(allLabel, filter === null, () => setFilter(null))}
-          {tags.map(t => chip(t, filter === t, () => setFilter(prev => (prev === t ? null : t))))}
-        </div>
-        <p className="font-mono text-micro uppercase tracking-wide opacity-secondary" role="status" aria-live="polite">
-          <span className="opacity-70">Current shelf · {filter ?? allLabel}</span> — {status}
-        </p>
-      </div>
-
       {/* Archive-record cards */}
       <div className="pleatfold pleatfold--archive grid grid-cols-1 md:grid-cols-2 gap-4">
-        {visible.map((doc, i) => (
+        {cards.map((doc, i) => (
           <div
             key={doc.id}
             // 2px top accent + a low, uniform-direction pleat so each archive

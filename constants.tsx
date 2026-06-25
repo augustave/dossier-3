@@ -401,7 +401,6 @@ export const CONTENT_MODULES: ModuleData[] = [
         <div className="pt-4 border-t border-white/20">
           <DoctrineLibrary
             cards={COPY.modules.doctrineLibrary.cards}
-            allLabel={COPY.modules.doctrineLibrary.filterAllLabel}
             pendingNote={COPY.modules.doctrineLibrary.pendingNote}
           />
         </div>

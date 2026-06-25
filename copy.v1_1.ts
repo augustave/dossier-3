@@ -280,7 +280,6 @@ export const CT_DOSSIER_COPY_V120 = {
         "Essays, rulebooks, white papers — where I name the laws before they become visual systems. Each answers a recurring question: what survives pressure, what deserves preserving, what shows only under stress, what a brand keeps as everything changes.",
       shelfLogic:
         "Each text anchors a different part of the practice: pressure, memory, signal, brand, systems, or identity.",
-      filterAllLabel: "ALL",
       // Footer line for cards whose document isn't published yet — archival
       // cataloguing, not a "coming soon" teaser. Keeps every card's footer filled.
       pendingNote: "Indexed · not yet public.",
@@ -308,17 +307,6 @@ export const CT_DOSSIER_COPY_V120 = {
           href: "library/creative-strategy-5-4.pdf",
         },
         {
-          id: "watchman-builder",
-          title: "The Watchman Builder",
-          subtitle: "An American Dynamism Doctrine for First-Sight, Moral Force, and Civilizational Continuity",
-          type: "Essay / white paper",
-          registers: ["Monastery", "Forge"],
-          description: "An essay on builders, protection, first-sight, moral force, and the village as the unit of defense.",
-          why: "The moral doctrine under the technical work. It gives the practice a theory of protection, memory, and civilizational continuity.",
-          ctaLabel: "READ ESSAY",
-          href: null, // /library/watchman-builder-american-dynamism.md
-        },
-        {
           id: "algorithmic-aesthetics",
           title: "A New Visual Language for the Age of AGI",
           subtitle: "Algorithmic Aesthetics and the Non-Human Gaze",
@@ -339,39 +327,6 @@ export const CT_DOSSIER_COPY_V120 = {
           why: "The brand doctrine. It explains why a brand system should behave like a living rule-set with soul, not a static cage.",
           ctaLabel: "READ ESSAY",
           href: "https://dirty.artdirector.rocks/",
-        },
-        {
-          id: "rubric-design-system",
-          title: "Rubric Design System",
-          subtitle: "A codified evaluation and design-language artifact",
-          type: "Design system / rubric",
-          registers: ["Systems", "Oracle"],
-          description: "A structured design-system artifact for turning judgment, criteria, and evaluation into a usable visual and conceptual framework.",
-          why: "This extends the dossier beyond aesthetics into evaluation logic — how taste becomes criteria.",
-          ctaLabel: "VIEW SYSTEM",
-          href: "library/rubric-design-system.html",
-        },
-        {
-          id: "hospitaller-codex",
-          title: "Hospitaller Codex",
-          subtitle: "A doctrine of care, defense, and institutional memory",
-          type: "Codex / doctrine artifact",
-          registers: ["Monastery", "Forge"],
-          description: "A codex-style artifact exploring the relationship between protection, care, duty, and institutional continuity.",
-          why: "This belongs to the Monastery / Forge axis: memory and protection, care and defense, restraint and force.",
-          ctaLabel: "VIEW CODEX",
-          href: "library/hospitaller-codex.html",
-        },
-        {
-          id: "hospitaller-doctrine-brief",
-          title: "Hospitaller Doctrine Brief",
-          subtitle: "A brief on protection, service, and the moral architecture of force",
-          type: "Doctrine brief",
-          registers: ["Monastery", "Forge"],
-          description: "A compact doctrine brief on the Hospitaller pattern: care first, defense as the outer wall, and force subordinated to protection.",
-          why: "This sharpens the moral logic behind the defense work. It frames power as a duty of care, not an aesthetic of aggression.",
-          ctaLabel: "READ BRIEF",
-          href: "library/hospitaller-doctrine-brief.html",
         },
         {
           id: "algorithmic-branding-archive",

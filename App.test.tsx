@@ -438,31 +438,24 @@ describe('Doctrine Library (module 06)', () => {
     window.location.hash = '#module-06';
   });
 
-  it('renders the doctrine shelf with its source-text cards', async () => {
+  it('renders the doctrine shelf with its source-text cards (no register filter)', async () => {
     render(<App />);
     const m6 = () => document.getElementById('module-06') as HTMLElement;
 
     await waitFor(() => {
       expect(within(m6()).getByText('Design Under Fire')).toBeInTheDocument();
     });
-    expect(within(m6()).getByText('The Watchman Builder')).toBeInTheDocument();
-    // IAA papers removed from the shelf.
+    expect(within(m6()).getByText('Dirty Canvas')).toBeInTheDocument();
+
+    // Removed cards: IAA (both), Watchman, Rubric, Hospitaller (both).
     expect(within(m6()).queryByText('IAA Manifesto')).not.toBeInTheDocument();
     expect(within(m6()).queryByText('IAA Brand Architecture')).not.toBeInTheDocument();
-  });
+    expect(within(m6()).queryByText('The Watchman Builder')).not.toBeInTheDocument();
+    expect(within(m6()).queryByText('Rubric Design System')).not.toBeInTheDocument();
+    expect(within(m6()).queryByText('Hospitaller Codex')).not.toBeInTheDocument();
+    expect(within(m6()).queryByText('Hospitaller Doctrine Brief')).not.toBeInTheDocument();
 
-  it('filters the shelf when a register chip is clicked', async () => {
-    render(<App />);
-    const m6 = () => document.getElementById('module-06') as HTMLElement;
-
-    // Oracle filter hides Forge/Systems-only papers (Design Under Fire) and
-    // keeps Oracle-tagged ones (Dirty Canvas).
-    const oracleChip = await within(m6()).findByRole('button', { name: /^Oracle$/i });
-    fireEvent.click(oracleChip);
-
-    await waitFor(() => {
-      expect(within(m6()).queryByText('Design Under Fire')).not.toBeInTheDocument();
-    });
-    expect(within(m6()).getByText('Dirty Canvas')).toBeInTheDocument();
+    // Register filter strip removed — no register toggle buttons.
+    expect(within(m6()).queryByRole('button', { name: /^Oracle$/i })).not.toBeInTheDocument();
   });
 });
