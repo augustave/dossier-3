@@ -289,34 +289,39 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
   });
 
-  it('selecting a band stamps the route (?read=), folds the others away, keeps all modules', async () => {
+  it('selecting a band unfolds its stamp; the other routes stay as compact seams', async () => {
     render(<App />);
     await screen.findByTestId('crease-map');
 
     fireEvent.click(band('client'));
 
     await waitFor(() => expect(window.location.search).toContain('read=client'));
-    const stamp = screen.getByTestId('route-stamp');
+    expect(screen.getByTestId('route-stamp')).toBeInTheDocument();
     expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 01 → 03 → 05 → 07');
-    // Non-selected bands stay mounted but fold away (row collapsed, not unmounted).
-    expect(screen.getByTestId('band-row-hiring').getAttribute('data-open')).toBe('false');
-    expect(screen.getByTestId('band-row-client').getAttribute('data-open')).toBe('true');
+    // Every route band stays visible (clickable seam) — none folds away.
+    ['hiring', 'client', 'collab', 'acad', 'full'].forEach(v => expect(band(v)).toBeInTheDocument());
+    // Only the selected route's detail panel is open.
+    expect(screen.getByTestId('route-panel-client').getAttribute('data-open')).toBe('true');
+    expect(screen.getByTestId('route-panel-hiring').getAttribute('data-open')).toBe('false');
+    expect(screen.getAllByTestId('route-stamp')).toHaveLength(1);
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
     expect(document.querySelector('.fold[data-open="true"]')).toBeNull();
   });
 
-  it('the stamp folds back to the overview (reversible; route persists)', async () => {
+  it('clicking the active route again returns to neutral and clears ?read', async () => {
     render(<App />);
     await screen.findByTestId('crease-map');
     fireEvent.click(band('hiring'));
     await screen.findByTestId('route-stamp');
+    expect(window.location.search).toContain('read=hiring');
 
-    // Clicking the open band's header re-folds it back to the overview.
+    // Clicking the active route's seam again folds the stamp + clears the route.
     fireEvent.click(band('hiring'));
 
-    await waitFor(() => expect(screen.getByTestId('band-row-client').getAttribute('data-open')).toBe('true'));
-    expect(screen.queryByTestId('route-stamp')).toBeNull();
-    expect(window.location.search).toContain('read=hiring');
+    await waitFor(() => expect(screen.queryByTestId('route-stamp')).toBeNull());
+    expect(window.location.search).not.toContain('read=');
+    // All routes remain visible as seams (no trap).
+    ['hiring', 'client', 'collab', 'acad', 'full'].forEach(v => expect(band(v)).toBeInTheDocument());
   });
 
   it('?read=client deep-link shows the stamp + all 9 modules; Index marks RECOMMENDED, hides nothing', async () => {
@@ -346,15 +351,30 @@ describe('Crease Map (V3.6.8 route bands, no filter)', () => {
     expect(screen.getByTestId('route-stamp-path').textContent).toBe('00 → 02 → 03 → 04 → 06');
   });
 
-  it('Full Dossier route stamps ?read=full and marks NOTHING recommended (neutral)', async () => {
-    window.history.replaceState(null, '', '?read=full');
+  it('Full Dossier is the neutral flat sheet — clicking it clears ?read, no stamp, nothing recommended', async () => {
     render(<App />);
-    await screen.findByTestId('route-stamp');
+    await screen.findByTestId('crease-map');
+    // Select a real route first, then click Full Dossier to return to neutral.
+    fireEvent.click(band('client'));
+    await waitFor(() => expect(window.location.search).toContain('read=client'));
+
+    fireEvent.click(band('full'));
+    await waitFor(() => expect(window.location.search).not.toContain('read='));
+    expect(screen.queryByTestId('route-stamp')).toBeNull();
     ALL.forEach(idx => expect(getModuleToggle(`module-${idx}`)).not.toBeNull());
+
     fireEvent.click(screen.getByText(/INDEX \(09\)/i));
     const items = await screen.findAllByTestId('manifest-item');
     expect(items).toHaveLength(9);
     items.forEach(row => expect(within(row).queryByText(/^recommended$/i)).not.toBeInTheDocument());
+  });
+
+  it('?read=full is treated as neutral — stripped to / with no stamp', async () => {
+    window.history.replaceState(null, '', '?read=full');
+    render(<App />);
+    await screen.findByTestId('crease-map');
+    expect(screen.queryByTestId('route-stamp')).toBeNull();
+    await waitFor(() => expect(window.location.search).not.toContain('read='));
   });
 
   it('?read=30s is retired — redirects to the neutral overview (param stripped)', async () => {

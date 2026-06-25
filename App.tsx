@@ -54,6 +54,8 @@ const ROUTE_ALIASES: Record<string, RouteValue> = {
 };
 const normalizeRouteValue = (s: string | null): RouteValue | null => {
   if (s === null) return null;
+  // Full Dossier is the neutral flat sheet, not a ?read route — never resolve to it.
+  if (s === 'full') return null;
   if (isRouteValue(s)) return s;
   return ROUTE_ALIASES[s] ?? null;
 };
@@ -248,7 +250,9 @@ const App: React.FC = () => {
     try {
       const params = new URLSearchParams(window.location.search);
       const raw = params.get('read');
-      if (raw === '30s') { writeRouteToUrl(null, true); return; }
+      // ?read=30s (retired) and ?read=full (Full Dossier = neutral flat sheet)
+      // both strip back to the neutral overview at /.
+      if (raw === '30s' || raw === 'full') { writeRouteToUrl(null, true); return; }
       const route = normalizeRouteValue(raw);
       if (route) setSelectedRoute(route);
     } catch (e) {
