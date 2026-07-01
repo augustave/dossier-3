@@ -1,15 +1,17 @@
 import { ReactNode } from 'react';
 
+// V4.0.0 — PRD "site swap" spine. Five sections (BIO / INFLUENCES / AI /
+// AMERICAN DYNAMISM / BRAND) plus the FRONT_MATTER cover and the MANIFEST
+// index overlay. The old taste-led spine (TASTE/SEEING/VISUAL_LANGUAGES/
+// DOCTRINE/DOCTRINE_LIBRARY/PORTFOLIOS/BIOGRAPHY) was retired in the swap.
 export enum ModuleType {
   MANIFEST = 'MANIFEST',
   FRONT_MATTER = 'FRONT_MATTER',
-  TASTE = 'TASTE',
-  SEEING = 'SEEING',
-  VISUAL_LANGUAGES = 'VISUAL_LANGUAGES',
-  DOCTRINE = 'DOCTRINE',
-  DOCTRINE_LIBRARY = 'DOCTRINE_LIBRARY',
-  PORTFOLIOS = 'PORTFOLIOS',
-  BIOGRAPHY = 'BIOGRAPHY'
+  BIO = 'BIO',
+  INFLUENCES = 'INFLUENCES',
+  AI = 'AI',
+  AMERICAN_DYNAMISM = 'AMERICAN_DYNAMISM',
+  BRAND = 'BRAND'
 }
 
 /** Evidence link item for module sidebar. Reserved for future use. */

@@ -1,21 +1,11 @@
 import React from 'react';
-import { ROUTES, RouteValue } from '../constants';
+import { RouteValue } from '../constants';
 
 /**
- * CreaseMap — the dossier's TOP FOLD and reading-route selector.
- *
- * Model:
- *   • ENTRY (neutral) — every route band is shown at once as a compact seam: no
- *     stamp, no helper / Best-if, no Change Lens / Study All / Start Path. Full
- *     Dossier is the neutral flat sheet (no ?read).
- *   • SELECT — the chosen route unfolds into its stamp (path · helper · Best if);
- *     the OTHER routes stay visible as compact seams so the reader can switch
- *     directly. Only one stamp is open at a time; rows never collapse away.
- *   • NEUTRAL — clicking Full Dossier, or the already-active route, returns to
- *     the neutral flat sheet and clears ?read (URL → /).
- *
- * The route is an ORIENTATION AID — it stamps a path + drives the Index
- * RECOMMENDED markers, and NEVER filters; all 9 modules stay rendered below.
+ * CreaseMap — the dossier's TOP FRAME. V4.0.0 swap: the reading-route selector
+ * was retired with the old spine; the frame now carries only the human thesis
+ * ("THE BRAIN IS THE PRODUCT") above the five folds. Props are retained (App
+ * still passes route state) but inert.
  */
 
 const COPY = {
@@ -33,23 +23,10 @@ const COPY = {
 const CREASE_CSS = `
 #crease-map-root .crease-rise{animation:crease-rise .45s ease both;}
 @keyframes crease-rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-
-#crease-map-root .band-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s ease;}
-#crease-map-root .band-panel[data-open="true"]{grid-template-rows:1fr;}
-#crease-map-root .band-panel > .band-panel-inner{overflow:hidden;min-height:0;transform-origin:top center;transform:rotateX(-7deg);opacity:0;transition:transform .34s ease,opacity .28s ease;}
-#crease-map-root .band-panel[data-open="true"] > .band-panel-inner{transform:none;opacity:1;}
-
-@media (prefers-reduced-motion:reduce){
-  #crease-map-root .crease-rise{animation:none;}
-  #crease-map-root .band-panel{transition:none;}
-  #crease-map-root .band-panel > .band-panel-inner{transition:none;transform:none;}
-  #crease-map-root .crease-band{transition:none !important;}
-  #crease-map-root .crease-band:hover{transform:none !important;}
-}
+@media (prefers-reduced-motion:reduce){#crease-map-root .crease-rise{animation:none;}}
 `;
 
 const META = 'font-mono text-micro uppercase tracking-ultra text-strata-black opacity-subtle';
-const KEY = 'font-mono text-micro uppercase tracking-wider text-strata-black opacity-muted';
 
 interface CreaseMapProps {
   selectedRoute: RouteValue | null;
@@ -57,12 +34,7 @@ interface CreaseMapProps {
 }
 
 export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRoute }) => {
-  const onBandClick = (value: RouteValue) => {
-    // Full Dossier is the neutral flat sheet (no ?read). Clicking it — or the
-    // already-active route — returns to neutral and clears ?read.
-    if (value === 'full' || value === selectedRoute) onSelectRoute(null);
-    else onSelectRoute(value);
-  };
+  void selectedRoute; void onSelectRoute; // retained but inert (route selector retired in the swap)
 
   return (
     <section
@@ -85,62 +57,6 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
         <p className="font-sans text-body md:text-lead text-strata-black opacity-secondary mt-2">
           {COPY.offer}
         </p>
-      </div>
-
-      {/* Route system — every band is a seam; the selected one unfolds its stamp. */}
-      <div className="mt-7 border-t border-strata-black/10 pt-3" aria-live="polite">
-        <div className={`${KEY} mb-1`}>Read as —</div>
-        <div role="list">
-          {ROUTES.map((r) => {
-            const isFull = r.value === 'full';
-            const isActive = r.value === selectedRoute; // full is never selectedRoute
-            const panelOpen = isActive;
-            const panelId = `route-panel-${r.value}`;
-            return (
-              <div key={r.value} className="band-row" data-testid={`band-row-${r.value}`}>
-                <button
-                  type="button"
-                  role="listitem"
-                  data-testid={`route-band-${r.value}`}
-                  aria-pressed={isActive}
-                  aria-expanded={panelOpen}
-                  aria-controls={panelId}
-                  aria-label={isFull
-                    ? 'Full Dossier — every module, no recommended route'
-                    : `Read as ${r.label} — ${r.path}, ${r.time}`}
-                  onClick={() => onBandClick(r.value)}
-                  className="crease-band group w-full grid grid-cols-[1fr_auto] items-baseline gap-4 text-left py-3 pl-3 -ml-3 border-l-2 border-transparent border-b border-strata-black/10 transition-[transform,background-color,border-color] duration-200 hover:-translate-y-px hover:bg-strata-black/5 hover:border-l-strata-black/40 focus:outline-none focus-visible:bg-strata-black/5 focus-visible:border-l-strata-black/40"
-                >
-                  {/* Left column — fold type + audience */}
-                  <span className="flex items-baseline gap-3 md:gap-4 min-w-0">
-                    <span className="font-mono text-micro uppercase tracking-wider text-strata-black opacity-muted shrink-0">{r.prefix}</span>
-                    <span className="font-sans font-semibold text-caption tracking-tight text-strata-black opacity-secondary group-hover:opacity-primary truncate">{r.label}</span>
-                  </span>
-                  {/* Right column — module path + time */}
-                  <span className="font-mono text-micro text-strata-black opacity-muted shrink-0 text-right">
-                    <span data-testid={panelOpen ? 'route-stamp-path' : undefined}>{r.path}</span>
-                    {r.tag ? ` · ${r.tag}` : ''} · {r.time.toUpperCase()}
-                  </span>
-                </button>
-
-                {/* Detail panel — the selected band unfolded into its stamp. The
-                    detail renders ONLY when active (not just CSS-collapsed), so a
-                    non-selected seam can never leak a stamp even if the scoped
-                    fold CSS fails to apply. */}
-                <div className="band-panel" id={panelId} data-testid={panelId} data-open={panelOpen} role="region" aria-label={`${r.label} reading`}>
-                  <div className="band-panel-inner" data-testid={panelOpen ? 'route-stamp' : undefined}>
-                    {panelOpen && (
-                      <>
-                        <p className="font-sans text-caption text-strata-black opacity-tertiary max-w-[54ch] pt-2">{r.helper}</p>
-                        <p className={`${KEY} mt-2 pb-2`}>Best if · {r.bestIf}</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </section>
   );

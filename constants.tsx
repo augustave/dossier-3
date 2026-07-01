@@ -1,83 +1,37 @@
 import React from 'react';
 import { ModuleData, ModuleType } from './types';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
-import { VisualLanguages } from './components/VisualLanguages';
-import { DoctrineLibrary } from './components/DoctrineLibrary';
 
 export type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
 
 export interface Audience {
   id: AudienceId;
   label: string;
-  /** Recommended reading path (module indices). V3.6.1: this HIGHLIGHTS a path
-      through the Index — it no longer filters/hides any module. Orientation aid,
-      not a filter. Includes 00 so the path always starts at the cover. */
   modules: string[];
-  /** Orientation helper line shown under the lens row when this lens is active. */
   helper: string;
 }
 
-export const AUDIENCES: Audience[] = [
-  { id: 'hiring', label: 'HIRING MANAGER', modules: ['00', '03', '06', '07'],
-    helper: 'Recommended path: visual language, built evidence, and biography.' },
-  { id: 'client', label: 'CLIENT',         modules: ['00', '01', '03', '04', '06'],
-    helper: 'Recommended path: taste, systems, doctrine, and built work.' },
-  { id: 'collab', label: 'COLLABORATOR',   modules: ['00', '02', '03', '05'],
-    helper: 'Recommended path: lenses, registers, neighboring practices, and source texts.' },
-  { id: 'acad',   label: 'ACADEMIC',       modules: ['00', '01', '02', '04', '05'],
-    helper: 'Recommended path: sourcing discipline, neighborhood map, doctrine, and library.' }
-];
+// V4.0.0 swap: the reading-route / audience-lens system was retired with the
+// old spine (it indexed the old fold numbers and is not in the PRD). The types
+// and empty exports remain so App.tsx / CreaseMap compile unchanged; the
+// CreaseMap now renders only the thesis frame.
+export const AUDIENCES: Audience[] = [];
 
-// V3.6.8 Crease Map: each reading route is a folding band. A fold-context prefix
-// (mountain / valley / flat sheet) echoes the dossier's own pleat language. The
-// route is an ORIENTATION AID — it stamps a path + marks the Index, never filters.
 export type RouteValue = AudienceId | 'full';
 
 export interface RouteBand {
   value: RouteValue;
   label: string;
   prefix: 'MOUNTAIN' | 'VALLEY' | 'FLAT SHEET';
-  path: string;        // "00 → 03 → 07 → 08"
-  /** Optional band note between path and time (e.g. "COMPLETE READ" for full). */
+  path: string;
   tag?: string;
-  time: string;        // "~5 min"
+  time: string;
   helper: string;
   bestIf: string;
-  /** Modules the Index marks RECOMMENDED for this route ([] = neutral, e.g. full). */
   modules: string[];
 }
 
-const ROUTE_META: Record<RouteValue, { prefix: RouteBand['prefix']; time: string; bestIf: string }> = {
-  hiring: { prefix: 'MOUNTAIN',   time: '~5 min',  bestIf: 'you need to understand fit quickly' },
-  client: { prefix: 'VALLEY',     time: '~6 min',  bestIf: 'your thing is real but illegible' },
-  collab: { prefix: 'MOUNTAIN',   time: '~6 min',  bestIf: 'you want to think or build together' },
-  acad:   { prefix: 'VALLEY',     time: '~7 min',  bestIf: 'you want the framework and its sources' },
-  full:   { prefix: 'FLAT SHEET', time: '~12 min', bestIf: 'you have time to read the whole archive' },
-};
-
-export const ROUTES: RouteBand[] = [
-  ...AUDIENCES.map((a): RouteBand => ({
-    value: a.id,
-    label: a.label,
-    prefix: ROUTE_META[a.id].prefix,
-    path: a.modules.join(' → '),
-    time: ROUTE_META[a.id].time,
-    helper: a.helper,
-    bestIf: ROUTE_META[a.id].bestIf,
-    modules: a.modules,
-  })),
-  {
-    value: 'full',
-    label: 'FULL DOSSIER',
-    prefix: 'FLAT SHEET',
-    path: '00–07',
-    tag: 'COMPLETE READ',
-    time: ROUTE_META.full.time,
-    helper: 'Every module, unfiltered, in narrative order — the complete read.',
-    bestIf: ROUTE_META.full.bestIf,
-    modules: [],
-  },
-];
+export const ROUTES: RouteBand[] = [];
 
 export const isRouteValue = (s: string | null): s is RouteValue =>
   s !== null && ROUTES.some((r) => r.value === s);
@@ -89,24 +43,26 @@ export const COLORS = {
   clay: 'bg-strata-clay text-white border-white/20 theme-brown',
 };
 
+// Resolve a copy href: absolute http(s) untouched; a relative library path is
+// prefixed with the Vite base so it resolves on both the root and any subpath.
+const resolveHref = (href: string) =>
+  href.startsWith('http') ? href : `${import.meta.env.BASE_URL}${href}`;
+
 /**
- * Content modules for the CT Dossier — taste-led spine (V3.2).
- * Display index === narrative order (no more index/key mismatch).
- *   00 MANIFEST (overlay)  01 TASTE  02 SEEING  03 VISUAL LANGUAGES
- *   04 NEIGHBORHOOD  05 DOCTRINE  06 DOCTRINE LIBRARY  07 PORTFOLIOS  08 OPERATING BIOGRAPHY
+ * Content modules — V4.0.0 PRD "site swap" spine. Display index === render order.
+ *   00 FRONT MATTER (cover)  01 BIO  02 INFLUENCES  03 AI
+ *   04 AMERICAN DYNAMISM  05 BRAND       (MANIFEST = index overlay, not rendered inline)
  */
 export const CONTENT_MODULES: ModuleData[] = [
-  // 00 FRONT MATTER — the dossier cover. Folded by default; opening teaches the
-  // interaction grammar. responseDisplay is injected dynamically in App.tsx
-  // (it carries audience-lens state). Null here is safe — ManifestOverlay only
-  // reads index/title; ModuleStrata receives the real ReactNode at render time.
+  // 00 FRONT MATTER — the cover. responseDisplay is injected in App.tsx
+  // (FrontMatterContent). ManifestOverlay only reads index/title.
   {
     id: ModuleType.FRONT_MATTER,
     index: "00",
     title: "FRONT MATTER",
     promptText: "PRACTICE FRONT MATTER",
     themeColor: 'cream',
-    responseText: "Taste is not preference. Taste is a sourcing discipline.",
+    responseText: "Different disciplines, one obsession. The brain is the product.",
     responseDisplay: null,
   },
 
@@ -120,92 +76,52 @@ export const CONTENT_MODULES: ModuleData[] = [
     responseDisplay: "Select a stratum to jump to its coordinates.",
   },
 
-  // 01 — TASTE. Aesthetic authority first. Editorial, museum-catalogue energy.
+  // 01 — BIO. The human root + the neighborhood map + the My First CPO article.
+  // Blue theme keeps the map's native identity (lime owned-zone on a dark field).
   {
-    id: ModuleType.TASTE,
+    id: ModuleType.BIO,
     index: "01",
-    title: COPY.modules.taste.title,
-    promptText: COPY.modules.taste.prompt,
-    themeColor: 'cream',
-    responseText: COPY.modules.taste.hero,
+    title: COPY.modules.bio.title,
+    promptText: COPY.modules.bio.prompt,
+    themeColor: 'blue',
+    responseText: COPY.modules.bio.opening,
     responseDisplay: (
       <div className="space-y-8">
-        <div className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.taste.hero}
+        <div className="font-mono text-xs uppercase tracking-[0.25em] opacity-muted">
+          {COPY.modules.bio.name}
         </div>
-        <div className="font-sans text-lg md:text-xl max-w-2xl opacity-secondary leading-relaxed">
-          {COPY.modules.taste.body.split('\n\n').map((para, i) => (
-            <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.bio.opening}
+        </p>
+        <div className="font-sans text-base md:text-lg opacity-secondary leading-relaxed max-w-[820px] space-y-4">
+          {COPY.modules.bio.body.map((para, i) => (
+            <p key={i}>{para}</p>
           ))}
         </div>
-
-        <div className="space-y-3 border-t border-current/20 pt-6">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted">{COPY.modules.taste.beliefsTitle}</h4>
-          <ul className="space-y-2">
-            {COPY.modules.taste.beliefs.map((b, i) => (
-              <li key={i} className="flex gap-3 items-start">
-                <span className="font-mono text-xs opacity-muted pt-1">&bull;</span>
-                <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{b}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="border-t border-current/20 pt-6">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-2">{COPY.modules.taste.fieldNoteTitle}</h4>
-          <p className="font-serif text-xl md:text-2xl italic opacity-tertiary leading-relaxed max-w-2xl">
-            {COPY.modules.taste.fieldNote}
-          </p>
-        </div>
-      </div>
-    ),
-  },
-
-  // 02 — FIELD OF VIEW. Merged module: SEEING's Three Lenses (how I look) +
-  // THE NEIGHBORHOOD's field-position diagram (where I sit). Blue theme (the
-  // chart's native identity; the lens cards adapt via currentColor). The Field
-  // Position chart geometry is locked — only VEN→ME changed.
-  {
-    id: ModuleType.SEEING,
-    index: "02",
-    title: COPY.modules.seeing.title,
-    promptText: COPY.modules.seeing.prompt,
-    themeColor: 'blue',
-    responseText: COPY.modules.seeing.hero,
-    responseDisplay: (
-      <div className="space-y-8">
-        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.seeing.hero}
-        </p>
-        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
-          {COPY.modules.seeing.intro}
+        <p className="font-serif text-lg md:text-2xl italic opacity-secondary border-t border-white/10 pt-6 max-w-3xl">
+          {COPY.modules.bio.close}
         </p>
 
-        {/* Three Lenses — first. */}
-        <div>
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.seeing.lensesTitle}</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {COPY.modules.seeing.lenses.map((l, idx) => (
-              <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
-                <div className="flex items-baseline justify-between mb-3 gap-3">
-                  <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">LENS {l.code}</span>
-                  <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{l.title}</span>
-                </div>
-                <h4 className="font-serif text-xl md:text-2xl italic mb-2">{l.person}</h4>
-                <p className="font-mono text-xs uppercase tracking-wide opacity-muted mb-3">{l.question}</p>
-                <p className="font-sans text-sm opacity-secondary leading-relaxed">{l.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* My First CPO — the BIO article */}
+        <a
+          href={COPY.modules.bio.article.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(event) => event.stopPropagation()}
+          className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/article max-w-2xl"
+        >
+          <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{COPY.modules.bio.article.eyebrow}</div>
+          <div className="font-serif text-xl md:text-2xl italic mb-1 group-hover/article:underline">{COPY.modules.bio.article.title}</div>
+          <p className="font-sans text-sm opacity-secondary leading-relaxed">{COPY.modules.bio.article.subtitle}</p>
+        </a>
 
-        {/* Neighborhood diagram — second. Field Position chart (locked geometry). */}
+        {/* "Where Do I Fall" — the neighborhood map. Chart geometry locked. */}
         <div className="pleat-chart mt-4 pt-8 border-t border-white/20">
           <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
-            {COPY.modules.neighborhood.chartTitle}
+            {COPY.modules.bio.chartTitle}
           </h4>
           <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4 max-w-xl">
-            {COPY.modules.neighborhood.chartFraming}
+            {COPY.modules.bio.chartFraming}
           </p>
 
           <div className="bg-black/20 p-4 md:p-6 border border-white/10">
@@ -216,8 +132,7 @@ export const CONTENT_MODULES: ModuleData[] = [
               aria-label="A map of neighboring practices. Fourteen adjacent practices plotted across craft-native to AI-native horizontally and ephemeral to durable vertically. This practice (ME) sits alone in the durable, AI-native corner, labeled doctrine-led AI."
               style={{ color: 'currentColor' }}
             >
-              {/* Owned-zone wash — scoped to this practice's pocket in the deep
-                  durable/AI-native corner. Locked visualization. */}
+              {/* Owned-zone wash — this practice's pocket in the durable/AI-native corner. */}
               <rect x="420" y="360" width="180" height="140" fill="#E5FF00" opacity="0.07"/>
               <rect x="420" y="360" width="180" height="140" fill="none" stroke="#E5FF00" strokeOpacity="0.4" strokeWidth="0.5" strokeDasharray="2 3"/>
               {/* Plot border */}
@@ -227,19 +142,19 @@ export const CONTENT_MODULES: ModuleData[] = [
               <line x1="340" y1="60" x2="340" y2="500" stroke="currentColor" strokeOpacity="0.4" strokeWidth="0.5"/>
 
               {/* Quadrant labels — name work-modes, not the plotted practices. */}
-              <text x="92" y="80" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionQuadrants.tl}</text>
-              <text x="588" y="80" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionQuadrants.tr}</text>
-              <text x="92" y="490" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionQuadrants.bl}</text>
-              <text x="588" y="490" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="#E5FF00" opacity="0.85" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionQuadrants.br}</text>
+              <text x="92" y="80" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.bio.fieldPositionQuadrants.tl}</text>
+              <text x="588" y="80" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.bio.fieldPositionQuadrants.tr}</text>
+              <text x="92" y="490" fontSize="10" letterSpacing="1.5" fill="currentColor" opacity="0.3" fontFamily="ui-monospace, monospace">{COPY.modules.bio.fieldPositionQuadrants.bl}</text>
+              <text x="588" y="490" textAnchor="end" fontSize="10" letterSpacing="1.5" fill="#E5FF00" opacity="0.85" fontFamily="ui-monospace, monospace">{COPY.modules.bio.fieldPositionQuadrants.br}</text>
 
               {/* Axis labels */}
-              <text x="80" y="46" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionAxes.xLeft}</text>
-              <text x="600" y="46" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionAxes.xRight}</text>
-              <text x="65" y="60" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 60)">{COPY.modules.neighborhood.fieldPositionAxes.yTop}</text>
-              <text x="65" y="500" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 500)">{COPY.modules.neighborhood.fieldPositionAxes.yBottom}</text>
+              <text x="80" y="46" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules.bio.fieldPositionAxes.xLeft}</text>
+              <text x="600" y="46" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace">{COPY.modules.bio.fieldPositionAxes.xRight}</text>
+              <text x="65" y="60" textAnchor="end" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 60)">{COPY.modules.bio.fieldPositionAxes.yTop}</text>
+              <text x="65" y="500" textAnchor="start" fontSize="11" letterSpacing="2" fill="currentColor" fontFamily="ui-monospace, monospace" transform="rotate(-90, 65, 500)">{COPY.modules.bio.fieldPositionAxes.yBottom}</text>
 
               {/* Adjacent-practice dots */}
-              {COPY.modules.neighborhood.fieldPositionDesigners.map((d, i) => {
+              {COPY.modules.bio.fieldPositionDesigners.map((d, i) => {
                 const cx = 80 + (d.x / 100) * 520;
                 const cy = 60 + (d.y / 100) * 440;
                 return (
@@ -252,7 +167,7 @@ export const CONTENT_MODULES: ModuleData[] = [
 
               {/* ME dot (highlighted, lime accent) */}
               {(() => {
-                const v = COPY.modules.neighborhood.fieldPositionVen;
+                const v = COPY.modules.bio.fieldPositionVen;
                 const cx = 80 + (v.x / 100) * 520;
                 const cy = 60 + (v.y / 100) * 440;
                 return (
@@ -267,7 +182,7 @@ export const CONTENT_MODULES: ModuleData[] = [
               {/* Legend strip */}
               <g transform="translate(80, 545)">
                 <circle cx="5" cy="5" r="3" fill="currentColor" opacity="0.7"/>
-                <text x="14" y="9" fontSize="10" fill="currentColor" opacity="0.7" fontFamily="ui-monospace, monospace">{COPY.modules.neighborhood.fieldPositionLegendPeers}</text>
+                <text x="14" y="9" fontSize="10" fill="currentColor" opacity="0.7" fontFamily="ui-monospace, monospace">{COPY.modules.bio.fieldPositionLegendPeers}</text>
                 <circle cx="165" cy="5" r="5" fill="#E5FF00"/>
                 <text x="176" y="9" fontSize="10" fill="#E5FF00" fontFamily="ui-monospace, monospace">ME</text>
               </g>
@@ -275,189 +190,164 @@ export const CONTENT_MODULES: ModuleData[] = [
           </div>
 
           <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
-            {COPY.modules.neighborhood.chartCaption}
+            {COPY.modules.bio.chartCaption}
           </p>
         </div>
       </div>
     ),
   },
 
-  // 03 — VISUAL LANGUAGES (V3.2). Authored visual operating languages are the
-  // centerpiece; the registers survive only as blue/orange/green color tags on
-  // the cards (REGISTER GRAMMAR exposition + filter strip removed).
+  // 02 — INFLUENCES. The curated constellation.
   {
-    id: ModuleType.VISUAL_LANGUAGES,
-    index: "03",
-    title: COPY.modules.visualLanguages.title,
-    promptText: COPY.modules.visualLanguages.prompt,
-    themeColor: 'black',
-    responseText: COPY.modules.visualLanguages.hero,
+    id: ModuleType.INFLUENCES,
+    index: "02",
+    title: COPY.modules.influences.title,
+    promptText: COPY.modules.influences.prompt,
+    themeColor: 'cream',
+    responseText: COPY.modules.influences.hero,
     responseDisplay: (
       <div className="space-y-8">
-        <div className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.visualLanguages.hero}
-        </div>
-        <div className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-2xl">
-          {COPY.modules.visualLanguages.body.split('\n\n').map((para, i) => (
-            <p key={i} className={i > 0 ? 'mt-4' : ''}>{para}</p>
-          ))}
-        </div>
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.influences.hero}
+        </p>
+        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
+          {COPY.modules.influences.intro}
+        </p>
 
-        <div className="pt-4 border-t border-white/20">
-          <VisualLanguages
-            languages={COPY.modules.visualLanguages.languages}
-            registers={COPY.modules.visualLanguages.registers}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 border-t border-current/20 pt-6">
+          {COPY.modules.influences.people.map((p, i) => (
+            <div key={i} className="flex items-baseline gap-3">
+              <span className="font-mono text-micro opacity-tertiary pt-1 shrink-0">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <div className="font-serif text-xl md:text-2xl italic">{p.name}</div>
+                <div className="font-sans text-sm opacity-secondary leading-relaxed">{p.note}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     ),
   },
 
-  // 04 — DOCTRINE (V3.2, was PRACTICE). What the work obeys and refuses.
-  // Direction → Form → Trust.
+  // 03 — AI. Statement + the Five Axioms + the AI essays.
   {
-    id: ModuleType.DOCTRINE,
-    index: "04",
-    title: COPY.modules.doctrine.title,
-    promptText: COPY.modules.doctrine.prompt,
-    themeColor: 'cream',
-    responseText: COPY.modules.doctrine.short,
+    id: ModuleType.AI,
+    index: "03",
+    title: COPY.modules.ai.title,
+    promptText: COPY.modules.ai.prompt,
+    themeColor: 'black',
+    responseText: COPY.modules.ai.statement,
     responseDisplay: (
       <div className="space-y-8">
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.ai.statement}
+        </p>
+
         <div>
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">{COPY.modules.doctrine.layersTitle}</h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {COPY.modules.doctrine.layers.map((l, idx) => (
-              <div key={idx} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
-                <div className="flex items-baseline justify-between mb-3 gap-3">
-                  <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{l.code}</span>
-                  <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{l.title}</span>
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-1">{COPY.modules.ai.axiomsTitle}</h4>
+          <p className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-4">{COPY.modules.ai.axiomsCountLabel} axioms</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {COPY.modules.ai.axioms.map((a, i) => (
+              <div key={i} className="p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity">
+                <div className="flex items-baseline gap-3 mb-2">
+                  <span className="font-mono text-lg tracking-widest opacity-tertiary">{a.numeral}</span>
+                  <span className="font-serif text-xl md:text-2xl italic">{a.title}</span>
                 </div>
-                <p className="font-sans text-sm md:text-base opacity-secondary leading-relaxed">{l.body}</p>
+                <p className="font-mono text-xs uppercase tracking-wide opacity-muted">{a.note}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="space-y-3 border-t border-current/20 pt-6">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted">{COPY.modules.doctrine.rulesTitle}</h4>
-          <ul className="space-y-2">
-            {COPY.modules.doctrine.rules.map((b, i) => (
-              <li key={i} className="flex gap-3 items-start">
-                <span className="font-mono text-xs opacity-muted pt-1">&bull;</span>
-                <span className="font-sans text-base md:text-lg opacity-secondary leading-relaxed">{b}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <p className="font-serif text-lg md:text-xl italic opacity-tertiary border-t border-current/10 pt-6">
-          {COPY.modules.doctrine.short}
-        </p>
-      </div>
-    ),
-  },
-
-  // 05 — DOCTRINE LIBRARY (V3.3). The shelf of written source texts.
-  {
-    id: ModuleType.DOCTRINE_LIBRARY,
-    index: "05",
-    title: COPY.modules.doctrineLibrary.title,
-    promptText: COPY.modules.doctrineLibrary.prompt,
-    themeColor: 'black',
-    responseText: COPY.modules.doctrineLibrary.hero,
-    responseDisplay: (
-      <div className="space-y-8">
-        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.doctrineLibrary.hero}
-        </p>
-        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
-          {COPY.modules.doctrineLibrary.intro}
-        </p>
-        <p className="font-serif italic text-lg md:text-xl opacity-tertiary leading-relaxed max-w-3xl">
-          {COPY.modules.doctrineLibrary.shelfLogic}
-        </p>
-
-        <div className="pt-4 border-t border-white/20">
-          <DoctrineLibrary
-            cards={COPY.modules.doctrineLibrary.cards}
-            pendingNote={COPY.modules.doctrineLibrary.pendingNote}
-          />
-        </div>
-      </div>
-    ),
-  },
-
-  // 06 — PORTFOLIOS. Where the built work lives. Taste-first order.
-  {
-    id: ModuleType.PORTFOLIOS,
-    index: "06",
-    title: COPY.modules.portfolios.title,
-    promptText: COPY.modules.portfolios.prompt,
-    themeColor: 'clay',
-    responseText: COPY.modules.portfolios.hero,
-    responseDisplay: (
-      <div className="space-y-8">
-        <p className="font-serif text-2xl md:text-4xl leading-relaxed">
-          {COPY.modules.portfolios.hero}
-        </p>
-        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
-          {COPY.modules.portfolios.intro}
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {COPY.modules.portfolios.portfolioSites.map((site, idx) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/20 pt-6">
+          {COPY.modules.ai.links.map((l, i) => (
             <a
-              key={idx}
-              href={`https://${site.domain}`}
+              key={i}
+              href={l.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/site"
               onClick={(event) => event.stopPropagation()}
+              className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/link"
             >
-              <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{site.register}</div>
-              <div className="font-mono text-lg md:text-xl tracking-tight mb-3 group-hover/site:underline">{site.domain}</div>
-              <p className="font-sans text-sm opacity-secondary leading-relaxed">{site.frame}</p>
+              <div className="font-mono text-lg md:text-xl tracking-tight mb-2 group-hover/link:underline">{l.name}</div>
+              <p className="font-sans text-sm opacity-secondary leading-relaxed">{l.frame}</p>
             </a>
           ))}
         </div>
-
-        {COPY.modules.portfolios.outcomeLine && (
-          <p className="font-serif italic text-lg md:text-xl opacity-tertiary border-t border-current/20 pt-6 max-w-3xl">
-            {COPY.modules.portfolios.outcomeLine}
-          </p>
-        )}
       </div>
     ),
   },
 
-  // 07 — OPERATING BIOGRAPHY (V3.5.1, replaced Engagement Models). Text-led,
-  // first person — the human root of the practice. No cards.
+  // 04 — AMERICAN DYNAMISM. The defense center.
   {
-    id: ModuleType.BIOGRAPHY,
-    index: "07",
-    title: COPY.modules.biography.title,
-    promptText: COPY.modules.biography.prompt,
-    themeColor: 'black',
-    responseText: COPY.modules.biography.opening,
+    id: ModuleType.AMERICAN_DYNAMISM,
+    index: "04",
+    title: COPY.modules.americanDynamism.title,
+    promptText: COPY.modules.americanDynamism.prompt,
+    themeColor: 'clay',
+    responseText: COPY.modules.americanDynamism.hero,
     responseDisplay: (
       <div className="space-y-8">
         <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.biography.opening}
+          {COPY.modules.americanDynamism.hero}
         </p>
-        <div className="font-sans text-base md:text-lg opacity-secondary leading-relaxed max-w-[820px] space-y-4">
-          {COPY.modules.biography.body.map((para, i) => (
-            <p key={i}>{para}</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {COPY.modules.americanDynamism.links.map((l, i) => (
+            <a
+              key={i}
+              href={l.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(event) => event.stopPropagation()}
+              className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/link"
+            >
+              <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{l.register}</div>
+              <div className="font-serif text-xl md:text-2xl italic group-hover/link:underline">{l.name}</div>
+            </a>
           ))}
         </div>
-        <p className="font-serif text-lg md:text-2xl italic opacity-secondary border-t border-white/10 pt-6 max-w-3xl">
-          {COPY.modules.biography.close}
+      </div>
+    ),
+  },
+
+  // 05 — BRAND. Two essays (outbound URLs pending; local PDFs as placeholders).
+  {
+    id: ModuleType.BRAND,
+    index: "05",
+    title: COPY.modules.brand.title,
+    promptText: COPY.modules.brand.prompt,
+    themeColor: 'black',
+    responseText: COPY.modules.brand.hero,
+    responseDisplay: (
+      <div className="space-y-8">
+        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
+          {COPY.modules.brand.hero}
         </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {COPY.modules.brand.essays.map((e, i) => (
+            <a
+              key={i}
+              href={resolveHref(e.href)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(event) => event.stopPropagation()}
+              className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/essay"
+            >
+              <div className="font-serif text-xl md:text-2xl italic mb-1 group-hover/essay:underline">{e.title}</div>
+              <p className="font-sans text-sm opacity-secondary leading-relaxed mb-3">{e.subtitle}</p>
+              <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{e.ctaLabel} -&gt;</span>
+            </a>
+          ))}
+        </div>
       </div>
     ),
   },
 ];
 
+// Retained for InquiryPanel (not part of the swap spine; kept for its component
+// + tests). Not rendered in the main App surface.
 export const INQUIRY_OPTIONS = {
   assess: [
     "Taste & Direction",
