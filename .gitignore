@@ -91,6 +91,12 @@ out
 .nuxt
 dist
 
+# Stray Vite bundle spew — the app builds to dist/, never the repo root.
+# l.js / lv.js were minified React bundles committed to root by mistake.
+/l.js
+/lv.js
+/*.min.js
+
 # Gatsby files
 .cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js
