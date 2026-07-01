@@ -19,9 +19,12 @@ the `?read=30s` door landing, fixed the **Back button**, and trimmed module 00.
 > First push carried the repo-hygiene commit `c9f8516` (removed stale root bundles
 > `l.js`/`lv.js` + the `gh-pages` deploy workflow). The `dossier-fold`, `origin`, and
 > `founder-archive` remotes were left untouched.
-> **Open question for the owner:** is `dossier-3` now the canonical home, or a parallel
-> version? Until that's decided, the Vercel / `dossier-fold` lines below still describe the
-> previously-canonical deploy.
+> **Owner decision (2026-07-01): `dossier-3` is a PARALLEL / experimental version kept
+> ALONGSIDE the canonical one — it does NOT replace it.** `dossier-fold.vercel.app` (repo
+> `dossier-fold`) stays the canonical live site; the Vercel / `dossier-fold` lines below
+> still stand. THIS working copy is the dossier-3 parallel line — its pushes default to
+> `dossier-3/main`. Do NOT push this copy to `dossier-fold` unless you deliberately mean to
+> merge the parallel work back into canonical.
 
 - **Canonical home: `https://dossier-fold.vercel.app`** (Vercel project `dossier-fold`).
 - **Git: push to the `dossier-fold` remote, branch `main`** → `git push dossier-fold HEAD:main`
