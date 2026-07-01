@@ -189,6 +189,7 @@ export const CT_DOSSIER_COPY_V120 = {
       intro:
         "The map plots neighboring practices — craft, technology, identity, publishing, design. Not a ranking; an orientation. Some optimize for speed, some for experimentation, some for permanence. I sit where durable craft, systems thinking, visual direction, and AI-native production meet.",
       chartTitle: "A MAP OF NEIGHBORING PRACTICES",
+      chartFraming: "Practitioners I study and measure myself against.",
       chartCaption:
         "The corner where durable work meets AI-native production — a quiet part of the map.",
       fieldPositionAxes: {
@@ -198,9 +199,9 @@ export const CT_DOSSIER_COPY_V120 = {
         yBottom: "DURABLE",
       },
       fieldPositionQuadrants: {
-        tl: "TREND CRAFT",
-        tr: "FAST & DISPOSABLE",
-        bl: "LEGACY CRAFT",
+        tl: "CULTURAL",
+        tr: "HIGH-VELOCITY",
+        bl: "HERITAGE CRAFT",
         br: "DOCTRINE-LED AI",
       },
       fieldPositionLegendPeers: "neighboring practices",

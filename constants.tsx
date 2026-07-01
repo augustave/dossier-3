@@ -204,6 +204,9 @@ export const CONTENT_MODULES: ModuleData[] = [
           <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
             {COPY.modules.neighborhood.chartTitle}
           </h4>
+          <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4 max-w-xl">
+            {COPY.modules.neighborhood.chartFraming}
+          </p>
 
           <div className="bg-black/20 p-4 md:p-6 border border-white/10">
             <svg
