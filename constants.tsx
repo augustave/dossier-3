@@ -102,17 +102,24 @@ export const CONTENT_MODULES: ModuleData[] = [
           {COPY.modules.bio.close}
         </p>
 
-        {/* My First CPO — the BIO article */}
+        {/* My First CPO — the BIO article. Restrained editorial card: matte,
+            hairline, one precise hover (tight paper-lift + advancing arrow +
+            a hairline drawing under the title). No 3D — mass over swagger. */}
         <a
           href={COPY.modules.bio.article.href}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(event) => event.stopPropagation()}
-          className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/article max-w-2xl"
+          aria-label={`${COPY.modules.bio.article.title} — ${COPY.modules.bio.article.subtitle}`}
+          className="group/cpo relative block w-full max-w-2xl border border-white/20 bg-white/[0.02] p-6 md:p-7 transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:border-white/45 hover:bg-white/[0.04] hover:shadow-[0_26px_44px_-28px_rgba(0,0,0,0.6)] focus:outline-none focus-visible:border-white/60 focus-visible:-translate-y-1"
         >
-          <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{COPY.modules.bio.article.eyebrow}</div>
-          <div className="font-serif text-xl md:text-2xl italic mb-1 group-hover/article:underline">{COPY.modules.bio.article.title}</div>
-          <p className="font-sans text-sm opacity-secondary leading-relaxed">{COPY.modules.bio.article.subtitle}</p>
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{COPY.modules.bio.article.eyebrow}</span>
+            <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary transition-transform duration-300 ease-out group-hover/cpo:translate-x-1">Read &rarr;</span>
+          </div>
+          <div className="font-serif text-2xl md:text-3xl italic mt-4">{COPY.modules.bio.article.title}</div>
+          <div className="h-px w-12 bg-current/40 origin-left scale-x-0 group-hover/cpo:scale-x-100 transition-transform duration-500 ease-out mt-3" aria-hidden="true" />
+          <p className="font-sans text-sm opacity-secondary leading-relaxed mt-3 max-w-md">{COPY.modules.bio.article.subtitle}</p>
         </a>
 
         {/* "Where Do I Fall" — the neighborhood map. Chart geometry locked. */}
