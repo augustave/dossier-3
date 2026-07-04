@@ -1,5 +1,14 @@
 # README — CT Dossier Microsite (No API)
 
+> **⚠️ This README predates V4.0.0 and is largely stale below.** The current app is the
+> **V4.0.0 five-section spine** — landing claim **"THE BRAIN IS THE PRODUCT"**, bands
+> `00 FRONT MATTER · 01 BIOGRAPHY · 02 INFLUENCES · 03 ARTIFICIAL INTELLIGENCE ·
+> 04 AMERICAN DYNAMISM · 05 BRAND` (INDEX 06). The old route/lens system is gutted.
+> **2026-07-04 UI:** tab entrance motion (one-time linear pan-in on load), a unified
+> ledger `Card` component for all link cards, and the `BIO→BIOGRAPHY` /
+> `AI→ARTIFICIAL INTELLIGENCE` renames. The authoritative, current doc is
+> **`HANDOFF.md`** (see its top UPDATE block + §3 + §5b) — trust it over this file.
+
 A minimal-interactive microsite for presenting a recruiter-facing creative technologist profile. It uses a strata-based interface to show practice thesis, role fit, operating method, selected systems, and a client-side outreach composer without any backend.
 
 ## What this is

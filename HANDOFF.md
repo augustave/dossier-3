@@ -8,6 +8,32 @@ the `?read=30s` door landing, fixed the **Back button**, and trimmed module 00.
 > ⚠️ Two big reversals happened this session. Read §4 and §8 before changing the
 > route/lens behavior, or you will rebuild something the owner already rejected.
 
+> **UPDATE 2026-07-04 — this doc predates V4.0.0; read this delta first.**
+> The site is now the **V4.0.0 five-section spine** (commit `4678abf`), not the
+> module list in §3 below. Current rendered spine, **INDEX (06)**:
+> `00 FRONT MATTER (cream) · 01 BIOGRAPHY (blue) · 02 INFLUENCES (cream) ·
+> 03 ARTIFICIAL INTELLIGENCE (black) · 04 AMERICAN DYNAMISM (clay) ·
+> 05 BRAND (black)`. **The route / lens system is GUTTED** — `ROUTES` in
+> `constants.tsx` is now an empty array and `CreaseMap.tsx` renders only the
+> thesis frame, so §4 / §6 / §9's route-model narrative is **obsolete** (kept
+> for history; ignore the filter/lens mechanics).
+>
+> **Session 2026-07-04 (uncommitted → commit `f00fcf0` on `dossier-fold`, LOCAL, not pushed):**
+> 1. **Tab entrance motion** — one-time linear "drafting-table" pan-to-rest on
+>    first load. `--tab-*` law block in `index.css`; `App.tsx` arms every tab
+>    layer off one rAF-committed frame (`data-tab-armed` on `<main>`);
+>    `ModuleStrata` staggers each `.module-tab-skin` (a 1px hairline that pans
+>    in from the right) by `stackIndex`. Transform-only (no h-scroll);
+>    reduced-motion → instant. NO images/skins — the SVG tab skins from the
+>    `experiment/svg-exterior-tabs` branch were deliberately NOT used here.
+> 2. **Ledger Card** — `components/Card.tsx`, one shared component replacing the
+>    four hand-duplicated link cards (BIO article, AI tools, AD projects, Brand
+>    essays). Ledger split: mono rail (KIND top / CTA foot) + roman-serif
+>    content, hairline divider, **borderless**, `currentColor` (inherits each
+>    band's own foreground — no per-theme override). `--card-*` law in `index.css`.
+> 3. **Titles** — `BIO → BIOGRAPHY`, `AI → ARTIFICIAL INTELLIGENCE`
+>    (`copy.v1_1.ts`); added a `register` field to the AI links for the eyebrow.
+
 ---
 
 ## 0. CRITICAL — where it lives and deploys
@@ -60,23 +86,33 @@ for the external sites.
 - `components/FrontMatterContent.tsx` — module 00 content (now just headline + work links).
 - `components/ManifestOverlay.tsx` — the INDEX overlay (lists ALL 9 + RECOMMENDED markers).
 - `components/PleatFold.tsx`, `VisualLanguages.tsx`, `DoctrineLibrary.tsx` — module internals.
-- `constants.tsx` — `CONTENT_MODULES`, `COLORS`, `AUDIENCES`, **`ROUTES`/`RouteValue`/`isRouteValue`** (the Crease Map data).
-- `copy.v1_1.ts` — editorial copy + `meta.version` (the visible `Vx.x.x` label).
+- `components/Card.tsx` — **the one link-card** (ledger split; article/tools/projects/essays). See top UPDATE + §5b.
+- `constants.tsx` — `CONTENT_MODULES`, `COLORS`, `AUDIENCES`; **`ROUTES` is now `[]`** (route system gutted at V4.0.0 — `RouteValue`/`isRouteValue` kept so `App.tsx`/`CreaseMap` still compile). Renders `<Card>` at the four link-card sites.
+- `copy.v1_1.ts` — editorial copy + `meta.version` (the visible `Vx.x.x` label). Module titles live here (`modules.bio.title` = "BIOGRAPHY", `modules.ai.title` = "ARTIFICIAL INTELLIGENCE", …).
+- `index.css` — fold/pleat law **plus the `--tab-*` (tab entrance) and `--card-*` (ledger card) law blocks** added this session.
 - `App.test.tsx` — **28 Vitest tests**.
 - `index.html` — metadata/OG (canonical = dossier-fold.vercel.app). `tailwind.config.cjs` — tokens (incl `fontSize.hero`, `jsx` in content globs).
 - **Deleted this session:** `components/ThirtySecondView.jsx` (the retired ?read=30s door).
 
-## 3. Module architecture
+## 3. Module architecture (V4.0.0 — current)
 ```
-00 FRONT MATTER  cream  ← taste thesis + "Built work lives at" links ONLY (trimmed V3.7.6)
-01 TASTE         cream  02 SEEING clay  03 VISUAL LANGUAGES black (self-pleat)
-04 THE NEIGHBORHOOD blue (chart, one plane)  05 DOCTRINE cream  06 DOCTRINE LIBRARY black (self-pleat)
-07 PORTFOLIOS    ?      08 OPERATING BIOGRAPHY ?
+00 FRONT MATTER            cream   ← thesis + "Built work lives at" links
+01 BIOGRAPHY               blue    ← "My First CPO" ledger article card + Field Position chart
+02 INFLUENCES              cream
+03 ARTIFICIAL INTELLIGENCE black   ← Five Axioms + tool ledger cards (self-pleat)
+04 AMERICAN DYNAMISM       clay    ← project ledger cards
+05 BRAND                   black   ← essay ledger cards (self-pleat)
 ```
-- **INDEX count = (09)** — always; the route NEVER hides modules.
-- Root `/` loads with all modules visible + Crease Map overview (no route selected).
+- **INDEX count = (06)** — six rendered bands (00–05). MANIFEST (index "00") is the
+  index OVERLAY, not a band. Titles are data-driven from `copy.v1_1.ts`.
+- Root `/` loads with all bands visible + the thesis frame at top (routes are gutted — see top UPDATE).
+- The four **link-card sites** (01 article, 03 tools, 04 projects, 05 essays) all render `<Card>` (§5b).
 
-## 4. The Crease Map + the route model (READ THIS)
+## 4. The Crease Map + the route model (OBSOLETE as of V4.0.0 — history only)
+> **Gutted at V4.0.0 (`4678abf`).** `ROUTES` is now `[]` and `CreaseMap.tsx` renders only
+> the thesis frame — there is no lens/route selector, no `?read=` filtering, no route bands.
+> The section below describes the retired system; keep it only to understand old commits.
+
 `CreaseMap.tsx` is the dossier's **top fold** and route selector. It replaced the old
 "reading-lens strip." Two reversible states (fold-native):
 - **Overview** — compact bet (`THE BRAIN IS THE PRODUCT`) + `Read as —` + **5 folding
@@ -102,6 +138,29 @@ on `[data-open]`; pleats rotate keyed on `[data-pleat-open]` (split is load-bear
 22° uniform, chart 30°). Self-pleating modules (00/03/06) render their content bare.
 Reduced motion → fade. **Matte doctrine: pure-black shadows, no glow/glint/gradient; 04
 one plane; 06 grid stable.** The CreaseMap bands reuse a lighter version of this fold.
+
+## 5b. Tab entrance motion + ledger cards (added 2026-07-04, commit `f00fcf0`)
+Two new, self-contained systems. Both stay inside matte doctrine; neither touches the
+fold/pleat physics.
+
+- **Tab entrance motion** (`--tab-*` law in `index.css`). Each band carries a thin
+  `.module-tab-skin` hairline that **pans in from the right once on first load** and
+  hard-stops — `--tab-ease: linear` (constant velocity, no ease-in/out, no overshoot;
+  "drafting-table robotic"), `--tab-duration: 900ms`, `--tab-distance: 100%` (self-
+  relative → never makes a horizontal scrollbar), `--tab-stagger: 90ms × stackIndex`.
+  Armed ONCE by `App.tsx` via a double-rAF flip of `data-tab-armed` on `<main>` (same
+  paint-baseline trick as `Fold.tsx`), with a `setTimeout` fallback. Reduced-motion →
+  instant, content never hidden. **No image/SVG skins** — those live only on the frozen
+  `experiment/svg-exterior-tabs` branch and were deliberately kept off canonical.
+- **Ledger `Card`** (`components/Card.tsx`, `--card-*` law). ONE component for every
+  eyebrow+title+CTA link (01 article, 03 tools, 04 projects, 05 essays) — replaced four
+  hand-duplicated variants. Ledger split: mono rail (`w-16 sm:w-20`, KIND on top / CTA
+  `→`|`↗` at the foot) + a hairline `border-r` divider + roman-serif (`font-serif`,
+  **not italic**) title and sans subtitle on the right, seated on a `border-t` rule.
+  **Borderless, no fill:** text is `currentColor`, so each card inherits its band's own
+  foreground — do NOT reintroduce a forced text color (an earlier `text-[#111111]` on a
+  cream fill washed out on the blue/clay/black bands). Optional `meta` (real values only
+  — no fabricated dates) and `image` slots exist for later.
 
 ## 6. URL / history model (NEW — the Back-button fix, §8 V3.7.5)
 - State lives in **query + hash**, never path segments. `?read=<route>` (`hiring | client
@@ -143,6 +202,15 @@ stars, flat official colors, hairline frame). CTAs = one prefilled mailto.
 - `4c87c2b` **V3.7.5 Back-button fix** (pushState + popstate, §6).
 - `a447c79` **V3.7.6 module 00 trim** — headline + work links only (removed identity sublines,
   body, pullout). Role line still lives in the footer colophon.
+- `4678abf` **V4.0.0 five-section spine** (`feat(swap)!`) — restructured to the PRD spine:
+  `00 FRONT MATTER · 01 BIOGRAPHY · 02 INFLUENCES · 03 ARTIFICIAL INTELLIGENCE ·
+  04 AMERICAN DYNAMISM · 05 BRAND` (INDEX 06). **Route/lens system gutted** (`ROUTES = []`,
+  CreaseMap = thesis frame only) — §4/§6/§9 route mechanics are now obsolete. `cf5ebbe`
+  restrained BIO article card (pre-ledger).
+- `f00fcf0` **UI session 2026-07-04** (on `dossier-fold`, LOCAL, not pushed) —
+  (1) tab entrance motion (`--tab-*`, §5b); (2) ledger `Card.tsx` unifying the four link
+  cards (`--card-*`, §5b); (3) titles `BIO→BIOGRAPHY`, `AI→ARTIFICIAL INTELLIGENCE`.
+  Verified via `getComputedStyle` (preview screenshots were unreliable — see §13).
 
 ## 9. Invariants (don't break)
 - **Route = orientation, NEVER a filter.** All 9 modules always render. (See §4.)
@@ -180,7 +248,14 @@ stars, flat official colors, hairline frame). CTAs = one prefilled mailto.
 ## 13. Environment gotchas
 - **Two agents worked the same repo** this session (identical commit hashes prove it). Check
   `git log` before assuming state.
-- **Preview screenshots freeze animation** at frame 0 — DOM/`getComputedStyle` checks are the
-  reliable signal for fold/crease; eyeball motion in the owner's real browser.
+- **Preview screenshots freeze animation** at frame 0 AND came back BLANK even while the app
+  rendered fine — DOM/`getComputedStyle` / `preview_inspect` are the reliable signal (verify
+  colors, `font-style`, border color, bounding box); eyeball motion in the owner's real browser.
+- **Do NOT stop/start the preview MCP server repeatedly to chase a screenshot** — it dies and
+  leaves `localhost:3100` DEAD, which the owner sees as "the UI regressed / my work is gone"
+  (it happened 2026-07-04). Run the dev server as a **durable background Bash process**
+  (`npm run dev -- --port 3100 --strictPort`, backgrounded); confirm with `curl` (poll to 200)
+  and `lsof -iTCP:3100 -sTCP:LISTEN`. If a screenshot is blank, `curl localhost:3100` FIRST —
+  a dead server looks identical to a tab-sync bug. After any churn, tell the owner to hard-refresh.
 - **Port 3000** is held by a different project's dev server — use another port.
 - The in-app preview browser holds **stale tabs / cross-talks**; open a clean tab to the exact URL.
