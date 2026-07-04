@@ -39,6 +39,12 @@ interface ModuleStrataProps {
 
 export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onToggle, stackIndex, stackCount }) => {
   const themeClass = COLORS[module.themeColor];
+  // Which bands get the tab entrance motion — same set as before (cream/blue/clay),
+  // no image attached to it on this version, just the pan-to-rest layer.
+  const hasTab =
+    module.themeColor === 'cream' ||
+    module.themeColor === 'blue' ||
+    module.themeColor === 'clay';
 
   // Paper-stack z-index: earlier bands sit HIGHER so each sheet's drop shadow
   // draws over the (opaque) band below instead of being painted over by it.
@@ -171,7 +177,14 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
         onToggle();
       }}
     >
-      <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+      {hasTab && (
+        <div
+          className="module-tab-skin"
+          aria-hidden="true"
+          style={{ transitionDelay: `calc(var(--tab-stagger) * ${stackIndex})` }}
+        />
+      )}
+      <div className="relative z-10 container mx-auto px-4 md:px-8 max-w-6xl">
         {/* Header Band */}
         <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 md:gap-12 select-none">
           <div className="flex items-baseline gap-6 relative">

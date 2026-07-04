@@ -58,6 +58,26 @@
   --fold-duration: 500ms;     /* micro folds: drawer, spec */
   --fold-duration-lg: 700ms;  /* module strata panel */
   --fold-crease: var(--hairline); /* the seam reuses the existing hairline */
+
+  /* Tab entrance law — ONE-TIME pan-to-rest on initial page load only.
+     Distinct from fold/pleat: linear (no ease-in/ease-out), hard-stop finish,
+     no overshoot — "drafting-table robotic," a plotter head indexing to its
+     position, not a spring settling into one. Applies to transform/opacity on
+     .module-tab-skin only; never touches the pleat/fold open-close system. */
+  --tab-ease: linear;
+  --tab-duration: 900ms;   /* slower than fold/pleat (500-820ms) — this is the deliberate one */
+  --tab-distance: 100%;    /* self-relative to the tab skin's own box */
+  --tab-stagger: 90ms;     /* per-tab index delay, larger than pleat's 36-42ms — more separated, mechanical cadence */
+
+  /* Card law — every eyebrow+title+CTA link card (article, project, essay
+     links) is a ledger row: mono metadata rail + serif content, divided by a
+     hairline, seated on a horizontal rule. Borderless, no fill — text is
+     currentColor (inherits the band), the two hairlines reuse --hairline
+     (theme-aware). The only motion is the CTA arrow advancing on hover/focus,
+     hence just an ease + duration here — no lift/shadow (a ledger row on the
+     band doesn't elevate). Reuses --fold-ease; no invented easing. */
+  --card-ease: var(--fold-ease);
+  --card-duration: 300ms;
 }
 
 /* Per-stratum overrides */
@@ -101,6 +121,38 @@
   --index-fill: rgba(255, 255, 255, 0.18);
   --index-stroke: rgba(255, 255, 255, 0.85);
   --index-shadow: rgba(0, 0, 0, 0.55);
+}
+
+/* Exterior tab entrance mark. No panel, no image — bands stay their normal
+   flat color at all times. Just a thin hairline that pans in near the top of
+   the band on load, offset from the band's own border-b seam (--space-tight)
+   so it reads as its own registration mark, not a doubled-up divider. */
+.module-tab-skin {
+  position: absolute;
+  top: var(--space-tight);
+  right: 0;
+  left: 0;
+  height: 1px;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--hairline);
+  transition: transform var(--tab-duration) var(--tab-ease),
+              opacity var(--tab-duration) var(--tab-ease);
+  transform: translateX(var(--tab-distance));
+  opacity: 0;
+}
+
+[data-tab-armed='true'] .module-tab-skin {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .module-tab-skin {
+    transition: opacity 0.01ms !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
 }
 
 /* Module Index Class */

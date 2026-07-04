@@ -31,7 +31,7 @@ export const CT_DOSSIER_COPY_V120 = {
     // strictly those the PRD states; the connective prose is a draft for the
     // owner's edit — replace `body`/`opening` with the final bio text.
     bio: {
-      title: "BIO",
+      title: "BIOGRAPHY",
       prompt: "WHO CARRIES THE PRACTICE",
       name: "EBENZ AUGUSTAVE",
       opening: "Born on the Notre Dame campus in South Bend, Indiana. Based in Brooklyn.",
@@ -116,13 +116,13 @@ export const CT_DOSSIER_COPY_V120 = {
     // 03 — AI. First-person statement + the Five Axioms + the AI essays
     // (PRD §6 Tab 3). The axiom label must read "Five" and Axiom V is present.
     ai: {
-      title: "AI",
+      title: "ARTIFICIAL INTELLIGENCE",
       prompt: "MULTIPLICATION, NOT REPLACEMENT",
       statement:
         "I do not think AI will replace our creativity in the slightest — this is about multiplication of innovation.",
       links: [
-        { name: "DIRTY",         frame: "Brand as living system in the AGI era.",               href: "https://dirty.artdirector.rocks/" },
-        { name: "Branding / AGI", frame: "Brand identity at the intersection of algorithm and archive.", href: "https://branding.artdirector.rocks/" },
+        { register: "Tool", name: "DIRTY",         frame: "Brand as living system in the AGI era.",               href: "https://dirty.artdirector.rocks/" },
+        { register: "Tool", name: "Branding / AGI", frame: "Brand identity at the intersection of algorithm and archive.", href: "https://branding.artdirector.rocks/" },
       ],
       axiomsTitle: "THE FIVE AXIOMS OF ALGORITHMIC INNOVATION",
       axiomsCountLabel: "Five",

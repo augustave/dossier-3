@@ -1,6 +1,7 @@
 import React from 'react';
 import { ModuleData, ModuleType } from './types';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
+import { Card } from './components/Card';
 
 export type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
 
@@ -102,25 +103,14 @@ export const CONTENT_MODULES: ModuleData[] = [
           {COPY.modules.bio.close}
         </p>
 
-        {/* My First CPO — the BIO article. Restrained editorial card: matte,
-            hairline, one precise hover (tight paper-lift + advancing arrow +
-            a hairline drawing under the title). No 3D — mass over swagger. */}
-        <a
-          href={COPY.modules.bio.article.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(event) => event.stopPropagation()}
-          aria-label={`${COPY.modules.bio.article.title} — ${COPY.modules.bio.article.subtitle}`}
-          className="group/cpo relative block w-full max-w-2xl border border-white/20 bg-white/[0.02] p-6 md:p-7 transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:border-white/45 hover:bg-white/[0.04] hover:shadow-[0_26px_44px_-28px_rgba(0,0,0,0.6)] focus:outline-none focus-visible:border-white/60 focus-visible:-translate-y-1"
-        >
-          <div className="flex items-baseline justify-between gap-4">
-            <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{COPY.modules.bio.article.eyebrow}</span>
-            <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary transition-transform duration-300 ease-out group-hover/cpo:translate-x-1">Read &rarr;</span>
-          </div>
-          <div className="font-serif text-2xl md:text-3xl italic mt-4">{COPY.modules.bio.article.title}</div>
-          <div className="h-px w-12 bg-current/40 origin-left scale-x-0 group-hover/cpo:scale-x-100 transition-transform duration-500 ease-out mt-3" aria-hidden="true" />
-          <p className="font-sans text-sm opacity-secondary leading-relaxed mt-3 max-w-md">{COPY.modules.bio.article.subtitle}</p>
-        </a>
+        <div className="max-w-2xl">
+          <Card
+            href={COPY.modules.bio.article.href}
+            eyebrow={COPY.modules.bio.article.eyebrow}
+            title={COPY.modules.bio.article.title}
+            subtitle={COPY.modules.bio.article.subtitle}
+          />
+        </div>
 
         {/* "Where Do I Fall" — the neighborhood map. Chart geometry locked. */}
         <div className="pleat-chart mt-4 pt-8 border-t border-white/20">
@@ -268,17 +258,7 @@ export const CONTENT_MODULES: ModuleData[] = [
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/20 pt-6">
           {COPY.modules.ai.links.map((l, i) => (
-            <a
-              key={i}
-              href={l.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(event) => event.stopPropagation()}
-              className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/link"
-            >
-              <div className="font-mono text-lg md:text-xl tracking-tight mb-2 group-hover/link:underline">{l.name}</div>
-              <p className="font-sans text-sm opacity-secondary leading-relaxed">{l.frame}</p>
-            </a>
+            <Card key={i} href={l.href} eyebrow={l.register} title={l.name} subtitle={l.frame} arrow="visit" />
           ))}
         </div>
       </div>
@@ -301,17 +281,7 @@ export const CONTENT_MODULES: ModuleData[] = [
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {COPY.modules.americanDynamism.links.map((l, i) => (
-            <a
-              key={i}
-              href={l.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(event) => event.stopPropagation()}
-              className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/link"
-            >
-              <div className="font-mono text-micro uppercase tracking-widest opacity-tertiary mb-2">{l.register}</div>
-              <div className="font-serif text-xl md:text-2xl italic group-hover/link:underline">{l.name}</div>
-            </a>
+            <Card key={i} href={l.href} eyebrow={l.register} title={l.name} arrow="visit" />
           ))}
         </div>
       </div>
@@ -334,18 +304,7 @@ export const CONTENT_MODULES: ModuleData[] = [
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {COPY.modules.brand.essays.map((e, i) => (
-            <a
-              key={i}
-              href={resolveHref(e.href)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(event) => event.stopPropagation()}
-              className="block p-6 border border-current opacity-secondary hover:opacity-primary transition-opacity group/essay"
-            >
-              <div className="font-serif text-xl md:text-2xl italic mb-1 group-hover/essay:underline">{e.title}</div>
-              <p className="font-sans text-sm opacity-secondary leading-relaxed mb-3">{e.subtitle}</p>
-              <span className="font-mono text-micro uppercase tracking-widest opacity-tertiary">{e.ctaLabel} -&gt;</span>
-            </a>
+            <Card key={i} href={resolveHref(e.href)} eyebrow="Essay" title={e.title} subtitle={e.subtitle} cta={e.ctaLabel} />
           ))}
         </div>
       </div>

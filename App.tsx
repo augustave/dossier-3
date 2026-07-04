@@ -204,6 +204,25 @@ const App: React.FC = () => {
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   // V3.6.8 Crease Map: the selected reading route (or null = neutral overview).
   const [selectedRoute, setSelectedRoute] = useState<RouteValue | null>(null);
+  // Tab entrance arming — every exterior tab layer pans into rest position off
+  // ONE shared page-load event, not N independent component mounts. Starts
+  // false so first paint renders every tab off-plane; flips true one committed
+  // frame later (+ timeout fallback for rAF-starved backgrounded tabs) so the
+  // browser has a painted "from" state before the transition to armed fires —
+  // same technique as Fold.tsx's data-pleat-open flip.
+  const [tabsArmed, setTabsArmed] = useState(false);
+  useEffect(() => {
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setTabsArmed(true));
+    });
+    const fallback = window.setTimeout(() => setTabsArmed(true), 90);
+    return () => {
+      cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+      clearTimeout(fallback);
+    };
+  }, []);
   // Latest scroll-first open request. A mutable ref (not state) so rapid clicks
   // resolve to the LAST module — an in-flight settle callback bails if superseded.
   const pendingRef = useRef<string | null>(null);
@@ -467,7 +486,7 @@ const App: React.FC = () => {
       </div>
 
       {/* pt-24/pt-32 clears the fixed masthead. Module 00 is first in the stack. */}
-      <main className="w-full pt-24 md:pt-32">
+      <main className="w-full pt-24 md:pt-32" data-tab-armed={tabsArmed}>
         {/* The dossier's TOP FOLD — bet + folding route bands. Selecting a route
             stamps it + drives the Index markers; it never filters. */}
         <CreaseMap selectedRoute={selectedRoute} onSelectRoute={selectRoute} />
