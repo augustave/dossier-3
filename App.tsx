@@ -513,7 +513,7 @@ const App: React.FC = () => {
         })}
 
 
-        {/* Footer — dossier COLOPHON (V3.6.10). Warm cream "inside back cover":
+        {/* Footer — dossier COLOPHON. Warm cream "inside back cover":
             three columns (Identity / Correspondence / Actions) + a small metadata
             seal. The old large serif closing statement is retired — the end is
             archival, not rhetorical. Cream #eee9dd reads as cover stock, a touch

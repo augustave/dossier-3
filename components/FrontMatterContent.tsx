@@ -19,7 +19,7 @@ export const FrontMatterContent: React.FC = () => {
       {/* Row 0 — Headline + identity */}
       <div className="pleat" style={{ transitionDelay: 'calc(var(--pleat-stagger) * 0)' }}>
         <h1 className="font-serif text-3xl md:text-[2.85rem] lg:text-5xl leading-[1.12] max-w-3xl">
-          Different disciplines.<br />One obsession.
+          Creating visual identities for entirely new categories that lack existing design precedents
         </h1>
       </div>
 

@@ -170,7 +170,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
       // sit above the next so each shadow draws over the opaque band below.
       // Elevation shadow, not a colour gradient — matte, on-doctrine.
       style={{ zIndex }}
-      className={`relative w-full border-b border-black/10 transition-[padding,box-shadow] duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${themeClass} ${isOpen ? 'py-12 md:py-24' : 'py-8 md:py-12'} ${shadowClass} cursor-pointer group scroll-mt-[100px]`}
+      className={`strata-band relative w-full border-b border-black/10 transition-[padding,box-shadow] duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${themeClass} ${isOpen ? 'py-12 md:py-24' : 'py-8 md:py-12'} ${shadowClass} cursor-pointer group scroll-mt-[100px]`}
       onClick={(e) => {
         const target = e.target as Element;
         if (target.closest('a') || target.closest('button')) return;

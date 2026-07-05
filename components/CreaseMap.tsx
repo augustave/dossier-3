@@ -12,7 +12,7 @@ const COPY = {
   eyebrow: 'The bet',
   role: 'AI-Native Design Engineer & Art Director',
   claim: 'THE BRAIN IS THE PRODUCT',
-  offer: 'I turn complex systems into visual languages.',
+  offer: 'I particularly enjoy two emerging sectors: Frontier AI, where I design the “human-legible surface of non-human intelligence,” and American Dynamism (Defense-Tech) at the intersection of product design, artificial intelligence, and art direction.',
 };
 
 /* Scoped fold motion — a lighter version of the dossier's pleat. Only the detail

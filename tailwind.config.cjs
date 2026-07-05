@@ -9,10 +9,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'strata-blue': '#5E7CFF',
-        'strata-cream': '#F2EFE4',
-        'strata-black': '#050505',
-        'strata-clay': '#8F6F50',
+        // BRONC palette reskin (experiment/bronc-palette). Token NAMES retained
+        // to avoid churn — the values are now olive/putty/near-black/dark-olive:
+        'strata-blue': '#6E7248',   // "blue" is now matte OLIVE (BIOGRAPHY band, selection, index accent)
+        'strata-cream': '#F2EFE4',  // light cream paper (reverted — putty read too dark) (FRONT MATTER, INFLUENCES, body)
+        'strata-black': '#0A0A0A',  // near-black (AI, BRAND)
+        'strata-clay': '#464A2C',   // "clay" is now DARK OLIVE-DRAB (AMERICAN DYNAMISM) — the 2nd green
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

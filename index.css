@@ -111,10 +111,10 @@
   --hairline: rgba(242,238,232,0.22);
 }
 
-.theme-blue {
-  --text-primary: #F3F6FF;
-  --text-muted: rgba(243,246,255,0.72);
-  --hairline: rgba(243,246,255,0.22);
+.theme-blue { /* now the OLIVE band — warm off-white text, not the old cool blue-white */
+  --text-primary: #F4F1E7;
+  --text-muted: rgba(244,241,231,0.72);
+  --hairline: rgba(244,241,231,0.22);
 }
 
 .theme-dark {
@@ -124,18 +124,19 @@
 }
 
 /* Exterior tab entrance mark. No panel, no image — bands stay their normal
-   flat color at all times. Just a thin hairline that pans in near the top of
-   the band on load, offset from the band's own border-b seam (--space-tight)
-   so it reads as its own registration mark, not a doubled-up divider. */
+   flat color at all times. A soft shaded strip (a hairline feathered top+bottom
+   into a thin gradient — "shader" effect 3) that pans in near the top of the
+   band on load, offset from the band's own border-b seam (--space-tight) so it
+   reads as its own registration mark, not a doubled-up divider. */
 .module-tab-skin {
   position: absolute;
   top: var(--space-tight);
   right: 0;
   left: 0;
-  height: 1px;
+  height: 3px;
   z-index: 0;
   pointer-events: none;
-  background: var(--hairline);
+  background: linear-gradient(to bottom, transparent, var(--hairline), transparent);
   transition: transform var(--tab-duration) var(--tab-ease),
               opacity var(--tab-duration) var(--tab-ease);
   transform: translateX(var(--tab-distance));
@@ -153,6 +154,52 @@
     transform: none !important;
     opacity: 1 !important;
   }
+}
+
+/* Band shader — two very-subtle, static effects on every module band (all 6),
+   "thin" = low intensity. Both sit BELOW the content column (z-10) and pass
+   clicks through. Pure-black shade only (matte); grain is a self-contained SVG
+   noise, no external asset. Tune the two intensity vars to taste. */
+:root {
+  --band-grain: 0.05;  /* paper-grain texture opacity (effect 2) */
+  --band-edge: 0.10;   /* top-edge shade alpha (effect 1) */
+}
+
+/* Effect 2 — paper grain across the whole band surface (BRONC letterpress feel). */
+.strata-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  opacity: var(--band-grain);
+  mix-blend-mode: multiply;
+}
+
+/* Effect 1 — thin soft shadow along the band's TOP edge (page-meets-page depth). */
+.strata-band::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.5rem;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, var(--band-edge)), transparent);
+}
+
+/* FRONT MATTER (module 00) is the top band — no sheet above it, so the seam
+   top-edge shade is spurious there. Remove it entirely (keeps the top clean). */
+#module-00::after {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* static effects — nothing to disable, but keep the block for parity */
+  .strata-band::before, .strata-band::after { }
 }
 
 /* Module Index Class */
@@ -490,11 +537,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F2EFE4;
+  background: #F2EFE4; /* cream */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #050505;
+  background: #0A0A0A; /* near-black */
   border: 2px solid #F2EFE4;
 }
 

@@ -256,7 +256,7 @@ export const CONTENT_MODULES: ModuleData[] = [
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/20 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
           {COPY.modules.ai.links.map((l, i) => (
             <Card key={i} href={l.href} eyebrow={l.register} title={l.name} subtitle={l.frame} arrow="visit" />
           ))}

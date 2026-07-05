@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <!-- CT DOSSIER — social card. Matte doctrine: cream/black/clay, mass over
-       swagger, real units. Source for public/og.png (render via rsvg-convert). -->
+  <!-- CT DOSSIER — social card. Matte doctrine: cream/near-black/olive-drab
+       (BRONC reskin), mass over swagger. Source for public/og.png (rsvg-convert). -->
   <rect width="1200" height="630" fill="#F2EFE4"/>
 
   <!-- Hairline trim frame -->
-  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#050505" stroke-opacity="0.16" stroke-width="1.5"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#0A0A0A" stroke-opacity="0.16" stroke-width="1.5"/>
 
   <!-- Measured edge ticks (ruler register) — top + bottom midpoints, quarter marks -->
-  <g stroke="#050505" stroke-opacity="0.22" stroke-width="1.5">
+  <g stroke="#0A0A0A" stroke-opacity="0.22" stroke-width="1.5">
     <line x1="320"  y1="40" x2="320"  y2="54"/>
     <line x1="600"  y1="40" x2="600"  y2="58"/>
     <line x1="880"  y1="40" x2="880"  y2="54"/>
@@ -17,27 +17,27 @@
   </g>
 
   <!-- Clay registration mark, top-right (the single accent of mass) -->
-  <rect x="1102" y="72" width="18" height="18" fill="#8F6F50"/>
+  <rect x="1102" y="72" width="18" height="18" fill="#464A2C"/>
 
   <!-- Brand block — anchored upper-left like the masthead -->
   <text x="88" y="232" font-family="Helvetica Neue, Arial, sans-serif" font-weight="800"
-        font-size="112" letter-spacing="-4" fill="#050505">CT DOSSIER</text>
+        font-size="112" letter-spacing="-4" fill="#0A0A0A">CT DOSSIER</text>
 
   <text x="92" y="286" font-family="Helvetica Neue, Arial, sans-serif" font-weight="700"
-        font-size="32" letter-spacing="2" fill="#050505" fill-opacity="0.5">EBENZ AUGUSTAVE</text>
+        font-size="32" letter-spacing="2" fill="#0A0A0A" fill-opacity="0.5">EBENZ AUGUSTAVE</text>
 
   <!-- Clay rule under the brand -->
-  <line x1="92" y1="318" x2="560" y2="318" stroke="#8F6F50" stroke-width="2"/>
+  <line x1="92" y1="318" x2="560" y2="318" stroke="#464A2C" stroke-width="2"/>
 
   <!-- Mono tagline -->
   <text x="92" y="392" font-family="Menlo, monospace" font-weight="400"
-        font-size="27" letter-spacing="5" fill="#050505" fill-opacity="0.72">VISUAL LANGUAGE FOR COMPLEX SYSTEMS</text>
+        font-size="27" letter-spacing="5" fill="#0A0A0A" fill-opacity="0.72">VISUAL LANGUAGE FOR COMPLEX SYSTEMS</text>
 
   <!-- Serif descriptor -->
   <text x="90" y="452" font-family="Georgia, serif" font-style="italic"
-        font-size="31" fill="#050505" fill-opacity="0.58">A practice dossier / visual-language archive.</text>
+        font-size="31" fill="#0A0A0A" fill-opacity="0.58">A practice dossier / visual-language archive.</text>
 
   <!-- Footer metadata -->
   <text x="92" y="556" font-family="Menlo, monospace" font-weight="400"
-        font-size="19" letter-spacing="4" fill="#050505" fill-opacity="0.5">V3.6.1 · NO API</text>
+        font-size="19" letter-spacing="4" fill="#0A0A0A" fill-opacity="0.5">V3.6.1 · NO API</text>
 </svg>
