@@ -241,9 +241,8 @@ stars, flat official colors, hairline frame). CTAs = one prefilled mailto.
 
 ## 11. Verify & deploy
 1. `cd Founder && npm run typecheck` · `npm test -- --run` (28) · `npm run build`.
-2. Real-browser QA on a fresh dev port (`npx vite --port 3210 --strictPort` — **3000 is a
-   different project, "Dirty Canvas"**). Preview tool FREEZES CSS animation at frame 0 —
-   verify motion (fold, crease) in a real browser, not screenshots.
+2. Real-browser QA on a fresh dev port (`npx vite --port 3210 --strictPort`). Verify motion
+   (fold, crease) in a real browser, not screenshots — **preview/port gotchas: see §13.**
 3. `git push dossier-fold HEAD:main` · `vercel deploy --prod --yes` · curl-verify the live
    bundle hash matches local + version.
 
