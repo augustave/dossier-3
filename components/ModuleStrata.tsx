@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ModuleData, ModuleType } from '../types';
 import { COLORS } from '../constants';
 import { CollapsibleDrawer } from './CollapsibleDrawer';
@@ -7,6 +7,7 @@ import { PleatFold } from './PleatFold';
 import { useClipboard } from '../hooks/useClipboard';
 import { ChevronDownIcon, FingerprintIcon, LinkIcon, CheckIcon } from './icons';
 import { SplitFlap } from './SplitFlap';
+import { IndexOdometer } from './IndexOdometer';
 
 // Unwrap the response into pleat rows. If it's a single wrapper element with
 // several children (e.g. <div className="space-y-8">…</div>) or a Fragment,
@@ -39,6 +40,11 @@ interface ModuleStrataProps {
 
 export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onToggle, stackIndex, stackCount }) => {
   const themeClass = COLORS[module.themeColor];
+  // Odometer / departure-board hover kinetics. AMERICAN DYNAMISM (04) is the
+  // always-on flagship: wipe + numeral stay lit. `rowHover` drives the units
+  // reel spin (the wipe + sibling-dim are pure CSS: :hover + main:has()).
+  const isFlagship = module.index === '04';
+  const [rowHover, setRowHover] = useState(false);
   // Which bands get the tab entrance motion — same set as before (cream/blue/clay),
   // no image attached to it on this version, just the pan-to-rest layer.
   const hasTab =
@@ -170,7 +176,10 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
       // sit above the next so each shadow draws over the opaque band below.
       // Elevation shadow, not a colour gradient — matte, on-doctrine.
       style={{ zIndex }}
-      className={`strata-band relative w-full border-b border-black/10 transition-[padding,box-shadow] duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${themeClass} ${isOpen ? 'py-12 md:py-24' : 'py-8 md:py-12'} ${shadowClass} cursor-pointer group scroll-mt-[100px]`}
+      data-key={isFlagship ? 'dynamism' : undefined}
+      className={`strata-band relative w-full border-b border-black/10 ${isFlagship ? 'always-on' : ''} ${isOpen ? 'is-open' : ''} ${themeClass} ${isOpen ? 'py-12 md:py-24' : 'py-8 md:py-12'} ${shadowClass} cursor-pointer group scroll-mt-[100px]`}
+      onMouseEnter={() => setRowHover(true)}
+      onMouseLeave={() => setRowHover(false)}
       onClick={(e) => {
         const target = e.target as Element;
         if (target.closest('a') || target.closest('button')) return;
@@ -184,13 +193,16 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
           style={{ transitionDelay: `calc(var(--tab-stagger) * ${stackIndex})` }}
         />
       )}
+      {/* Color wipe — fills the WHOLE tab (band) from the left on hover, empties
+          on leave. Sits behind the z-10 content. */}
+      <div className="row-wipe" aria-hidden="true" />
       <div className="relative z-10 container mx-auto px-4 md:px-8 max-w-6xl">
-        {/* Header Band */}
-        <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 md:gap-12 select-none">
+        {/* Header Band — wrapped for the color-wipe layer (scoped to the header,
+            not the expanded fold). */}
+        <div className="odo-header relative">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-baseline justify-between gap-4 md:gap-12 select-none">
           <div className="flex items-baseline gap-6 relative">
-             <span className="module-index font-mono text-4xl md:text-6xl font-bold tracking-tighter" aria-hidden="true">
-              {module.index}
-            </span>
+             <IndexOdometer index={module.index} spin={rowHover} alwaysOn={isFlagship} />
             <h2 className="font-sans text-3xl md:text-5xl font-bold uppercase tracking-tightest leading-none">
               <SplitFlap text={module.title} open={isOpen} />
             </h2>
@@ -228,6 +240,7 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
                   <ChevronDownIcon />
                 </div>
             </button>
+          </div>
           </div>
         </div>
 

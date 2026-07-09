@@ -12,7 +12,8 @@ const COPY = {
   eyebrow: 'The bet',
   role: 'AI-Native Design Engineer & Art Director',
   claim: 'THE BRAIN IS THE PRODUCT',
-  offer: 'I particularly enjoy two emerging sectors: Frontier AI, where I design the “human-legible surface of non-human intelligence,” and American Dynamism (Defense-Tech) at the intersection of product design, artificial intelligence, and art direction.',
+  offer: 'I design visual language for consequential systems — frontier AI products, defense-tech interfaces, and brands whose meaning has to hold under pressure.',
+  offer2: 'The work begins where the thing is real, but the language around it has not caught up.',
 };
 
 /* Scoped fold motion — a lighter version of the dossier's pleat. Only the detail
@@ -54,8 +55,11 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
         <h1 className="font-sans font-black tracking-tight leading-none text-heading md:text-display text-strata-black mt-1">
           {COPY.claim}
         </h1>
-        <p className="font-sans text-body md:text-lead text-strata-black opacity-secondary mt-2">
+        <p className="font-sans text-body md:text-lead text-strata-black opacity-secondary mt-2 max-w-2xl">
           {COPY.offer}
+        </p>
+        <p className="font-sans text-body md:text-lead text-strata-black opacity-secondary mt-3 max-w-2xl">
+          {COPY.offer2}
         </p>
       </div>
     </section>

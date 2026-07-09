@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--", "--port", "3100", "--strictPort"],
       "port": 3100
+    },
+    {
+      "name": "dossier-verify",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3101", "--strictPort"],
+      "port": 3101
     }
   ]
 }

@@ -211,6 +211,14 @@ stars, flat official colors, hairline frame). CTAs = one prefilled mailto.
   (1) tab entrance motion (`--tab-*`, §5b); (2) ledger `Card.tsx` unifying the four link
   cards (`--card-*`, §5b); (3) titles `BIO→BIOGRAPHY`, `AI→ARTIFICIAL INTELLIGENCE`.
   Verified via `getComputedStyle` (preview screenshots were unreliable — see §13).
+- `971fbce` **docs** — this HANDOFF + README synced to the V4.0.0 spine (on `dossier-fold`).
+- `a714102` **BRONC palette reskin** (on branch **`experiment/bronc-palette`**, off `971fbce`,
+  LOCAL/not pushed, NOT merged to canonical) — matte olive/putty→cream/near-black/dark-olive-drab
+  palette; `.strata-band` band shaders (top-edge seam-shade + paper grain); FRONT MATTER top-edge
+  shade removed; landing copy edits (thesis subhead → Frontier-AI/American-Dynamism line, FRONT
+  MATTER headline, curly quotes, redundant AI-grid border removed). **Uncommitted on that branch:**
+  the "uncoated cardstock" texture (`.strata-band::before` → micro-stipple + crease + coarse grain).
+  Full session narrative + every debugging incident/fix: **see `BUILD_LOG.md`.**
 
 ## 9. Invariants (don't break)
 - **Route = orientation, NEVER a filter.** All 9 modules always render. (See §4.)

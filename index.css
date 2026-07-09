@@ -78,6 +78,22 @@
      band doesn't elevate). Reuses --fold-ease; no invented easing. */
   --card-ease: var(--fold-ease);
   --card-duration: 300ms;
+
+  /* Atlas law — module 02 influence atlas. One instrument: a dotted
+     coordinate grid, an 8-slice wheel, and ONE measured hover vector from
+     the list to the ring. Interaction is ink-only (currentColor opacity /
+     width shifts); olive appears only at LOCK, echoing the og-card
+     registration square. */
+  --atlas-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --atlas-draw: 340ms;            /* vector draw-on base; JS clamps 280–420 by length */
+  --atlas-settle: 360ms;          /* wheel rotation, slice scale, fill shifts */
+  --atlas-label: 90ms;            /* readout + arrowhead fade (linear) */
+  --atlas-stroke: 2px;            /* vector while drawing */
+  --atlas-stroke-active: 2.25px;  /* vector at lock (v4.0.2: 1.5–2.25 band) */
+  --atlas-ghost: 0.06;            /* idle ghost coordinate lines (5–8% band) */
+  --atlas-scale-active: 1.03;     /* active slice lift (PRD 1.02–1.05) */
+  --atlas-grid-alpha: 0.12;       /* coordinate-grid dot alpha */
+  --atlas-grid-gap: 22px;         /* NOT a multiple of the 3px band stipple (no moiré) */
 }
 
 /* Per-stratum overrides */
@@ -156,25 +172,29 @@
   }
 }
 
-/* Band shader — two very-subtle, static effects on every module band (all 6),
-   "thin" = low intensity. Both sit BELOW the content column (z-10) and pass
-   clicks through. Pure-black shade only (matte); grain is a self-contained SVG
-   noise, no external asset. Tune the two intensity vars to taste. */
+/* Band texture — "uncoated, aged archival cardstock" surface on every band (all
+   6). THREE stacked layers, all matte + multiply, sitting BELOW the content
+   column (z-10), clicks pass through: (1) micro-stipple dots (pointillism for
+   graphic elements), (2) faint irregular crease lines, (3) coarse paper grain
+   (high-friction). Self-contained SVGs, no external assets. Stipple + top-edge
+   tune via the vars; grain/crease alpha is baked in their SVG strings. */
 :root {
-  --band-grain: 0.05;  /* paper-grain texture opacity (effect 2) */
-  --band-edge: 0.10;   /* top-edge shade alpha (effect 1) */
+  --band-stipple: 0.05;  /* micro-stipple dot alpha (pointillism) */
+  --band-edge: 0.10;     /* top-edge seam-shade alpha (effect 1) */
 }
 
-/* Effect 2 — paper grain across the whole band surface (BRONC letterpress feel). */
 .strata-band::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 140px 140px;
-  opacity: var(--band-grain);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,var(--band-stipple)) 0.5px, transparent 0.8px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='800' preserveAspectRatio='none'%3E%3Cg stroke='%23000' stroke-opacity='0.05' stroke-width='1' fill='none'%3E%3Cline x1='0' y1='150' x2='1200' y2='166'/%3E%3Cline x1='0' y1='300' x2='1200' y2='288'/%3E%3Cline x1='0' y1='520' x2='1200' y2='534'/%3E%3Cline x1='0' y1='690' x2='1200' y2='678'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+  background-size: 3px 3px, 100% 100%, 160px 160px;
+  background-repeat: repeat, no-repeat, repeat;
   mix-blend-mode: multiply;
 }
 
@@ -208,6 +228,103 @@
   -webkit-text-stroke: var(--index-stroke-width) var(--index-stroke);
   paint-order: stroke fill;
   opacity: 1 !important; /* Force visibility per PRD */
+}
+
+/* ============================================================
+   ODOMETER / DEPARTURE-BOARD hover kinetics on the module bands.
+   Accent = olive. Three parts: (1) left-origin color wipe on the header,
+   (2) units-digit reel (spin in IndexOdometer.tsx) with tens fill + motion
+   blur, (3) sibling focus-dimming. AMERICAN DYNAMISM (04, [.always-on] /
+   data-key="dynamism") stays lit permanently. Kinetic by intent — a
+   deliberate departure from the otherwise-matte surface.
+   ============================================================ */
+:root { --row-accent: #6E7248; } /* olive — the highlighter stroke */
+
+/* The section transition (padding/box-shadow keep their 700ms strata curve —
+   the fold needs them). Opacity-dim was removed; the hovered tab elevates instead. */
+.strata-band {
+  transition:
+    padding 700ms cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 700ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 1. Color wipe — olive sweeps in from the left edge across the WHOLE tab
+   (band) on hover, empties on leave. Sits above the texture layers (z-0),
+   below the z-10 content. */
+.odo-header { position: relative; }
+.row-wipe {
+  position: absolute;
+  inset: 0;                           /* fill the entire band */
+  z-index: 1;
+  pointer-events: none;
+  background: var(--wipe, var(--row-accent));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Wipe fills only while the tab is CLOSED — once open you're reading it, so the
+   fill must not cover the content (it would clash with the body text). */
+.strata-band:not(.is-open):hover .row-wipe,
+.strata-band.always-on:not(.is-open) .row-wipe { transform: scaleX(1); }
+
+/* Per-band hover-wipe accent (--wipe) + the ink that reads over it (--wipe-ink).
+   Each tab reacts in its own color, redistributed across the richer palette;
+   inks are dark over light wipes (taupe/bone), light over dark wipes. */
+#module-00 { --wipe: #3B2A1D; --wipe-ink: #F4F1E7; } /* Front Matter → espresso */
+#module-01 { --wipe: #B4551F; --wipe-ink: #F4F1E7; } /* Biography → rust */
+#module-02 { --wipe: #6E7248; --wipe-ink: #F4F1E7; } /* Influences → olive */
+#module-03 { --wipe: #8B8173; --wipe-ink: #1A1712; } /* AI → taupe */
+#module-04 { --wipe: #B4551F; --wipe-ink: #F4F1E7; } /* American Dynamism (flagship) → rust */
+#module-05 { --wipe: #E8E0CF; --wipe-ink: #1A1712; } /* Brand → bone */
+
+/* Text/stroke catches up FASTER than the wipe (90ms), flipping to the per-band
+   ink so it reads over that tab's accent. */
+.odo-header { transition: color 90ms linear; }
+.strata-band:not(.is-open):hover .odo-header,
+.strata-band.always-on:not(.is-open) .odo-header { color: var(--wipe-ink, #F4F1E7); }
+
+/* 2. Odometer numeral — tens (static) + units (reel). em-based so it scales
+   with the responsive font-size. */
+.odometer { display: inline-flex; line-height: 1; }
+.odo-tens { line-height: 1; }
+.reel { display: inline-block; height: 1em; overflow: hidden; }
+.reel-strip { display: flex; flex-direction: column; will-change: transform; }
+.reel-digit { height: 1em; line-height: 1; text-align: center; }
+
+/* Idle = outline (glass, reusing the per-theme index stroke/fill so it can't
+   go transparent); lit (hover / always-on) = solid fill inheriting the row's
+   light hover color, stroke off. */
+.odo-tens, .reel-digit {
+  color: var(--index-fill);
+  -webkit-text-stroke: var(--index-stroke-width) var(--index-stroke);
+  paint-order: stroke fill;
+  transition: color 90ms linear;
+}
+.strata-band:not(.is-open):hover .odo-tens,
+.strata-band:not(.is-open):hover .reel-digit,
+.strata-band.always-on:not(.is-open) .odo-tens,
+.strata-band.always-on:not(.is-open) .reel-digit {
+  color: inherit;
+  -webkit-text-stroke: 0;
+}
+
+/* Fake motion blur mid-spin, sharpen on landing. */
+.reel-strip.is-spinning { animation: reel-blur 420ms cubic-bezier(0.15, 0.85, 0.25, 1); }
+@keyframes reel-blur {
+  0%   { filter: blur(0); }
+  25%  { filter: blur(1.8px); }
+  75%  { filter: blur(1.8px); }
+  100% { filter: blur(0); }
+}
+
+/* 3. Focus — elevate, don't dim. The hovered tab advances on its own (olive
+   wipe fills + numeral lights); siblings stay full, solid color. No opacity
+   fade — translucency read as "ill", not "backgrounded". */
+
+@media (prefers-reduced-motion: reduce) {
+  .row-wipe { transition: none; }
+  .reel-strip { transition: none !important; }
+  .reel-strip.is-spinning { animation: none; }
 }
 
 .animate-grid-enter {
@@ -530,6 +647,293 @@
 
 body {
   overscroll-behavior-y: none;
+}
+
+/* ============================================================
+   INFLUENCE ATLAS — module 02 lineage collage.
+   Architectural site-analysis grammar: one central construction circle,
+   photo plates orbiting the field, sparse target dots, and one measured
+   active vector. No boxed card; the drawing is the object.
+   ============================================================ */
+
+.atlas-collage-stage {
+  min-height: clamp(620px, 74vw, 800px);
+  border-top: 1px solid var(--hairline);
+  overflow: visible;
+  color: var(--text-primary);
+}
+
+.atlas-construction {
+  z-index: 0;
+  color: var(--text-primary);
+  opacity: 0.96;
+  pointer-events: auto;
+}
+
+.atlas-construction rect,
+.atlas-construction path,
+.atlas-radial-field,
+.atlas-arc-bands,
+.atlas-targets text {
+  pointer-events: none;
+}
+
+.atlas-targets,
+.atlas-node {
+  pointer-events: auto;
+}
+
+.atlas-radial-field {
+  opacity: 0.82;
+}
+
+.atlas-arc-bands {
+  opacity: 0.62;
+}
+
+.atlas-node {
+  cursor: crosshair;
+  pointer-events: auto;
+  transition: opacity 200ms var(--atlas-ease), r 200ms var(--atlas-ease);
+}
+
+.atlas-fragment {
+  position: absolute;
+  z-index: 10;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: crosshair;
+  transition: opacity 180ms var(--atlas-ease), filter 180ms var(--atlas-ease), transform 180ms var(--atlas-ease), z-index 0ms linear;
+}
+
+.atlas-fragment:focus {
+  outline: none;
+}
+
+.atlas-fragment:focus-visible .atlas-fragment__cluster {
+  box-shadow: 0 0 0 1px #11100d, 0 0 0 4px rgba(110, 114, 72, 0.18);
+}
+
+.atlas-fragment.is-active {
+  z-index: 20;
+  filter: none;
+}
+
+.atlas-fragment.is-dim {
+  opacity: 0.42;
+  filter: grayscale(0.36);
+}
+
+.atlas-fragment__cluster {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: var(--fragment-h, 132px);
+  transition: box-shadow 160ms var(--atlas-ease);
+}
+
+.atlas-fragment__image {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  border: 1px solid rgba(18, 17, 14, 0.16);
+  background: rgba(244, 239, 226, 0.48);
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.07);
+  transform-origin: center;
+}
+
+.atlas-fragment__cluster--1 .atlas-fragment__image--0 {
+  inset: 0;
+}
+
+.atlas-fragment__cluster--2 .atlas-fragment__image--0,
+.atlas-fragment__cluster--3 .atlas-fragment__image--0 {
+  left: 0;
+  top: 3%;
+  width: 78%;
+  height: 72%;
+}
+
+.atlas-fragment__cluster--2 .atlas-fragment__image--1 {
+  right: 0;
+  bottom: 5%;
+  width: 58%;
+  height: 56%;
+  transform: rotate(7deg);
+}
+
+.atlas-fragment__cluster--3 .atlas-fragment__image--1 {
+  right: 0;
+  bottom: 6%;
+  width: 54%;
+  height: 52%;
+  transform: rotate(8deg);
+  z-index: 2;
+}
+
+.atlas-fragment__cluster--3 .atlas-fragment__image--2 {
+  right: 4%;
+  top: 0;
+  width: 34%;
+  height: 34%;
+  z-index: 3;
+  transform: rotate(calc(-1 * var(--fragment-rot, 0deg)));
+}
+
+.atlas-fragment__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.1) saturate(0.78) contrast(1.08);
+  mix-blend-mode: multiply;
+  transition: filter 180ms var(--atlas-ease), opacity 180ms var(--atlas-ease), transform 180ms var(--atlas-ease);
+}
+
+.atlas-fragment.is-active .atlas-fragment__image img {
+  filter: grayscale(0.02) saturate(0.96) contrast(1.12);
+  opacity: 1;
+}
+
+.atlas-fragment__label {
+  position: absolute;
+  top: calc(100% + 8px);
+  display: grid;
+  gap: 2px;
+  min-width: 128px;
+  max-width: 180px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.15;
+  transform: rotate(calc(-1 * var(--fragment-rot, 0deg)));
+}
+
+.atlas-fragment__label--left {
+  left: 0;
+}
+
+.atlas-fragment__label--right {
+  right: 0;
+  text-align: right;
+}
+
+.atlas-fragment__number {
+  font-size: 0.54rem;
+  opacity: 0.46;
+}
+
+.atlas-fragment__name {
+  font-size: 0.62rem;
+  opacity: 0.78;
+}
+
+.atlas-fragment__note {
+  font-size: 0.52rem;
+  opacity: 0.46;
+}
+
+.atlas-fragment .atlas-inherit {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 48px);
+  width: min(240px, 150%);
+  transform: rotate(calc(-1 * var(--fragment-rot, 0deg)));
+  text-align: left;
+}
+
+.atlas-vector-line { stroke-width: var(--atlas-stroke); }
+.atlas-vector-origin,
+.atlas-vector-line,
+.atlas-vector-head {
+  color: #11100d;
+}
+.atlas-overlay[data-locked='true'] .atlas-vector-line {
+  stroke-width: var(--atlas-stroke-active);
+  transition: stroke-width 120ms linear;
+}
+
+.atlas-ghosts {
+  opacity: 0.5;
+}
+
+.atlas-inherit {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 200ms var(--atlas-ease),
+              opacity 200ms var(--atlas-ease);
+}
+.atlas-inherit[data-open='true'] { grid-template-rows: 1fr; opacity: 1; }
+.atlas-inherit__inner { min-height: 0; overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-fragment,
+  .atlas-fragment__image img,
+  .atlas-node { transition: none !important; }
+  .atlas-vector-line {
+    transition: none !important;
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .atlas-inherit { transition: opacity 0.01ms !important; }
+}
+
+@media (max-width: 767px) {
+  .atlas-collage-stage {
+    min-height: auto;
+    display: grid;
+    gap: 14px;
+    padding-top: 18px;
+  }
+  .atlas-construction,
+  .atlas-overlay {
+    display: none;
+  }
+  .atlas-fragment {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    transform: none !important;
+    display: grid;
+    grid-template-columns: 86px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .atlas-fragment__label,
+  .atlas-fragment .atlas-inherit {
+    position: static;
+    transform: none;
+    text-align: left;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
+  .atlas-fragment__cluster {
+    width: 86px;
+    min-height: 86px;
+    --fragment-h: 86px;
+  }
+  .atlas-fragment__cluster--2 .atlas-fragment__image--0,
+  .atlas-fragment__cluster--3 .atlas-fragment__image--0 {
+    width: 72%;
+    height: 72%;
+  }
+  .atlas-fragment__cluster--2 .atlas-fragment__image--1,
+  .atlas-fragment__cluster--3 .atlas-fragment__image--1 {
+    width: 52%;
+    height: 52%;
+  }
+  .atlas-fragment__cluster--3 .atlas-fragment__image--2 {
+    width: 34%;
+    height: 34%;
+  }
 }
 
 ::-webkit-scrollbar {

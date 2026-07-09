@@ -68,8 +68,10 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     expect(within(sec).getByText(COPY.modules.bio.name)).toBeInTheDocument();
     expect(within(sec).getByText(/A MAP OF NEIGHBORING PRACTICES/i)).toBeInTheDocument();
     expect(within(sec).getByText(/measure myself against/i)).toBeInTheDocument();
-    // Relabelled quadrant (Edit 1) rendered on the SVG.
-    expect(within(sec).getByText(COPY.modules.bio.fieldPositionQuadrants.tr)).toBeInTheDocument();
+    // The neighborhood map is now the interactive artifact, embedded as an iframe.
+    expect(
+      sec.querySelector('iframe[title*="neighboring practices"]')
+    ).toBeInTheDocument();
     // My First CPO article link.
     expect(
       within(sec).getByRole('link', { name: /My First CPO/i })
@@ -83,12 +85,62 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     COPY.modules.influences.people.forEach((p) => {
       expect(within(sec).getByText(p.name)).toBeInTheDocument();
     });
+    expect(sec.querySelectorAll('.atlas-fragment')).toHaveLength(8);
+    sec.querySelectorAll('img').forEach((el) => {
+      const src = el.getAttribute('src') ?? el.getAttribute('href') ?? '';
+      expect(src.toLowerCase()).not.toContain('profile');
+    });
+  });
+
+  it('INFLUENCES behaves as an interactive lineage atlas', async () => {
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query.includes('hover: hover') || query.includes('pointer: fine') || query.includes('min-width: 768px'),
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+
+    try {
+      render(<App />);
+      const sec = await openModule('module-02');
+      const [brody, mutu, kruger] = COPY.modules.influences.people;
+      const brodyLine = brody.inheritanceLine ?? brody.inheritance;
+      const mutuLine = mutu.inheritanceLine ?? mutu.inheritance;
+
+      expect(within(sec).queryByText(brodyLine)).not.toBeInTheDocument();
+
+      const brodyButton = within(sec).getByRole('button', { name: /Neville Brody/i });
+      fireEvent.focus(brodyButton);
+      expect(within(sec).getByText(brodyLine)).toBeInTheDocument();
+      expect(within(sec).getByRole('button', { name: /Wangechi Mutu/i })).toHaveClass('is-dim');
+      expect(sec.querySelectorAll('.atlas-fragment.is-active')).toHaveLength(1);
+      expect(sec.querySelector('.atlas-vector-line')?.getAttribute('d')).toMatch(/^M /);
+
+      fireEvent.click(within(sec).getByRole('button', { name: /Wangechi Mutu/i }));
+      expect(within(sec).queryByText(brodyLine)).not.toBeInTheDocument();
+      expect(within(sec).getByText(mutuLine)).toBeInTheDocument();
+
+      const krugerNode = sec.querySelectorAll('.atlas-node')[2] as SVGCircleElement;
+      fireEvent.click(krugerNode);
+      expect(within(sec).getByText(kruger.inheritanceLine ?? kruger.inheritance)).toBeInTheDocument();
+
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(within(sec).queryByText(kruger.inheritanceLine ?? kruger.inheritance)).not.toBeInTheDocument();
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
   });
 
   it('AI shows the statement and the Five Axioms including Axiom V', async () => {
     render(<App />);
     const sec = await openModule('module-03');
-    expect(within(sec).getByText(/multiplication of innovation/i)).toBeInTheDocument();
+    // V4.0.1 copy patch: statement re-cut to "changes where creativity lives".
+    expect(within(sec).getByText(/changes where creativity lives/i)).toBeInTheDocument();
     // Exact — avoid also matching the "THE FIVE AXIOMS OF …" title.
     expect(within(sec).getByText(/^Five axioms$/i)).toBeInTheDocument();
     expect(within(sec).getByText(/Relentless Innovation/i)).toBeInTheDocument(); // I
@@ -137,7 +189,8 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     fireEvent.click(screen.getByRole('button', { name: /INDEX \(/i }));
     await waitFor(() => expect(screen.getAllByTestId('manifest-item').length).toBe(6));
     // The overlay renders each title as a whole text node (no SplitFlap).
-    ['FRONT MATTER', 'BIO', 'INFLUENCES', 'AI', 'AMERICAN DYNAMISM', 'BRAND'].forEach((t) => {
+    // V4.0.1: BIO→BIOGRAPHY, AI→ARTIFICIAL INTELLIGENCE (owner rename).
+    ['FRONT MATTER', 'BIOGRAPHY', 'INFLUENCES', 'ARTIFICIAL INTELLIGENCE', 'AMERICAN DYNAMISM', 'BRAND'].forEach((t) => {
       expect(screen.getByText(new RegExp(`^${t}$`, 'i'))).toBeInTheDocument();
     });
   });

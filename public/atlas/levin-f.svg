@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <!-- Levin fragment — bioelectric field / emergence pattern. Authored in the
+       dossier instrument grammar: matte dark ground, bone ink, real diagram
+       furniture (equipotentials, cell nodes, +/- marks, gap junctions). -->
+  <rect width="800" height="800" fill="#171511"/>
+  <g fill="none" stroke="#E8E0CF">
+    <!-- equipotential field lines -->
+    <ellipse cx="400" cy="410" rx="330" ry="250" stroke-opacity="0.10" stroke-width="1"/>
+    <ellipse cx="400" cy="410" rx="260" ry="192" stroke-opacity="0.14" stroke-width="1"/>
+    <ellipse cx="400" cy="410" rx="192" ry="138" stroke-opacity="0.18" stroke-width="1"/>
+    <ellipse cx="400" cy="410" rx="128" ry="88" stroke-opacity="0.24" stroke-width="1" stroke-dasharray="3 4"/>
+    <ellipse cx="400" cy="410" rx="66" ry="44" stroke-opacity="0.32" stroke-width="1"/>
+    <!-- gap-junction connections between cells -->
+    <g stroke-opacity="0.38" stroke-width="1">
+      <line x1="400" y1="410" x2="253" y2="322"/>
+      <line x1="400" y1="410" x2="562" y2="341"/>
+      <line x1="400" y1="410" x2="475" y2="540"/>
+      <line x1="253" y1="322" x2="211" y2="476"/>
+      <line x1="562" y1="341" x2="631" y2="470"/>
+      <line x1="211" y1="476" x2="475" y2="540" stroke-dasharray="2 4" stroke-opacity="0.22"/>
+      <line x1="631" y1="470" x2="475" y2="540" stroke-dasharray="2 4" stroke-opacity="0.22"/>
+    </g>
+  </g>
+  <!-- cell nodes -->
+  <g fill="#E8E0CF">
+    <circle cx="400" cy="410" r="7" fill-opacity="0.9"/>
+    <circle cx="253" cy="322" r="5" fill-opacity="0.65"/>
+    <circle cx="562" cy="341" r="5" fill-opacity="0.65"/>
+    <circle cx="211" cy="476" r="4" fill-opacity="0.5"/>
+    <circle cx="631" cy="470" r="4" fill-opacity="0.5"/>
+    <circle cx="475" cy="540" r="5" fill-opacity="0.65"/>
+  </g>
+  <g fill="none" stroke="#E8E0CF" stroke-opacity="0.5" stroke-width="0.75">
+    <circle cx="400" cy="410" r="14" stroke-dasharray="2 2"/>
+    <circle cx="562" cy="341" r="10" stroke-dasharray="2 2"/>
+  </g>
+  <!-- polarity marks -->
+  <g fill="#E8E0CF" fill-opacity="0.55" font-family="ui-monospace, monospace" font-size="15" text-anchor="middle">
+    <text x="329" y="360">+</text>
+    <text x="489" y="373">+</text>
+    <text x="438" y="486">−</text>
+    <text x="243" y="415">−</text>
+  </g>
+  <!-- measurement furniture -->
+  <g stroke="#E8E0CF" stroke-opacity="0.25" stroke-width="1">
+    <line x1="60" y1="740" x2="60" y2="726"/>
+    <line x1="200" y1="740" x2="200" y2="730"/>
+    <line x1="340" y1="740" x2="340" y2="726"/>
+    <line x1="60" y1="733" x2="340" y2="733"/>
+  </g>
+  <g fill="#E8E0CF" fill-opacity="0.35" font-family="ui-monospace, monospace" font-size="13" letter-spacing="2">
+    <text x="60" y="712">V-MEM FIELD</text>
+    <text x="60" y="66">FIG. E-06</text>
+    <text x="672" y="712" fill-opacity="0.28">Δψ</text>
+  </g>
+</svg>
