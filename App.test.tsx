@@ -78,62 +78,13 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     ).toHaveAttribute('href', COPY.modules.bio.article.href);
   });
 
-  it('INFLUENCES lists the eight practitioners', async () => {
+  it('INFLUENCES embeds the Index of Influences astrolabe', async () => {
+    // The lineage atlas was replaced by the FERRIS widget, embedded as an iframe.
     render(<App />);
     const sec = await openModule('module-02');
-    expect(COPY.modules.influences.people).toHaveLength(8);
-    COPY.modules.influences.people.forEach((p) => {
-      expect(within(sec).getByText(p.name)).toBeInTheDocument();
-    });
-    expect(sec.querySelectorAll('.atlas-fragment')).toHaveLength(8);
-    sec.querySelectorAll('img').forEach((el) => {
-      const src = el.getAttribute('src') ?? el.getAttribute('href') ?? '';
-      expect(src.toLowerCase()).not.toContain('profile');
-    });
-  });
-
-  it('INFLUENCES behaves as an interactive lineage atlas', async () => {
-    const originalMatchMedia = window.matchMedia;
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query.includes('hover: hover') || query.includes('pointer: fine') || query.includes('min-width: 768px'),
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
-
-    try {
-      render(<App />);
-      const sec = await openModule('module-02');
-      const [brody, mutu, kruger] = COPY.modules.influences.people;
-      const brodyLine = brody.inheritanceLine ?? brody.inheritance;
-      const mutuLine = mutu.inheritanceLine ?? mutu.inheritance;
-
-      expect(within(sec).queryByText(brodyLine)).not.toBeInTheDocument();
-
-      const brodyButton = within(sec).getByRole('button', { name: /Neville Brody/i });
-      fireEvent.focus(brodyButton);
-      expect(within(sec).getByText(brodyLine)).toBeInTheDocument();
-      expect(within(sec).getByRole('button', { name: /Wangechi Mutu/i })).toHaveClass('is-dim');
-      expect(sec.querySelectorAll('.atlas-fragment.is-active')).toHaveLength(1);
-      expect(sec.querySelector('.atlas-vector-line')?.getAttribute('d')).toMatch(/^M /);
-
-      fireEvent.click(within(sec).getByRole('button', { name: /Wangechi Mutu/i }));
-      expect(within(sec).queryByText(brodyLine)).not.toBeInTheDocument();
-      expect(within(sec).getByText(mutuLine)).toBeInTheDocument();
-
-      const krugerNode = sec.querySelectorAll('.atlas-node')[2] as SVGCircleElement;
-      fireEvent.click(krugerNode);
-      expect(within(sec).getByText(kruger.inheritanceLine ?? kruger.inheritance)).toBeInTheDocument();
-
-      fireEvent.keyDown(window, { key: 'Escape' });
-      expect(within(sec).queryByText(kruger.inheritanceLine ?? kruger.inheritance)).not.toBeInTheDocument();
-    } finally {
-      window.matchMedia = originalMatchMedia;
-    }
+    expect(
+      sec.querySelector('iframe[title*="Index of Influences"]')
+    ).toBeInTheDocument();
   });
 
   it('AI shows the statement and the Five Axioms including Axiom V', async () => {

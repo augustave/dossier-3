@@ -1,0 +1,521 @@
+/* ============================================================
+   DOSSIER — FERRIS · tactile curatorial astrolabe widget
+   Canvas #F2EFE4 · Graphite #B0B0A8 · Slate #9CAEAD
+   Red #E02020 · Ink #000 — no shadows, no smooth curves.
+
+   Everything is scoped to `.ferris`. The container isolates its
+   own stacking + blend context, so it drops onto any host page.
+   ============================================================ */
+
+/* Self-hosted (OFL) — no external font dependency. */
+@font-face{font-family:'Archivo Black';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/archivo-black-latin-400-normal.woff2') format('woff2');}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/courier-prime-latin-400-normal.woff2') format('woff2');}
+@font-face{font-family:'Courier Prime';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/courier-prime-latin-700-normal.woff2') format('woff2');}
+@font-face{font-family:'Courier Prime';font-style:italic;font-weight:400;font-display:swap;src:url('fonts/courier-prime-latin-400-italic.woff2') format('woff2');}
+
+:root{
+  --canvas:#F2EFE4;   /* matches the INFLUENCES (02) band — strata-cream */
+  --paper:#F2F0E9;
+  --graphite:#B0B0A8;
+  --graphite-ink:#8E8E86;
+  --slate:#9CAEAD;
+  --red:#E02020;
+  --ink:#000;
+  --mono:'Courier Prime','Courier New',Courier,monospace;
+  --stamp:'Archivo Black','Arial Black','Helvetica Neue',sans-serif;
+  --hard:cubic-bezier(.75,0,1,1);   /* sluggish start, abrupt stop */
+}
+
+/* ---- demo host page only (not part of the widget) ---- */
+html,body{height:100%}
+body{margin:0;background:var(--canvas)}
+
+/* ============ WIDGET ROOT ============ */
+
+.ferris{
+  --rail-w:32%;
+  position:relative;
+  /* Fixed px (not 100%/vh) so the auto-height host iframe can't feed back on
+     itself; the mobile @media below overrides to height:auto when stacked. */
+  height:800px;
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(320px,var(--rail-w)) 1fr;
+  isolation:isolate;                 /* contain z-index + blend to widget */
+  overflow:hidden;
+  box-sizing:border-box;
+  color:var(--ink);
+  font-family:var(--mono);
+  cursor:crosshair;
+  background:
+    repeating-linear-gradient(0deg,  rgba(60,55,45,.030) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(60,55,45,.030) 0 1px, transparent 1px 3px),
+    var(--canvas);
+}
+.ferris *{box-sizing:border-box}
+
+/* global linen bite — noise multiplied over the whole widget, incl. images */
+.ferris::after{
+  content:"";
+  position:absolute;inset:0;
+  z-index:60;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.10 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+  opacity:.85;
+}
+
+.ferris ::selection{background:var(--ink);color:var(--canvas)}
+
+/* ============ LEFT RAIL ============ */
+
+#rail{
+  position:relative;
+  z-index:20;
+  height:100%;
+  padding:clamp(18px,3%,38px) clamp(18px,2.2%,42px);
+  border-right:1px solid rgba(0,0,0,.14);
+  display:flex;
+  flex-direction:column;
+  gap:clamp(12px,2.4%,26px);
+  min-width:0;
+  overflow:hidden;
+}
+
+.kicker{
+  font-size:10px;
+  letter-spacing:.22em;
+  color:var(--graphite-ink);
+  text-transform:uppercase;
+}
+
+/* compact widget masthead (the giant title is gone — this is embedded) */
+.widget-title{
+  font-family:var(--stamp);
+  font-weight:400;
+  font-size:clamp(19px,2.1vw,30px);
+  line-height:1;
+  letter-spacing:.005em;
+  color:var(--ink);
+  margin:3px 0 1px;
+  user-select:none;
+}
+
+.sub{
+  font-size:10px;
+  letter-spacing:.24em;
+  color:var(--ink);
+  border-top:1px solid rgba(0,0,0,.35);
+  border-bottom:1px solid rgba(0,0,0,.12);
+  padding:7px 0;
+  text-transform:uppercase;
+}
+
+/* dossier caption — typewriter ghosting */
+#caption{
+  min-height:44px;
+  font-size:11px;
+  line-height:1.55;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#2c2c28;
+  max-width:46ch;
+}
+#caption .ch{opacity:0;animation:ghost .16s steps(2) forwards}
+@keyframes ghost{from{opacity:.25}to{opacity:1}}
+#caption .cursor{
+  display:inline-block;width:.6em;height:1em;
+  background:var(--ink);vertical-align:-.15em;
+  animation:blink 1s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0}}
+
+#rail-foot{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px 22px;
+  font-size:10px;
+  letter-spacing:.2em;
+  color:var(--graphite-ink);
+  border-top:1px solid rgba(0,0,0,.14);
+  padding-top:10px;
+}
+#rail-foot span{white-space:nowrap}
+
+/* ============ INDEX ROWS ============ */
+
+#index-list{
+  list-style:none;margin:0;padding:0;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:0;
+  min-height:0;
+}
+
+.row{
+  position:relative;
+  display:grid;
+  grid-template-columns:2.6em 1fr auto;
+  grid-template-areas:"num name theta" "num disc theta";
+  align-items:baseline;
+  column-gap:.9em;
+  padding:1.1vh 22px 1.1vh 2px;
+  border-bottom:1px solid rgba(0,0,0,.10);
+  cursor:crosshair;
+  outline:none;
+}
+.row:first-child{border-top:1px solid rgba(0,0,0,.10)}
+
+.row .num{
+  grid-area:num;
+  font-size:11px;
+  letter-spacing:.14em;
+  color:var(--graphite-ink);
+}
+.row .name{
+  grid-area:name;
+  font-weight:700;
+  font-size:clamp(13px,1.05vw,17px);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.row .disc{
+  grid-area:disc;
+  font-size:9.5px;
+  letter-spacing:.26em;
+  color:var(--graphite-ink);
+  text-transform:uppercase;
+  padding-top:2px;
+}
+.row .theta{
+  grid-area:theta;
+  align-self:center;
+  font-size:9.5px;
+  letter-spacing:.18em;
+  color:var(--graphite-ink);
+}
+
+/* per-row reference link — signal-red on hover/focus, no underline */
+.row .src{
+  margin-left:.35em;
+  padding:.15em .35em;               /* honest hit target */
+  color:var(--graphite);
+  text-decoration:none;
+  font-size:13px;
+  cursor:pointer;
+  transition:color .12s var(--hard);
+}
+.row .src:hover,
+.row .src:focus-visible{ color:var(--red); outline:none; }
+
+/* ============ LIGHTBOX (image blow-up) ============ */
+#lightbox{
+  position:fixed;
+  inset:0;
+  z-index:200;                       /* above the linen-noise overlay (z60) + pins */
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:5vmin;
+  background:rgba(20,18,14,.92);      /* flat ink wash — no gradient */
+  cursor:zoom-out;
+}
+#lightbox.open{ display:flex; flex-direction:column; gap:14px; }
+#lightbox img{
+  max-width:92%;
+  max-height:84%;
+  width:auto;height:auto;
+  border:1px solid rgba(242,239,228,.55);   /* hairline frame, no radius/shadow */
+  filter:none;                               /* full colour, drop the milky treatment */
+}
+#lightbox .lb-cap{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:rgba(242,239,228,.85);
+  text-align:center;
+  max-width:80%;
+}
+#lightbox .lb-cap .esc{ color:rgba(242,239,228,.45); margin-left:1.2em; }
+
+/* right-edge anchor tick — arrow origin */
+.row .tick{
+  position:absolute;
+  right:0;top:50%;
+  width:9px;height:1px;
+  background:var(--graphite);
+  transform:translateY(-.5px);
+}
+
+/* interaction states */
+.row.active .num{color:var(--red);font-weight:700}
+.row.active .name{letter-spacing:.19em}
+.row.active .tick{background:var(--ink);height:2px}
+.row.pinned .name{box-shadow:inset 0 -2px 0 0 var(--red)}   /* flat red strike */
+.row.pinned::before{
+  content:"●";
+  position:absolute;left:-14px;top:50%;transform:translateY(-55%);
+  color:var(--red);font-size:8px;
+}
+
+.ferris.focused .row:not(.active){opacity:.38}
+.row{transition:opacity 120ms var(--hard)}
+
+/* ============ STAGE / BOARD ============ */
+
+#stage{
+  position:relative;
+  z-index:10;
+  height:100%;
+  min-width:0;
+  container-type:size;               /* board sizes to the stage, not the viewport */
+}
+
+#board{
+  position:absolute;
+  top:50%;left:50%;
+  width:min(96vh,58vw);              /* fallback for no container-query support */
+  width:min(94cqmin,900px);          /* fit the stage square wherever embedded */
+  aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  --rot:0deg;
+}
+
+#board-svg{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  overflow:visible;
+  mix-blend-mode:multiply;           /* pencil biting into cloth */
+}
+
+/* --- structural linework --- */
+.ring{
+  fill:none;stroke:var(--graphite);stroke-width:.8;
+  vector-effect:non-scaling-stroke;
+}
+.ring.faint{stroke-width:.5;opacity:.55}
+.spoke{stroke:var(--graphite);stroke-width:.55;opacity:.65}
+.tickmark{stroke:var(--graphite);stroke-width:.6;opacity:.5}
+.crosshair{stroke:var(--graphite-ink);stroke-width:.7}
+.center-stamp{
+  font-family:var(--mono);
+  font-size:9px;letter-spacing:.3em;
+  fill:var(--graphite-ink);
+  text-anchor:middle;
+}
+.orbit-num{
+  font-family:var(--mono);
+  font-size:12px;letter-spacing:.35em;
+  fill:#5d5d55;
+}
+
+/* sonar pulse — outermost ring breathes */
+.sonar{
+  fill:none;stroke:var(--graphite);stroke-width:.7;
+  transform-box:view-box;transform-origin:500px 500px;
+  animation:sonar 8s var(--hard) infinite;
+  opacity:0;
+}
+@keyframes sonar{
+  0%{transform:scale(.42);opacity:.28}
+  70%{transform:scale(1.0);opacity:.05}
+  74%{transform:scale(1.02);opacity:0}
+  100%{transform:scale(1.02);opacity:0}
+}
+
+/* idle pencil sweep */
+.sweep{
+  stroke:var(--graphite-ink);stroke-width:.6;opacity:.16;
+  transform-box:view-box;transform-origin:500px 500px;
+  animation:sweep 60s linear infinite;
+}
+@keyframes sweep{to{transform:rotate(360deg)}}
+
+/* slate conduit — organic stroke violating the geometry */
+.thread-band{fill:none;stroke:var(--slate);stroke-width:9;opacity:.30;stroke-linecap:round}
+.thread-flow{
+  fill:none;stroke:var(--slate);stroke-width:1.6;opacity:.85;
+  stroke-dasharray:5 11;stroke-linecap:round;
+  animation:flow 26s linear infinite;
+}
+@keyframes flow{to{stroke-dashoffset:-640}}
+
+/* ============ ROTOR — pinned evidence ============ */
+
+#rotor{
+  position:absolute;inset:0;
+  transform:rotate(var(--rot));
+}
+
+.clip{
+  position:absolute;margin:0;
+  transform:translate(-50%,-50%) rotate(calc(var(--tilt) - var(--rot))) scale(1);
+  background:var(--paper);
+  padding:5px;                       /* physical print margin */
+  border:1px solid rgba(0,0,0,.07);  /* tonal edge, not a shadow */
+  cursor:zoom-in;                    /* clips blow up on click */
+}
+.clip img{
+  display:block;width:100%;height:100%;
+  object-fit:cover;
+  filter:grayscale(.92) sepia(.13) contrast(.82) brightness(1.07);
+  transition:filter 90ms steps(2);
+}
+
+/* physical pin — solid black dot */
+.pin{
+  position:absolute;
+  width:9px;height:9px;
+  border-radius:50%;
+  background:var(--ink);
+  transform:translate(-50%,-50%);
+  z-index:35;
+}
+.pin.red{background:var(--red)}
+.pin::after{                         /* one-shot thud ring */
+  content:"";
+  position:absolute;inset:-3px;
+  border-radius:50%;
+  border:1.5px solid var(--ink);
+  opacity:0;
+  transform:scale(.4);
+}
+.pin.thud::after{animation:thud .5s var(--hard) forwards}
+@keyframes thud{
+  0%{opacity:.9;transform:scale(.4)}
+  100%{opacity:0;transform:scale(3.4)}
+}
+
+.chip{
+  position:absolute;
+  transform:translate(-50%,-50%) rotate(calc(0deg - var(--rot)));
+  font-size:9px;letter-spacing:.3em;
+  color:#3a3a34;
+  white-space:nowrap;
+  text-transform:uppercase;
+  z-index:34;
+  user-select:none;
+}
+
+/* focus economy — selected cluster saturates, the sea washes out */
+.clip,.chip,.pin{transition:opacity 130ms var(--hard)}
+.ferris.focused .clip:not(.on){opacity:.36}
+.ferris.focused .chip:not(.on){opacity:.30}
+.ferris.focused .pin:not(.on){opacity:.40}
+.ferris.focused #board-svg{opacity:.58}
+.clip.on img{filter:grayscale(0) sepia(0) contrast(1) brightness(1)}
+.clip.on{z-index:40 !important}
+
+#rot-readout{
+  position:absolute;
+  right:22px;bottom:18px;
+  font-size:10px;letter-spacing:.26em;
+  color:var(--graphite-ink);
+  z-index:12;
+}
+
+/* ============ OVERLAY — strings + arrow (scoped to widget) ============ */
+
+#overlay{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;            /* JS keeps this exact in px (mobile auto-height) */
+  pointer-events:none;
+  z-index:45;
+}
+#strings line{
+  stroke:var(--graphite);
+  stroke-width:.6;
+  opacity:.5;
+  mix-blend-mode:multiply;
+}
+#strings line.mute{opacity:0}
+#arrow-path{
+  fill:none;
+  stroke:var(--ink);
+  stroke-width:2.4;
+  stroke-linejoin:miter;
+  stroke-linecap:butt;
+}
+#arrow-head{fill:var(--ink)}
+
+/* ============ ENTRY CHOREOGRAPHY ============ */
+/* 1 linen → 2 grid draws → 3 thread → 4 clippings pin → 5 type stamps */
+
+.drawable{
+  stroke-dasharray:100;
+  stroke-dashoffset:100;
+}
+.ferris.p-grid .drawable{
+  transition:stroke-dashoffset .9s var(--hard);
+  transition-delay:var(--d,0ms);
+  stroke-dashoffset:0;
+}
+
+.orbit-num{opacity:0}
+.ferris.p-grid .orbit-num{
+  transition:opacity 10ms steps(1);
+  transition-delay:var(--d,0ms);
+  opacity:1;
+}
+
+.thread-band,.thread-flow{opacity:0}
+.ferris.p-thread .thread-band{transition:opacity .5s var(--hard);opacity:.30}
+.ferris.p-thread .thread-flow{transition:opacity .5s var(--hard);opacity:.85}
+
+.sonar,.sweep{visibility:hidden}
+.ferris.p-grid .sonar,.ferris.p-grid .sweep{visibility:visible}
+
+.clip{opacity:0}
+.clip:not(.placed){
+  transform:translate(-50%,-50%) rotate(calc(var(--tilt) - var(--rot) + 2.5deg)) scale(1.055);
+}
+.clip.placed{
+  opacity:1;
+  transition:transform 130ms var(--hard),opacity 45ms steps(2);
+}
+.pin,.chip{opacity:0}
+.pin.placed,.chip.placed{opacity:1;transition:opacity 30ms steps(1)}
+
+.stamp-t,.row{opacity:0}
+.ferris.p-type .stamp-t,.ferris.p-type .row{
+  transition:opacity 60ms steps(2);
+  transition-delay:var(--d,0ms);
+  opacity:1;
+}
+.ferris.p-type.focused .row:not(.active){opacity:.38}
+
+/* ============ REDUCED MOTION / KILLSWITCH ============ */
+@media (prefers-reduced-motion:reduce){
+  .sonar,.sweep,.thread-flow{animation:none !important}
+  .drawable{stroke-dashoffset:0 !important;transition:none !important}
+  .clip,.pin,.chip,.orbit-num,.stamp-t,.row{opacity:1 !important;transition:none !important}
+  .clip{transform:translate(-50%,-50%) rotate(calc(var(--tilt) - var(--rot))) scale(1) !important}
+  .thread-band{opacity:.30 !important}.thread-flow{opacity:.85 !important}
+}
+.ferris.no-motion .sonar,.ferris.no-motion .sweep,.ferris.no-motion .thread-flow{animation:none}
+
+/* ============ RESPONSIVE ============ */
+/* widget goes single-column when its own box is narrow */
+@media (max-width:719px){
+  .ferris{
+    grid-template-columns:1fr;
+    height:auto;
+    overflow:visible;
+  }
+  #rail{height:auto;border-right:none;border-bottom:1px solid rgba(0,0,0,.14)}
+  #index-list{justify-content:flex-start}
+  #stage{height:auto;container-type:normal}
+  #board{
+    position:relative;top:auto;left:auto;transform:none;
+    width:min(94vw,94vh);
+    margin:6vw auto 14vw;
+  }
+  #rot-readout{right:16px;bottom:8px}
+  .widget-title{font-size:clamp(22px,6vw,34px)}
+}

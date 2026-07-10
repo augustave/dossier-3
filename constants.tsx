@@ -2,7 +2,7 @@ import React from 'react';
 import { ModuleData, ModuleType } from './types';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
 import { Card } from './components/Card';
-import { InfluenceAtlas } from './components/InfluenceAtlas';
+import { FerrisInfluences } from './components/FerrisInfluences';
 import { NeighborPracticesMap } from './components/NeighborPracticesMap';
 
 export type AudienceId = 'hiring' | 'client' | 'collab' | 'acad';
@@ -141,17 +141,11 @@ export const CONTENT_MODULES: ModuleData[] = [
     promptText: COPY.modules.influences.prompt,
     themeColor: 'cream',
     responseText: COPY.modules.influences.hero,
-    // Influence Atlas (v1.1 lineage map). MUST stay a single function-component
-    // child: ModuleStrata's selfPleating path then renders it BARE (no rotateX
-    // pleat wrapper), which the atlas's getBoundingClientRect math depends on.
+    // FERRIS "Index of Influences" astrolabe — self-contained widget embedded
+    // via iframe (see FerrisInfluences). Single function-component child, so
+    // ModuleStrata's selfPleating path still renders it BARE.
     responseDisplay: (
-      <InfluenceAtlas
-        hero={COPY.modules.influences.hero}
-        intro={COPY.modules.influences.intro}
-        intro2={COPY.modules.influences.intro2}
-        people={COPY.modules.influences.people}
-        atlasLabel={COPY.modules.influences.atlasLabel}
-      />
+      <FerrisInfluences />
     ),
   },
 

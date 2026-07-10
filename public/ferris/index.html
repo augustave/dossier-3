@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOSSIER — FERRIS / Index of Influences</title>
+<link rel="icon" href="data:,">
+<!-- Fonts self-hosted in styles.css (@font-face) — no external dependency. -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- =================================================================
+       FERRIS · influence widget
+       Drop this whole #ferris block into any host page. All styling,
+       texture, blend modes and the arrow overlay are scoped to it.
+       Give the container a size (height + width) from the host side.
+       ================================================================= -->
+  <div id="ferris" class="ferris pre">
+
+    <!-- LEFT RAIL — the index -->
+    <aside id="rail">
+      <header id="masthead">
+        <div class="kicker stamp-t">CT-DOSSIER · MODULE 02 — REF 2026-07-09</div>
+        <div class="widget-title stamp-t">INDEX OF INFLUENCES</div>
+        <div class="sub stamp-t">POLAR REGISTER · 001–007</div>
+        <div id="caption" aria-live="polite"></div>
+      </header>
+
+      <ol id="index-list"><!-- rows injected by app.js --></ol>
+
+      <footer id="rail-foot" class="stamp-t">
+        <span>DRAG — ROTATE</span>
+        <span>CLICK — PIN</span>
+        <span>ESC — RELEASE</span>
+      </footer>
+    </aside>
+
+    <!-- RIGHT STAGE — the radial board -->
+    <main id="stage" aria-label="Radial influence map">
+      <div id="board">
+        <svg id="board-svg" viewBox="0 0 1000 1000" aria-hidden="true">
+          <!-- static + rotor groups injected by app.js -->
+        </svg>
+        <div id="rotor"><!-- clippings, pins, chips injected --></div>
+      </div>
+      <div id="rot-readout" class="stamp-t">ROT 000°</div>
+    </main>
+
+    <!-- OVERLAY — string-lines + live interaction arrow, scoped to widget -->
+    <svg id="overlay" aria-hidden="true">
+      <g id="strings"></g>
+      <g id="arrow-g">
+        <path id="arrow-path" d="" />
+        <polygon id="arrow-head" points="" />
+      </g>
+    </svg>
+
+  </div>
+
+  <script src="app.js"></script>
+
+  <!-- Embed helper: report content height so the host iframe can size to it.
+       Measures #ferris directly (fixed px on desktop, auto on mobile) — not
+       documentElement.scrollHeight, which is floored at the iframe viewport. -->
+  <script>
+  (function () {
+    var el = document.getElementById('ferris');
+    if (!el) return;
+    function postHeight() {
+      parent.postMessage(
+        { type: 'ferris-height', height: Math.ceil(el.getBoundingClientRect().height) },
+        '*'
+      );
+    }
+    window.addEventListener('load', postHeight);
+    window.addEventListener('resize', postHeight);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(postHeight);
+    if (window.ResizeObserver) new ResizeObserver(postHeight).observe(el);
+    postHeight();
+  })();
+  </script>
+</body>
+</html>

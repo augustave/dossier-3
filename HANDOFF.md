@@ -34,6 +34,47 @@ the `?read=30s` door landing, fixed the **Back button**, and trimmed module 00.
 > 3. **Titles** — `BIO → BIOGRAPHY`, `AI → ARTIFICIAL INTELLIGENCE`
 >    (`copy.v1_1.ts`); added a `register` field to the AI links for the eyebrow.
 
+> **UPDATE 2026-07-10 — DEPLOY TOPOLOGY + iframe widgets. READ BEFORE DEPLOYING.**
+>
+> **Two Vercel projects now serve this codebase; know which one you're hitting:**
+> - **`dossier-fold`** → `dossier-fold.vercel.app` — **canonical**. As of 2026-07-10 it
+>   serves the CURRENT work (olive/BRONC palette + both iframe widgets, promoted
+>   deliberately by owner decision — deployment `dossier-fold-dm584xyiw`).
+> - **`dossier-3`** → `dossier-3.vercel.app` — the parallel/experimental line.
+> - **`.vercel/project.json` in this working copy is linked to `dossier-3`.** A plain
+>   `vercel deploy --prod --yes` goes to dossier-3, NOT canonical. To promote to
+>   canonical: back up `.vercel/project.json` → `vercel link --yes --scope
+>   researchdirector --project dossier-fold` → `vercel deploy --prod --yes` → restore
+>   the backed-up `project.json`. ALWAYS restore the dossier-3 link afterward.
+> - **Verify which site you're LOOKING at before reporting a regression.** The two
+>   domains render near-identically. `curl -s <site>/ferris/app.js | grep -c openLightbox`
+>   or compare bundle hashes. A "missing feature" was twice (2026-07-09/10) just the
+>   stale sister site or a DEAD localhost:3100 tab.
+> - ⚠️ **A parallel agent/process shares this repo** and has committed, pushed
+>   (`dossier-fold/main`), and deployed to the canonical Vercel project WITHOUT being
+>   asked (2026-07-09: stale snapshot went live on canonical). Check `git log`,
+>   `git reflog`, and `vercel ls dossier-fold` before assuming state — and before
+>   diagnosing "how did canonical change."
+>
+> **Module content swaps (both are self-contained iframe embeds under `public/`):**
+> 1. **01 BIOGRAPHY map** — static inline SVG replaced by the interactive
+>    `public/neighboring-practices.html` (32 practitioners, ranked panel, olive plate;
+>    position radius bound to the measured `distance` field). Embedded via
+>    `components/NeighborPracticesMap.tsx` (auto-height iframe via postMessage).
+> 2. **02 INFLUENCES** — `InfluenceAtlas` replaced by the **FERRIS astrolabe**
+>    (`public/ferris/`: index.html + app.js + styles.css + IMAGES/ + fonts/). Embedded
+>    via `components/FerrisInfluences.tsx`. 7 influences (N.B. merged into Neville
+>    Brody), per-artist `↗` reference links, click-a-clipping **lightbox**, canvas
+>    matched to the band cream `#F2EFE4`, stacking breakpoint 719px. `InfluenceAtlas.tsx`
+>    + its copy fields are now dead code (left in place).
+> - **Fonts are self-hosted everywhere** (`public/fonts/`, `public/ferris/fonts/`) — do
+>   NOT reintroduce Google-Fonts `@import`s in the widgets.
+> - Widget heights sync via `postMessage`; measure the content root's
+>   `getBoundingClientRect().height`, never `documentElement.scrollHeight` (floored at
+>   iframe viewport → frame can never shrink; caused the "empty olive strip" bug).
+> - Exhibit images in `public/ferris/IMAGES/` are third-party reference material —
+>   rights NOT cleared (README caveat) — flag before serious public promotion.
+
 ---
 
 ## 0. CRITICAL — where it lives and deploys
