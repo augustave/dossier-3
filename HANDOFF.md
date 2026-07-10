@@ -75,6 +75,49 @@ the `?read=30s` door landing, fixed the **Back button**, and trimmed module 00.
 > - Exhibit images in `public/ferris/IMAGES/` are third-party reference material —
 >   rights NOT cleared (README caveat) — flag before serious public promotion.
 
+> **UPDATE 2026-07-10 (cont'd) — FERRIS lightbox rebuilt; 04 gained Doctrine Plates.**
+> Local/uncommitted at time of writing (both changes, `.vercel` still linked `dossier-3`).
+>
+> **FERRIS image lightbox — rebuilt to fix "unreliable open."** Root cause:
+> `board.setPointerCapture()` (needed for drag-to-rotate) can retarget the follow-up
+> `click` event's `e.target` to `#board` instead of the actual image, and the old
+> lightbox lived inside `#ferris` (a stacking/`overflow:hidden` context) — both fought
+> the drag system. Fix in `public/ferris/app.js`: lightbox now mounts at
+> **`document.body`**; target resolution uses **`document.elementFromPoint()`** (true
+> hit-testing, immune to retargeting) with `closest()` as fallback; a document-level
+> **capture-phase** `pointerdown`+`click` delegation with a **6px movement threshold**
+> distinguishes a real click from a drag (matches board's own independent `S.moved`
+> gate — the two systems don't need to coordinate beyond one `stopPropagation()` on a
+> genuine image click). `z-index: 2147483647`, `role="dialog"`/`aria-modal`, body-scroll
+> lock/restore, visible `×` close button. Verified with **real trusted browser clicks**
+> (not synthetic dispatch) — synthetic events don't reproduce the pointer-capture
+> retargeting bug, so don't trust a synthetic-only test of this interaction again.
+>
+> **04 AMERICAN DYNAMISM — new "Doctrine Plates" micro-interaction.** Ten editorial
+> plates (source: `Images/DYNAMISIM-DO/`, motion spec `AD_GREEN_FINE.md`) appended
+> below the existing hero/sub/3-Cards — that content is untouched, this is additive.
+> `components/DynamismPlates.tsx` + `public/dynamism/plate-01..10.jpg` (originals
+> 50MB PNG → 2.9MB JPEG q80, `sips -Z 1600`). Index row of ten `(01)…(10)` tokens is
+> the affordance (house pattern); click → rigid `[ 04 ]` bracket stamp (instant,
+> `steps(1)`, no transition), an SVG frame **traces itself** at constant velocity
+> (`stroke-dasharray`, `--plate-trace-duration:450ms` `linear` — new law block in
+> `index.css`), caption **types in mechanically** (fixed-tick `setInterval`, no
+> cursor sway), image **snaps in** (`opacity` `steps(1)`, animation-delayed to the
+> trace's exact duration — a fade would violate the AD GREEN spec). `←`/`→` step
+> plates; closes via re-click / `[ CLOSE ]` / Esc, all instant, no exit animation.
+> Images are conditionally rendered (viewer only mounts on click) — zero plate bytes
+> load until first interaction; do NOT add `loading="lazy"` on top of that, it can
+> stall the load entirely once the region is already off-screen-computed.
+>
+> ⚠️ **New instance of the "dead server reads as broken feature" trap (see §13):**
+> a temporary preview server used only for verification (port 3101) was stopped after
+> testing, but the owner's browser tab against it stayed open — every plate image
+> request then hit a dead server, reported as "images broken." The actual dev server
+> (durable, port 3100) was healthy the whole time. **Before debugging "broken images"
+> or any missing feature: confirm the tab's port matches a server you know is alive**
+> (`curl -s -o /dev/null -w '%{http_code}' http://localhost:<port>/`), not just that
+> *some* localhost tab is open.
+
 ---
 
 ## 0. CRITICAL — where it lives and deploys

@@ -79,6 +79,15 @@
   --card-ease: var(--fold-ease);
   --card-duration: 300ms;
 
+  /* Plate law — module 04 doctrine plates (AD GREEN spec). Plotting-table
+     temperament: constant velocity only (linear, like --tab-ease), frame
+     draws via stroke-dasharray, image SNAPS in when the trace completes
+     (steps(1) — a fade would violate the spec), selection is a rigid [ ]
+     bracket stamp + 1px→2px rule thickening with NO transition (instant),
+     exits are instant. All currentColor on the clay band; matte. */
+  --plate-trace-duration: 450ms;
+  --plate-trace-ease: linear;
+
   /* Atlas law — module 02 influence atlas. One instrument: a dotted
      coordinate grid, an 8-slice wheel, and ONE measured hover vector from
      the list to the ring. Interaction is ink-only (currentColor opacity /
@@ -963,3 +972,91 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* == Plate system (module 04 doctrine plates — see --plate-* law) ========== */
+
+.plate-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+/* Index token: "(01)" at rest → rigid "[ 01 ]" stamp on hover/focus/open.
+   Content swap + rule thickening are INSTANT (no transition) per the spec —
+   selection is a stamp, not a glide. */
+.plate-token {
+  font: inherit;
+  color: inherit;
+  background: none;
+  padding: 2px 2px 3px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  cursor: pointer;
+  outline: none;
+}
+.plate-token::before { content: "(\00a0"; }
+.plate-token::after  { content: "\00a0)"; }
+.plate-token:hover,
+.plate-token:focus-visible,
+.plate-token.is-open {
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 2px;               /* keep baseline seat — thicken, don't grow */
+  font-weight: 700;
+}
+.plate-token:hover::before,
+.plate-token:focus-visible::before,
+.plate-token.is-open::before { content: "[\00a0"; }
+.plate-token:hover::after,
+.plate-token:focus-visible::after,
+.plate-token.is-open::after  { content: "\00a0]"; }
+
+/* Mechanical typesetting caret: solid block, no blink, gone once printed. */
+.plate-caret {
+  display: inline-block;
+  width: 0.6em;
+  height: 1em;
+  margin-left: 2px;
+  background: currentColor;
+  vertical-align: text-bottom;
+}
+
+.plate-close {
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  outline: none;
+}
+.plate-close:hover,
+.plate-close:focus-visible { font-weight: 700; }
+
+/* Stage: the frame traces itself at constant velocity around the plate area,
+   then the image snaps in (steps(1)) the moment the trace completes. */
+.plate-stage {
+  position: relative;
+  padding: 8px;                      /* tipped-in margin between frame and sheet */
+}
+.plate-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.plate-trace {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: plate-trace var(--plate-trace-duration) var(--plate-trace-ease) forwards;
+}
+@keyframes plate-trace { to { stroke-dashoffset: 0; } }
+
+.plate-img {
+  opacity: 0;
+  animation: plate-snap 1ms steps(1, end) forwards;
+  animation-delay: var(--plate-trace-duration);
+}
+@keyframes plate-snap { to { opacity: 1; } }

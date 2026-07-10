@@ -245,6 +245,7 @@ INFLUENCES.forEach(inf => {
     d.style.setProperty('--tilt', cl.tilt + 'deg');
     const img = document.createElement('img');
     img.src = cl.src; img.alt = cl.alt; img.draggable = false;
+    img.dataset.lightboxSrc = cl.src;
     d.appendChild(img);
     rotor.appendChild(d);
     placeQueue.push({ el: d, inf });
@@ -473,36 +474,83 @@ function endDrag() {
 board.addEventListener('pointerup', endDrag);
 board.addEventListener('pointercancel', endDrag);
 
-/* suppress accidental pin after a drag */
-/* ---------- LIGHTBOX (click an image to blow it up) -------- */
+/* ---------- LIGHTBOX (click an image to blow it up) --------
+   Mounted at document.body — NOT inside #board/#rotor/#ferris — so it can
+   never be clipped by an ancestor's overflow/stacking context, and its
+   position:fixed is always relative to the real viewport. Target resolution
+   uses delegation from `document` in the CAPTURE phase: a genuine click on an
+   image is intercepted and stopPropagation()'d before it ever reaches board's
+   own bubble-phase click handler, so board never also fires setPin/rotation
+   for that click — no coordination needed between the two systems beyond
+   that one stopPropagation. A drag (>6px pointer movement) is deliberately
+   let bubble through untouched, so board's own S.moved-gated pin logic still
+   applies exactly as before.                                              */
 const lightbox = document.createElement('div');
 lightbox.id = 'lightbox';
+lightbox.setAttribute('role', 'dialog');
+lightbox.setAttribute('aria-modal', 'false');
 lightbox.setAttribute('aria-hidden', 'true');
-lightbox.innerHTML = '<img alt=""><div class="lb-cap"></div>';
-host.appendChild(lightbox);
+lightbox.innerHTML =
+  '<button type="button" class="lb-close" aria-label="Close image">&times;</button>' +
+  '<img alt="">' +
+  '<div class="lb-cap"></div>';
+document.body.appendChild(lightbox);
 const lbImg = lightbox.querySelector('img');
 const lbCap = lightbox.querySelector('.lb-cap');
+const lbCloseBtn = lightbox.querySelector('.lb-close');
+let bodyOverflowBeforeLightbox = '';
+
 function openLightbox(src, alt) {
   lbImg.src = src; lbImg.alt = alt || '';
   lbCap.innerHTML = (alt || 'EXHIBIT') + '<span class="esc">ESC — CLOSE</span>';
   lightbox.classList.add('open');
   lightbox.setAttribute('aria-hidden', 'false');
+  lightbox.setAttribute('aria-modal', 'true');
+  bodyOverflowBeforeLightbox = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';             // lock background scroll
 }
 function closeLightbox() {
+  if (!lightbox.classList.contains('open')) return;
   lightbox.classList.remove('open');
   lightbox.setAttribute('aria-hidden', 'true');
+  lightbox.setAttribute('aria-modal', 'false');
   lbImg.removeAttribute('src');
+  document.body.style.overflow = bodyOverflowBeforeLightbox;   // restore exactly
 }
-lightbox.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox || e.target === lbCloseBtn) closeLightbox();
+});
+
+/* delegated, capture-phase — never bound per-image, survives board rebuilds */
+let lbPointerStart = null;
+document.addEventListener('pointerdown', e => {
+  const t = e.target.closest('[data-lightbox-src]');
+  if (!t) return;
+  lbPointerStart = { x: e.clientX, y: e.clientY };
+}, true);
+document.addEventListener('click', e => {
+  const started = lbPointerStart;
+  lbPointerStart = null;
+  // Resolve the real element under the pointer via hit-testing, not just
+  // e.target — some browsers retarget click's target to the pointer-capture
+  // element (here, #board) after setPointerCapture, which would otherwise
+  // make closest() miss the image entirely.
+  const hitEl = document.elementFromPoint(e.clientX, e.clientY);
+  const target = (hitEl && hitEl.closest('[data-lightbox-src]')) ||
+                 e.target.closest('[data-lightbox-src]');
+  if (!target) return;
+  if (started) {
+    const dx = Math.abs(e.clientX - started.x);
+    const dy = Math.abs(e.clientY - started.y);
+    if (dx > 6 || dy > 6) return;                      // a drag, not a click
+  }
+  e.preventDefault();
+  e.stopPropagation();                                  // board never sees this click
+  openLightbox(target.dataset.lightboxSrc || target.src, target.alt || '');
+}, true);
 
 board.addEventListener('click', e => {
   if (S.moved) { S.moved = false; return; }
-  const clip = e.target.closest('.clip');
-  if (clip) {                                        // image → blow up, do not pin
-    const im = clip.querySelector('img');
-    if (im) openLightbox(im.src, im.alt);
-    return;
-  }
   const t = e.target.closest('[data-id]');
   if (t) setPin(t.dataset.id);
   else if (S.pinId) setPin(S.pinId);                 // empty board = release

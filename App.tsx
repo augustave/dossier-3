@@ -456,8 +456,10 @@ const App: React.FC = () => {
       {/* Masthead — full-width so brand anchors to the viewport left edge and
           actions anchor to the right, independent of the max-w-6xl content
           column. Reads as document metadata, not part of any fold module. */}
+      {/* Solid warm-paper bar: module bands, labels and controls scroll UNDER a
+          clean edge instead of visually tangling with the logo/actions (V4 QA). */}
       <div className="fixed top-0 left-0 w-full z-40 pointer-events-none">
-        <div className="px-6 md:px-10 py-4 flex justify-between items-start w-full">
+        <div className="px-6 md:px-10 py-4 flex justify-between items-start w-full bg-strata-cream border-b border-black/10">
          <div className="font-sans font-black text-xl tracking-tightest leading-none pointer-events-auto cursor-pointer text-black" onClick={() => window.scrollTo(0,0)}>
            CT<br/>DOSSIER<br/><span className="opacity-50">EBENZ AUGUSTAVE</span>
          </div>

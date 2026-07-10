@@ -112,6 +112,28 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     ).toHaveAttribute('href', 'https://augustave.github.io/HANDOFGOD');
   });
 
+  it('AMERICAN DYNAMISM doctrine plates open, step and close', async () => {
+    render(<App />);
+    const sec = await openModule('module-04');
+    // Strip renders: eyebrow + ten tokens, all closed.
+    expect(within(sec).getByText(/DOCTRINE PLATES/i)).toBeInTheDocument();
+    const tokens = within(sec).getAllByRole('button', { name: /^Plate \d\d —/i });
+    expect(tokens).toHaveLength(10);
+    expect(within(sec).queryByRole('region', { name: /^Plate/i })).not.toBeInTheDocument();
+    // Click (01) → viewer region with image; token marked expanded.
+    fireEvent.click(tokens[0]);
+    expect(tokens[0]).toHaveAttribute('aria-expanded', 'true');
+    const viewer = within(sec).getByRole('region', { name: /Plate 01 — THE AESTHETICS OF ALGORITHMIC WARFARE/i });
+    expect(viewer.querySelector('img')?.getAttribute('src')).toBe('dynamism/plate-01.jpg');
+    // ArrowRight = discrete jump to plate 02.
+    fireEvent.keyDown(window, { key: 'ArrowRight' });
+    expect(within(sec).getByRole('region', { name: /Plate 02/i })).toBeInTheDocument();
+    // Escape closes instantly; cards above untouched.
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(within(sec).queryByRole('region', { name: /^Plate/i })).not.toBeInTheDocument();
+    expect(within(sec).getByText('Hand of God')).toBeInTheDocument();
+  });
+
   it('BRAND shows the two essays', async () => {
     render(<App />);
     const sec = await openModule('module-05');

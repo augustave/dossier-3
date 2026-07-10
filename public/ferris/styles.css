@@ -16,8 +16,8 @@
 :root{
   --canvas:#F2EFE4;   /* matches the INFLUENCES (02) band — strata-cream */
   --paper:#F2F0E9;
-  --graphite:#B0B0A8;
-  --graphite-ink:#8E8E86;
+  --graphite:#9D9D96;       /* V4 QA: ~11% darker for board legibility (was #B0B0A8) */
+  --graphite-ink:#7D7D76;   /* V4 QA: ~12% darker (was #8E8E86) */
   --slate:#9CAEAD;
   --red:#E02020;
   --ink:#000;
@@ -186,7 +186,7 @@ body{margin:0;background:var(--canvas)}
 }
 .row .disc{
   grid-area:disc;
-  font-size:9.5px;
+  font-size:10.5px;   /* V4 QA: laptop-distance legibility (was 9.5px) */
   letter-spacing:.26em;
   color:var(--graphite-ink);
   text-transform:uppercase;
@@ -195,7 +195,7 @@ body{margin:0;background:var(--canvas)}
 .row .theta{
   grid-area:theta;
   align-self:center;
-  font-size:9.5px;
+  font-size:10.5px;   /* V4 QA: matches .disc bump */
   letter-spacing:.18em;
   color:var(--graphite-ink);
 }
@@ -217,7 +217,7 @@ body{margin:0;background:var(--canvas)}
 #lightbox{
   position:fixed;
   inset:0;
-  z-index:200;                       /* above the linen-noise overlay (z60) + pins */
+  z-index:2147483647;                 /* max int32 — bulletproof, mounted at document.body */
   display:none;
   align-items:center;
   justify-content:center;
@@ -230,9 +230,25 @@ body{margin:0;background:var(--canvas)}
   max-width:92%;
   max-height:84%;
   width:auto;height:auto;
+  object-fit:contain;                 /* never crop */
   border:1px solid rgba(242,239,228,.55);   /* hairline frame, no radius/shadow */
   filter:none;                               /* full colour, drop the milky treatment */
+  cursor:default;                     /* image itself doesn't close on click */
 }
+#lightbox .lb-close{
+  position:absolute;
+  top:18px;right:22px;
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;
+  border:1px solid rgba(242,239,228,.55);   /* hairline, matches image frame */
+  color:rgba(242,239,228,.85);
+  font-family:var(--mono);
+  font-size:20px;line-height:1;
+  cursor:pointer;
+}
+#lightbox .lb-close:hover,
+#lightbox .lb-close:focus-visible{ color:var(--red); border-color:var(--red); outline:none; }
 #lightbox .lb-cap{
   font-family:var(--mono);
   font-size:11px;

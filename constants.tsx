@@ -2,6 +2,7 @@ import React from 'react';
 import { ModuleData, ModuleType } from './types';
 import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
 import { Card } from './components/Card';
+import { DynamismPlates } from './components/DynamismPlates';
 import { FerrisInfluences } from './components/FerrisInfluences';
 import { NeighborPracticesMap } from './components/NeighborPracticesMap';
 
@@ -213,6 +214,9 @@ export const CONTENT_MODULES: ModuleData[] = [
             <Card key={i} href={l.href} eyebrow={l.register} title={l.name} arrow="visit" />
           ))}
         </div>
+
+        {/* Doctrine Plates — appended micro-interaction; band above unchanged. */}
+        <DynamismPlates />
       </div>
     ),
   },
