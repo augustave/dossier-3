@@ -100,14 +100,14 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     expect(within(sec).queryByText(/Branding \/ AGI/i)).not.toBeInTheDocument();
   });
 
-  it('AMERICAN DYNAMISM links to the defense pieces and the two papers', async () => {
+  it('AMERICAN DYNAMISM links to the defense pieces and the Under Fire paper', async () => {
     render(<App />);
     const sec = await openModule('module-04');
     expect(within(sec).getByText('Hand of God')).toBeInTheDocument();
     expect(within(sec).getByText('American Dynamo')).toBeInTheDocument();
     expect(within(sec).getByText('White Girls')).toBeInTheDocument();
     expect(within(sec).getByText('Under Fire')).toBeInTheDocument();
-    expect(within(sec).getByText('Creative Strategy')).toBeInTheDocument();
+    expect(within(sec).queryByText('Creative Strategy')).not.toBeInTheDocument();
     expect(
       within(sec).getByRole('link', { name: /Hand of God/i })
     ).toHaveAttribute('href', 'https://augustave.github.io/HANDOFGOD');
@@ -135,10 +135,11 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     expect(within(sec).getByText('Hand of God')).toBeInTheDocument();
   });
 
-  it('BRAND shows the Branding / AGI link', async () => {
+  it('BRAND shows Branding / AGI and Creative Strategy', async () => {
     render(<App />);
     const sec = await openModule('module-05');
     expect(within(sec).getByText(/Branding \/ AGI/i)).toBeInTheDocument();
+    expect(within(sec).getByText('Creative Strategy')).toBeInTheDocument();
     expect(within(sec).queryByText('Under Fire')).not.toBeInTheDocument();
   });
 

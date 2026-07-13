@@ -262,7 +262,6 @@ export const CT_DOSSIER_COPY_V120 = {
         { name: "American Dynamo", register: "Thesis",   href: "https://american-dynamo.vercel.app" },
         { name: "White Girls",     register: "Project",  href: "https://whitegirls.note.menu" },
         { name: "Under Fire",        register: "Paper",    subtitle: "Product thinking and the Battle of Stalingrad",         href: "library/design-under-fire-stalingrad.pdf", cta: "Read paper",    arrow: "read" },
-        { name: "Creative Strategy", register: "Strategy", subtitle: "Ethos and compliant go-to-market for defense startups", href: "library/creative-strategy-5-4.pdf",         cta: "Read strategy", arrow: "read" },
       ],
     },
 
@@ -282,6 +281,12 @@ export const CT_DOSSIER_COPY_V120 = {
           ctaLabel: "Visit",
           href: "https://branding.artdirector.rocks/",
           arrow: "visit",
+        },
+        {
+          title: "Creative Strategy",
+          subtitle: "Ethos and compliant go-to-market for defense startups",
+          ctaLabel: "Read strategy",
+          href: "library/creative-strategy-5-4.pdf",
         },
       ],
     },
