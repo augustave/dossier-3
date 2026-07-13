@@ -2,7 +2,7 @@ import React from 'react';
 
 const WORK_LINKS = [
   { label: 'ART DIRECTION',   url: 'artdirector.rocks', href: 'https://artdirector.rocks/' },
-  { label: 'BRAND × PRODUCT', url: 'brandproduct.dev',  href: 'https://brandproduct.dev/' },
+  { label: 'FINE ART',        url: 'plantsandaliens.art', href: 'https://plantsandaliens.art/' },
   { label: 'DEFENSE',         url: 'defense.observer',  href: 'https://defense.observer/' },
 ];
 
