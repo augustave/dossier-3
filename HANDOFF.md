@@ -1,6 +1,33 @@
-# CT-DOSSIER — Agent Handoff (V3.7.6)
+# CT-DOSSIER — Agent Handoff
 
-**Read this first.** Current as of **V3.7.6** (`a447c79`, 2026-06-24). This session
+> ## ✅ CURRENT STATE — verified 2026-07-13 (read this box; treat everything below it as history)
+>
+> - **Version V4.0.2.** Canonical live site **`dossier-fold.vercel.app` is fully current and healthy.**
+> - **Working tree is CLEAN — nothing is uncommitted.** Any older note below that says
+>   "LOCAL / not pushed / not merged / uncommitted / texture layer is UNCOMMITTED" has
+>   since **shipped**. Do not trust those phrases; they were written mid-flight.
+> - **Current branch `experiment/bronc-palette` is identical to canonical `dossier-fold/main`.**
+>   The BRONC olive palette, index odometer, FERRIS astrolabe (02), neighboring-practices
+>   map (01), ledger cards, tab entrance motion, and the 04 **Doctrine Plates** are all
+>   **built, committed, and live.**
+> - **Spine (INDEX 06):** `00 FRONT MATTER (cream) · 01 BIOGRAPHY (blue) · 02 INFLUENCES
+>   (cream) · 03 ARTIFICIAL INTELLIGENCE (black) · 04 AMERICAN DYNAMISM (clay) · 05 BRAND
+>   (black)`. The old route/lens/faceted system is **gutted** (`ROUTES = []`).
+> - **Deploy nuance (verified live 2026-07-13):** canonical `dossier-fold` is fully current;
+>   the parallel `dossier-3` is current **except** the 04 Doctrine Plates
+>   (`/dynamism/plate-01.jpg` → 404 there). Re-promote `dossier-3` only if it must match.
+>   Branch/push/deploy rules: §0 + the UPDATE blocks below.
+> - **Genuine open items live in `../TASKS.md`** (LinkedIn URL, chart peer names, FIG 02–04
+>   review, interview drill). Superseded planning docs were archived to `../_archive/` and
+>   `_archive/` on 2026-07-13.
+> - The stacked `UPDATE` blocks (2026-07-04 / 2026-07-10) below are accurate history.
+>   §4 / §6 / §9 route-mechanics are **obsolete** (that system was removed at V4.0.0).
+
+---
+
+# History log — CT-DOSSIER Agent Handoff (current truth is the box above)
+
+**Historical header (V3.7.6).** Was current as of **V3.7.6** (`a447c79`, 2026-06-24). This session
 rebuilt the route UI into a **Crease Map**, **removed the module filter**, retired
 the `?read=30s` door landing, fixed the **Back button**, and trimmed module 00.
 §8 is the changelog — it records the reversals so you don't re-litigate a decision.
