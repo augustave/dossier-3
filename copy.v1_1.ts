@@ -53,7 +53,6 @@ export const CT_DOSSIER_COPY_V120 = {
       // Quadrants relabelled to neutral; framing line converts naming into
       // citation. Chart geometry is locked.
       chartTitle: "A MAP OF NEIGHBORING PRACTICES",
-      chartFraming: "Practitioners I study and measure myself against.",
       chartCaption:
         "The corner where durable work meets AI-native production — a quiet part of the map.",
       fieldPositionAxes: {

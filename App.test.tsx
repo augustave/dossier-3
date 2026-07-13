@@ -62,12 +62,11 @@ describe('CT Dossier V4 — five-section swap spine', () => {
 
   // --- Fold content --------------------------------------------------------
 
-  it('BIO carries the name, the neighborhood map, and the framing line', async () => {
+  it('BIO carries the name and the neighborhood map', async () => {
     render(<App />);
     const sec = await openModule('module-01');
     expect(within(sec).getByText(COPY.modules.bio.name)).toBeInTheDocument();
     expect(within(sec).getByText(/A MAP OF NEIGHBORING PRACTICES/i)).toBeInTheDocument();
-    expect(within(sec).getByText(/measure myself against/i)).toBeInTheDocument();
     // The neighborhood map is now the interactive artifact, embedded as an iframe.
     expect(
       sec.querySelector('iframe[title*="neighboring practices"]')

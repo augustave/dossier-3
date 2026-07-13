@@ -114,12 +114,9 @@ export const CONTENT_MODULES: ModuleData[] = [
 
         {/* "Where Do I Fall" — the neighborhood map. Chart geometry locked. */}
         <div className="pleat-chart mt-4 pt-8 border-t border-white/20">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-3">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">
             {COPY.modules.bio.chartTitle}
           </h4>
-          <p className="font-sans text-sm opacity-secondary leading-relaxed mb-4 max-w-xl">
-            {COPY.modules.bio.chartFraming}
-          </p>
 
           <NeighborPracticesMap />
 

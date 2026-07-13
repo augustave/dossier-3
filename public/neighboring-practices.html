@@ -10,8 +10,8 @@
   @font-face { font-family:'IBM Plex Mono'; font-style:normal; font-weight:600; font-display:swap; src:url('fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2'); }
   * { box-sizing: border-box; }
   html, body { margin:0; background:#585a3f; font-family:'IBM Plex Mono', ui-monospace, 'SF Mono', 'Courier New', monospace; }
-  #app { display:flex; width:1680px; max-width:100%; margin:0 auto; }
-  #mapwrap { flex: 0 0 1200px; }
+  #app { position:relative; width:100%; max-width:100%; margin:0 auto; }
+  #mapwrap { width:calc(100% - 340px); }
   #mapwrap svg { width:100%; height:auto; display:block; }
   .pt { cursor:pointer; }
   .pt .dot { transition: r 120ms ease, fill 120ms ease; }
@@ -25,13 +25,21 @@
     .pt .dot, .pt .lbl, #panel ol.ranking li { transition:none; }
   }
 
+  /* Side panel — its own reserved column to the RIGHT of the map (map shrinks to
+     make room), never overlapping the plot. Height matches the map; scrolls
+     internally since the ranked list runs long. Was a column that stacked
+     off-screen below the tall SVG. */
   #panel {
-    flex: 0 0 480px;
+    position:absolute;
+    top:0;
+    right:0;
+    width:340px;
+    height:100%;
+    overflow-y:auto;
     background:#4a4c34;
     color:#e9e5d8;
-    padding:56px 36px;
+    padding:40px 28px;
     border-left:1px solid rgba(232,228,216,0.38);
-    min-height:1160px;
   }
   #panel .eyebrow { font-size:12px; letter-spacing:3px; color:#a19d84; margin-bottom:10px; }
   #panel h1 { font-size:26px; margin:0 0 6px 0; color:#cdd65f; }
@@ -60,10 +68,12 @@
   #panel ol.ranking li .ds { color:#a19d84; font-variant-numeric:tabular-nums; }
   #panel ol.ranking li.me-marker { color:#cdd65f; cursor:default; border-top:1px dashed #cdd65f; }
   #panel ol.ranking li.me-marker:hover { color:#cdd65f; }
-  @media (max-width: 1680px) {
-    #app { flex-direction:column; }
-    #mapwrap { flex:none; width:100%; }
-    #panel { flex:none; width:100%; border-left:none; border-top:1px solid rgba(232,228,216,0.38); min-height:auto; }
+  /* Too narrow for a side column — stack the panel under the map, capped +
+     scrolling so it's a short reference block, not a full-height slab. */
+  @media (max-width: 720px) {
+    #mapwrap { width:100%; }
+    #panel { position:static; width:100%; height:auto; max-height:420px;
+             border-left:none; border-top:1px solid rgba(232,228,216,0.38); padding:28px 22px; }
   }
 </style>
 </head>
