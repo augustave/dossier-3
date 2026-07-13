@@ -205,9 +205,11 @@ export const CONTENT_MODULES: ModuleData[] = [
         <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
           {COPY.modules.americanDynamism.hero}
         </p>
-        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
-          {COPY.modules.americanDynamism.sub}
-        </p>
+        <ul className="font-serif text-2xl md:text-3xl leading-tight space-y-1 max-w-3xl">
+          {COPY.modules.americanDynamism.pillars.map((p) => (
+            <li key={p}>{p}</li>
+          ))}
+        </ul>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {COPY.modules.americanDynamism.links.map((l, i) => (

@@ -24,7 +24,6 @@ export const FrontMatterContent: React.FC = () => {
         <div className="font-sans text-base md:text-lg opacity-secondary leading-relaxed max-w-2xl mt-6 space-y-4">
           <p>One wing builds instruments: interfaces, systems, and cognitive tools that make complexity legible.</p>
           <p>The other builds visual languages: brands, identities, and cultural objects that give consequential work a form people can trust, remember, and carry.</p>
-          <p>Both come from the same doctrine: restraint over spectacle, provenance over performance, and legibility under pressure.</p>
         </div>
       </div>
 

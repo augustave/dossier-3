@@ -258,8 +258,8 @@ export const CT_DOSSIER_COPY_V120 = {
     americanDynamism: {
       title: "AMERICAN DYNAMISM",
       prompt: "THE DEFENSE CENTER",
-      hero: "Defense-tech is where the practice stops being decorative.",
-      sub: "The language has to hold under harder constraints: ambiguity, consequence, pressure, trust, and failure. That is why I study it. Not for spectacle — for discipline.",
+      hero: "My perspective will always center on contributing to the development of technology that serves the following pillars:",
+      pillars: ["Family", "Industry", "Defense"],
       links: [
         { name: "Hand of God",     register: "Project",  href: "https://augustave.github.io/HANDOFGOD" },
         { name: "American Dynamo", register: "Thesis",   href: "https://american-dynamo.vercel.app" },
