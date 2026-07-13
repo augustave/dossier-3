@@ -95,17 +95,19 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     expect(within(sec).getByText(/^Five axioms$/i)).toBeInTheDocument();
     expect(within(sec).getByText(/Relentless Innovation/i)).toBeInTheDocument(); // I
     expect(within(sec).getByText(/Visual Impact/i)).toBeInTheDocument();          // V
-    // Both AI essays present.
+    // AI now carries only the DIRTY tool — Branding / AGI moved to BRAND.
     expect(within(sec).getByText(/^DIRTY$/)).toBeInTheDocument();
-    expect(within(sec).getByText(/Branding \/ AGI/i)).toBeInTheDocument();
+    expect(within(sec).queryByText(/Branding \/ AGI/i)).not.toBeInTheDocument();
   });
 
-  it('AMERICAN DYNAMISM links to the three defense pieces', async () => {
+  it('AMERICAN DYNAMISM links to the defense pieces and the two papers', async () => {
     render(<App />);
     const sec = await openModule('module-04');
     expect(within(sec).getByText('Hand of God')).toBeInTheDocument();
     expect(within(sec).getByText('American Dynamo')).toBeInTheDocument();
     expect(within(sec).getByText('White Girls')).toBeInTheDocument();
+    expect(within(sec).getByText('Under Fire')).toBeInTheDocument();
+    expect(within(sec).getByText('Creative Strategy')).toBeInTheDocument();
     expect(
       within(sec).getByRole('link', { name: /Hand of God/i })
     ).toHaveAttribute('href', 'https://augustave.github.io/HANDOFGOD');
@@ -133,11 +135,11 @@ describe('CT Dossier V4 — five-section swap spine', () => {
     expect(within(sec).getByText('Hand of God')).toBeInTheDocument();
   });
 
-  it('BRAND shows the two essays', async () => {
+  it('BRAND shows the Branding / AGI link', async () => {
     render(<App />);
     const sec = await openModule('module-05');
-    expect(within(sec).getByText('Under Fire')).toBeInTheDocument();
-    expect(within(sec).getByText('Creative Strategy')).toBeInTheDocument();
+    expect(within(sec).getByText(/Branding \/ AGI/i)).toBeInTheDocument();
+    expect(within(sec).queryByText('Under Fire')).not.toBeInTheDocument();
   });
 
   // --- Chrome --------------------------------------------------------------

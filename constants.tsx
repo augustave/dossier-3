@@ -211,8 +211,8 @@ export const CONTENT_MODULES: ModuleData[] = [
         </ul>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {COPY.modules.americanDynamism.links.map((l, i) => (
-            <Card key={i} href={l.href} eyebrow={l.register} title={l.name} arrow="visit" />
+          {(COPY.modules.americanDynamism.links as Array<{ name: string; register: string; href: string; subtitle?: string; cta?: string; arrow?: string }>).map((l, i) => (
+            <Card key={i} href={resolveHref(l.href)} eyebrow={l.register} title={l.name} subtitle={l.subtitle} cta={l.cta} arrow={(l.arrow as 'read' | 'visit') ?? 'visit'} />
           ))}
         </div>
 
@@ -240,8 +240,8 @@ export const CONTENT_MODULES: ModuleData[] = [
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {COPY.modules.brand.essays.map((e, i) => (
-            <Card key={i} href={resolveHref(e.href)} eyebrow="Essay" title={e.title} subtitle={e.subtitle} cta={e.ctaLabel} />
+          {(COPY.modules.brand.essays as Array<{ eyebrow?: string; title: string; subtitle?: string; ctaLabel?: string; href: string; arrow?: string }>).map((e, i) => (
+            <Card key={i} href={resolveHref(e.href)} eyebrow={e.eyebrow ?? 'Essay'} title={e.title} subtitle={e.subtitle} cta={e.ctaLabel} arrow={(e.arrow as 'read' | 'visit') ?? 'read'} />
           ))}
         </div>
       </div>

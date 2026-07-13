@@ -237,8 +237,7 @@ export const CT_DOSSIER_COPY_V120 = {
       statementBody:
         "As machines take on more production, human value moves toward direction, taste, judgment, restraint, and the ability to make intelligence legible to other humans. The design problem is no longer only how something looks. It is how something thinks, explains itself, and earns trust.",
       links: [
-        { register: "Tool", name: "DIRTY",         frame: "Brand as living system in the AGI era.",               href: "https://dirty.artdirector.rocks/" },
-        { register: "Tool", name: "Branding / AGI", frame: "Brand identity at the intersection of algorithm and archive.", href: "https://branding.artdirector.rocks/" },
+        { register: "Tool", name: "DIRTY", frame: "Brand as living system in the AGI era.", href: "https://dirty.artdirector.rocks/" },
       ],
       axiomsTitle: "THE FIVE AXIOMS OF ALGORITHMIC INNOVATION",
       axiomsCountLabel: "Five",
@@ -262,6 +261,8 @@ export const CT_DOSSIER_COPY_V120 = {
         { name: "Hand of God",     register: "Project",  href: "https://augustave.github.io/HANDOFGOD" },
         { name: "American Dynamo", register: "Thesis",   href: "https://american-dynamo.vercel.app" },
         { name: "White Girls",     register: "Project",  href: "https://whitegirls.note.menu" },
+        { name: "Under Fire",        register: "Paper",    subtitle: "Product thinking and the Battle of Stalingrad",         href: "library/design-under-fire-stalingrad.pdf", cta: "Read paper",    arrow: "read" },
+        { name: "Creative Strategy", register: "Strategy", subtitle: "Ethos and compliant go-to-market for defense startups", href: "library/creative-strategy-5-4.pdf",         cta: "Read strategy", arrow: "read" },
       ],
     },
 
@@ -273,21 +274,14 @@ export const CT_DOSSIER_COPY_V120 = {
       prompt: "WHERE THE LANGUAGE HOLDS",
       hero: "Brand is where the language holds.",
       sub: "Not the logo. Not the campaign. The deeper system: what the company refuses, what it repeats, what it protects, and what still reads when the surface changes. A useful brand is not louder. It is harder to break.",
-      // pending: true → local PDF placeholder; swap href when the outbound URL lands.
       essays: [
         {
-          title: "Under Fire",
-          subtitle: "Product thinking and the Battle of Stalingrad",
-          ctaLabel: "READ PAPER",
-          href: "library/design-under-fire-stalingrad.pdf",
-          pending: true,
-        },
-        {
-          title: "Creative Strategy",
-          subtitle: "Ethos and compliant go-to-market for defense startups",
-          ctaLabel: "READ STRATEGY",
-          href: "library/creative-strategy-5-4.pdf",
-          pending: true,
+          eyebrow: "Site",
+          title: "Branding / AGI",
+          subtitle: "Brand identity at the intersection of algorithm and archive.",
+          ctaLabel: "Visit",
+          href: "https://branding.artdirector.rocks/",
+          arrow: "visit",
         },
       ],
     },
