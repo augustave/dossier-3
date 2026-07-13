@@ -102,9 +102,6 @@ export const CONTENT_MODULES: ModuleData[] = [
             <p key={i}>{para}</p>
           ))}
         </div>
-        <p className="font-serif text-lg md:text-2xl italic opacity-secondary border-t border-white/10 pt-6 max-w-3xl">
-          {COPY.modules.bio.close}
-        </p>
 
         <div className="max-w-2xl">
           <Card
@@ -142,11 +139,16 @@ export const CONTENT_MODULES: ModuleData[] = [
     promptText: COPY.modules.influences.prompt,
     themeColor: 'cream',
     responseText: COPY.modules.influences.hero,
-    // FERRIS "Index of Influences" astrolabe — self-contained widget embedded
-    // via iframe (see FerrisInfluences). Single function-component child, so
-    // ModuleStrata's selfPleating path still renders it BARE.
+    // A leading pull-quote over the FERRIS "Index of Influences" astrolabe
+    // (self-contained iframe widget, see FerrisInfluences). Two rows now, so the
+    // band pleats normally — safe: the iframe has no inner pleats to double-rotate.
     responseDisplay: (
-      <FerrisInfluences />
+      <div className="space-y-10">
+        <blockquote className="font-serif text-2xl md:text-4xl leading-tight max-w-3xl">
+          &ldquo;{COPY.modules.influences.quote}&rdquo;
+        </blockquote>
+        <FerrisInfluences />
+      </div>
     ),
   },
 

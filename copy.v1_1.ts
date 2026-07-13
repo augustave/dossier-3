@@ -39,9 +39,7 @@ export const CT_DOSSIER_COPY_V120 = {
         "I am a product of Third World Culture and a childhood spent in the foreign service — raised across borders, where you learn early that meaning changes shape when it crosses one.",
         "My professional foundation is in the culinary arts. My background taught me to read rooms, pressure, timing, and ambiguity before I ever called it design.",
         "The kitchen gave me pacing. Photography gave me the eye. Product design gave me the system. AI gave me the new surface.",
-        "The through-line is simple: I make difficult things easier to see without making them smaller than they are.",
       ],
-      close: "Bring me in when the thing is real, but the language around it has not caught up.",
 
       // My First CPO — the BIO article (PRD §6 Tab 1).
       article: {
@@ -104,6 +102,7 @@ export const CT_DOSSIER_COPY_V120 = {
         "I do not treat references as moodboard decoration. I study people, systems, buildings, interfaces, campaigns, rituals, and machines that solved real problems under pressure. Then I translate what still holds.",
       intro2:
         "A useful reference is not something to imitate. It is something that survived contact with reality.",
+      quote: "I grew up between LOCKHEED and GQ Magazine.",
       // Atlas fields: id/number/name/shortLabel/inheritanceLine/angleDegrees/
       // category are the coordinate source of truth; images fill the slice.
       people: [
