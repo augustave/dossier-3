@@ -6,7 +6,7 @@ import { FrontMatterContent } from './components/FrontMatterContent';
 import { CreaseMap } from './components/CreaseMap';
 import { ModuleType } from './types';
 import { CONTACT, hasLinkedIn } from './contact';
-import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
+import { CT_DOSSIER_COPY as COPY } from './copy.v1_1';
 
 // Site version label, wired to the copy meta so the chrome can never go stale
 // against the content again (it sat at a hardcoded V1.2.0 while meta moved to

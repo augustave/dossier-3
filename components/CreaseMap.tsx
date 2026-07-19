@@ -40,7 +40,7 @@ export const CreaseMap: React.FC<CreaseMapProps> = ({ selectedRoute, onSelectRou
   return (
     <section
       id="crease-map-root"
-      aria-label="Reading routes"
+      aria-label="Thesis"
       data-testid="crease-map"
       className="container mx-auto px-4 md:px-8 max-w-6xl mb-6 md:mb-10"
     >

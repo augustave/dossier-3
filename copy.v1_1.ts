@@ -12,7 +12,7 @@
    Voice: first person where natural (esp. BIO/AI), plainspoken, no
    self-mythologizing. "Tab" in the PRD == "fold" here (owner confirmed). */
 
-export const CT_DOSSIER_COPY_V120 = {
+export const CT_DOSSIER_COPY = {
   meta: {
     version: "4.0.2",
     voice: "first person where natural (bio, AI); plainspoken; a polymath read as one mind, not a résumé; mass over swagger",
@@ -49,9 +49,25 @@ export const CT_DOSSIER_COPY_V120 = {
         href: "https://cpo-blue.vercel.app",
       },
 
+      // BioArchival — the flash-exposed print seated above the CPO article.
+      // Copy doctrine: plainspoken, no first person, no identity overclaim —
+      // the caption files the print against the article; it does not caption
+      // the man. DRAFT for owner edit.
+      archival: {
+        eyebrow: "FROM THE FAMILY FILE",
+        caption: "One print survives the kitchen years. The article below explains the rest.",
+        alt: "Archival photograph from the family file: a smiling man in glasses and a striped shirt, foreground sharp against a dark ground.",
+      },
+
       // "Where Do I Fall" — the neighborhood map (moved into BIO per PRD §6/§7).
       // Quadrants relabelled to neutral; framing line converts naming into
       // citation. Chart geometry is locked.
+      // LEGACY (2026-07-18 eval): the fieldPosition* blocks below fed a retired
+      // in-React chart and are referenced nowhere. The LIVE map is the
+      // neighboring-practices.html iframe (32 practitioners) — that file is the
+      // source of truth, incl. the peer roster. Only chartTitle/chartCaption
+      // are live copy. NOTE: peer names in the live iframe are still
+      // placeholders per TASKS.md (owner input needed).
       chartTitle: "A MAP OF NEIGHBORING PRACTICES",
       chartCaption:
         "The corner where durable work meets AI-native production — a quiet part of the map.",
@@ -102,8 +118,11 @@ export const CT_DOSSIER_COPY_V120 = {
       intro2:
         "A useful reference is not something to imitate. It is something that survived contact with reality.",
       quote: "I grew up between LOCKHEED and GQ Magazine.",
-      // Atlas fields: id/number/name/shortLabel/inheritanceLine/angleDegrees/
-      // category are the coordinate source of truth; images fill the slice.
+      // LEGACY (2026-07-18 eval): this people[] array fed InfluenceAtlas.tsx,
+      // which is no longer imported anywhere. The LIVE 02 widget is the FERRIS
+      // astrolabe iframe (public/ferris/), which renders 7 practitioners (N.B.
+      // merged into Brody) — the iframe is the source of truth, not this array.
+      // Kept for potential atlas revival; do not treat as live content.
       people: [
         {
           id: "brody",
@@ -160,8 +179,8 @@ export const CT_DOSSIER_COPY_V120 = {
           angleDegrees: 67.5,
           category: "THEORY",
           images: [
-            { src: "/atlas/metahaven-work-1.png", kind: "work", scale: 1.24, focusX: 0.52, focusY: 0.42 },
-            { src: "/atlas/metahaven-work-2.png", kind: "work" },
+            { src: "/atlas/metahaven-work-1.jpg", kind: "work", scale: 1.24, focusX: 0.52, focusY: 0.42 },
+            { src: "/atlas/metahaven-work-2.jpg", kind: "work" },
           ],
         },
         {
@@ -175,8 +194,8 @@ export const CT_DOSSIER_COPY_V120 = {
           angleDegrees: 112.5,
           category: "PRODUCTION",
           images: [
-            { src: "/atlas/thorp-work-1.png", kind: "work", scale: 1.38, focusX: 0.45, focusY: 0.48 },
-            { src: "/atlas/thorp-work-2.png", kind: "work" },
+            { src: "/atlas/thorp-work-1.jpg", kind: "work", scale: 1.38, focusX: 0.45, focusY: 0.48 },
+            { src: "/atlas/thorp-work-2.jpg", kind: "work" },
           ],
         },
         {
@@ -265,29 +284,58 @@ export const CT_DOSSIER_COPY_V120 = {
       ],
     },
 
-    // 05 — BRAND. Two essays (PRD §6 Tab 5). Outbound URLs are TBD in the PRD;
-    // wired to the existing local PDF assets as placeholders until the owner
-    // supplies the public links.
+    // 05 — BRAND. Links are LIVE (2026-07-18 eval): Branding / AGI → the
+    // public branding site; Creative Strategy → the local library PDF (a real
+    // shipped artifact, not a placeholder).
     brand: {
       title: "BRAND",
-      prompt: "WHERE THE LANGUAGE HOLDS",
-      hero: "Brand is where the language holds.",
-      sub: "Not the logo. Not the campaign. The deeper system: what the company refuses, what it repeats, what it protects, and what still reads when the surface changes. A useful brand is not louder. It is harder to break.",
-      essays: [
-        {
-          eyebrow: "Site",
-          title: "Branding / AGI",
-          subtitle: "Brand identity at the intersection of algorithm and archive.",
-          ctaLabel: "Visit",
-          href: "https://branding.artdirector.rocks/",
-          arrow: "visit",
-        },
-        {
-          title: "Creative Strategy",
-          subtitle: "Ethos and compliant go-to-market for defense startups",
-          ctaLabel: "Read strategy",
-          href: "library/creative-strategy-5-4.pdf",
-        },
+      prompt: "", // the matrix (animation) replaces the text prompt line
+      // The BRAND statement IS the matrix: a structural grid of the practice's
+      // working vocabulary. The grid itself is the artwork (static wrapping
+      // grid, matte). 31 labels laid full-bleed; the 2 live links sit apart as
+      // their own widget column.
+      hint:
+        "The practice's working vocabulary, held as one structural index. Thirty-one terms; three carry the signal green. The two live links open the branding site and the creative-strategy brief.",
+      // Each tile carries one matched image (public/brand/tags/) — a single
+      // still pulled by hand from the BRAND source folder to stand for the
+      // term, not a literal illustration of it. Appears as a sudden
+      // apparition on hover (BrandMatrix.tsx / .brand-cell__apparition).
+      matrix: [
+        { label: "Dream-Telling", accent: true, image: "brand/tags/dream-telling.jpg" },
+        { label: "Code Kunst", accent: true, image: "brand/tags/code-kunst.jpg" },
+        { label: "Alien Bio Physics", accent: true, image: "brand/tags/alien-bio-physics.jpg" },
+        { label: "Gradient Mesh", image: "brand/tags/gradient-mesh.jpg" },
+        { label: "Interface", image: "brand/tags/interface.jpg" },
+        { label: "Abstract Tech", image: "brand/tags/abstract-tech.jpg" },
+        { label: "Art Direction", image: "brand/tags/art-direction.jpg" },
+        { label: "Tile set Pixel", image: "brand/tags/tile-set-pixel.jpg" },
+        { label: "AGI.ESQ", image: "brand/tags/agi-esq.jpg" },
+        { label: "SR71–72/B2", image: "brand/tags/sr71-72-b2.jpg" },
+        { label: "Technology Review", image: "brand/tags/technology-review.jpg" },
+        { label: "Tokyo", image: "brand/tags/tokyo.jpg" },
+        { label: "Metal Horse", image: "brand/tags/metal-horse.jpg" },
+        { label: "Late NFT", image: "brand/tags/late-nft.jpg" },
+        { label: "Late Night Taiwan", image: "brand/tags/late-night-taiwan.jpg" },
+        { label: "Half Consciousness", image: "brand/tags/half-consciousness.jpg" },
+        { label: "Startup Lab", image: "brand/tags/startup-lab.jpg" },
+        { label: "Acrylic", image: "brand/tags/acrylic.jpg" },
+        { label: "Next War", image: "brand/tags/next-war.jpg" },
+        { label: "Tumblr Is Back", image: "brand/tags/tumblr-is-back.jpg" },
+        { label: "Neon Gal", image: "brand/tags/neon-gal.jpg" },
+        { label: "Hafez & Loki", image: "brand/tags/hafez-loki.jpg" },
+        { label: "Is It Climate Change Yet?", image: "brand/tags/is-it-climate-change-yet.jpg" },
+        { label: "ELECTRIC BLUE", image: "brand/tags/electric-blue.jpg" },
+        { label: "Quantum Chip", image: "brand/tags/quantum-chip.jpg" },
+        { label: "Cupertino Again", image: "brand/tags/cupertino-again.jpg" },
+        { label: "RAG", image: "brand/tags/rag.jpg" },
+        { label: "Drone Love", image: "brand/tags/drone-love.jpg" },
+        { label: "Black on Black", image: "brand/tags/black-on-black.jpg" },
+        { label: "Nobel ATTENTION", note: "after “attention is all you need”", image: "brand/tags/nobel-attention.jpg" },
+        { label: "WHY TRENDS?", image: "brand/tags/why-trends.jpg" },
+      ],
+      links: [
+        { eyebrow: "Site",     label: "Branding / AGI",    href: "https://branding.artdirector.rocks/", arrow: "visit" },
+        { eyebrow: "Strategy", label: "Creative Strategy", href: "library/creative-strategy-5-4.pdf",   arrow: "read"  },
       ],
     },
   },

@@ -88,6 +88,25 @@
   --plate-trace-duration: 450ms;
   --plate-trace-ease: linear;
 
+  /* BioArchival law — 01 BIOGRAPHY flash-bulb print, exposed on HOVER of the
+     My First CPO article ledger (.bio-cpo-row). Slide-projector temperament:
+     every state change is a hard cut (steps) — the flash onset is the
+     animation-delay boundary itself, the photo SNAPS in under the white
+     (plate-snap lineage), decay is stepped, not faded. The ONE slow element
+     is the grain/dust settling after impact. All delays derive from
+     --bioarch-flash-delay; 80ms — a beat after the cursor lands, no fold to
+     wait for (hover-out cancels + resets, so every hover-in re-fires). Exit:
+     the whole figure slow-fades back into the void (--bioarch-exit). */
+  --bioarch-flash-delay: 80ms;
+  --bioarch-exit-hold: 1000ms;  /* print LINGERS fully exposed after the cursor leaves… */
+  --bioarch-exit: 650ms;        /* …then fades back into the void */
+  --bioarch-flash-duration: 240ms;   /* white 0–60% = 144ms, ember 0.28 to 100% */
+  --bioarch-snap-delay: var(--bioarch-flash-delay);
+  --bioarch-grain-delay: calc(var(--bioarch-flash-delay) + var(--bioarch-flash-duration));
+  --bioarch-grain-duration: 1300ms;
+  --bioarch-caption-delay: calc(var(--bioarch-flash-delay) + 320ms);
+  --bioarch-grain-alpha: 0.38;
+
   /* Atlas law — module 02 influence atlas. One instrument: a dotted
      coordinate grid, an 8-slice wheel, and ONE measured hover vector from
      the list to the ring. Interaction is ink-only (currentColor opacity /
@@ -230,6 +249,105 @@
   display: none;
 }
 
+/* BRAND matrix (module 05) — the structural grid IS the artwork. Full-bleed
+   (100vw) three-region 12-column grid on the black band: meta / static wrapping
+   vocabulary grid / live-link widgets. Cells invert instantly on hover (a
+   version swap, same bounds — no fade). Static (no scroll track); the 100vw
+   overshoot past the band edge is clipped by .strata-band{overflow-x:clip}, so
+   it never makes a page-level horizontal scrollbar. */
+.brand-matrix {
+  --bm-fg:#EDE8DB; --bm-bg:#0A0A0A; --bm-line:rgba(237,232,219,0.22); --bm-accent:#42FC04;
+  /* full-bleed breakout of the max-w-6xl content column */
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  /* 12-column region grid */
+  display:grid;
+  grid-template-columns:repeat(12, 1fr);
+  gap:2rem 3rem;                 /* 2rem rows, generous 3rem columns */
+  align-items:start;
+  padding-inline:clamp(1.5rem, 4vw, 4rem);
+}
+/* LEFT — meta (span 3). The only reading block; capped to a legible measure and
+   centered within its column (text stays left-aligned). */
+.brand-meta { grid-column:span 3; max-width:65ch; margin-inline:auto; color:var(--bm-fg); }
+.brand-meta__label { font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--bm-accent); margin-bottom:14px; }
+.brand-meta__hint { font-size:12px; line-height:1.6; letter-spacing:0.02em; color:var(--bm-fg); opacity:0.72; margin:0; }
+/* CENTER — vocabulary (span 6). Fluid auto-fill wrapping grid; gap:0 + the
+   container's top/left hairline + each cell's right/bottom hairline = one
+   continuous 1px grid. Ragged final row is intentional (an index, not a slab). */
+.brand-grid {
+  grid-column:span 6;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+  gap:0;
+  border-top:1px solid var(--bm-line); border-left:1px solid var(--bm-line);
+}
+/* RIGHT — live-link widgets (span 3), stacked. */
+.brand-links { grid-column:span 3; display:flex; flex-direction:column; gap:1rem; }
+.brand-links .brand-cell { border-right:none; border-bottom:none; }  /* outline is the box */
+
+@media (max-width:767px) {
+  .brand-matrix { grid-template-columns:1fr; gap:2rem; }
+  .brand-meta, .brand-grid, .brand-links { grid-column:1 / -1; }
+  .brand-meta { max-width:none; }
+}
+
+.brand-cell {
+  position:relative; min-height:88px;
+  border-right:1px solid var(--bm-line); border-bottom:1px solid var(--bm-line);
+  padding:11px 13px; display:flex; flex-direction:column; justify-content:space-between;
+  color:var(--bm-fg); background:transparent; text-decoration:none;
+}
+.brand-cell__idx { font-size:10px; letter-spacing:0.15em; opacity:0.42; font-variant-numeric:tabular-nums; }
+.brand-cell__eyebrow { display:block; font-size:9px; letter-spacing:0.18em; text-transform:uppercase; opacity:0.6; margin-bottom:3px; }
+.brand-cell__label { font-size:12px; line-height:1.18; text-transform:uppercase; letter-spacing:0.03em; }
+.brand-cell__arrow { opacity:0.75; }
+.brand-cell--accent { color:var(--bm-accent); }
+.brand-cell--link { outline:1px solid var(--bm-accent); outline-offset:-1px; }
+/* instant version-swap on hover — no transition (matte doctrine). z-index
+   lifts the hovered cell's stacking context so its apparition (below) can
+   overflow into neighboring cells without being painted under them. */
+.brand-cell:hover, .brand-cell:focus-visible { background:var(--bm-fg); color:var(--bm-bg); z-index: 3; }
+.brand-cell--accent:hover, .brand-cell--accent:focus-visible,
+.brand-cell--link:hover, .brand-cell--link:focus-visible { background:var(--bm-accent); color:var(--bm-bg); }
+
+/* Sudden apparition — the tile's matched still POPS in centered over the
+   cell on hover: instant, no fade, same grammar as the invert above (matte
+   doctrine, no smooth digital morphing). Hover-capable devices only; touch
+   gets the plain label grid, unaffected. Sized past the cell's own box on
+   purpose — the fold's generous overflow-clip-margin (above) keeps it from
+   being trimmed near the grid's top/bottom edge. pointer-events:none so the
+   image never steals the hover target from the cell underneath it. */
+@media (hover: hover) {
+  .brand-cell__apparition {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 340px;
+    max-width: none;   /* override Tailwind preflight's img{max-width:100%},
+                           which otherwise caps this to the cell's own ~150-190px
+                           (the absolute-positioned img's containing block) */
+    aspect-ratio: 16 / 9;
+    transform: translate(-50%, -50%) rotate(-1deg);
+    object-fit: cover;
+    z-index: 4;
+    pointer-events: none;
+    outline: 1px solid var(--bm-line);
+    box-shadow: 9px 11px 0 rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+  }
+  .brand-cell:hover .brand-cell__apparition,
+  .brand-cell:focus-visible .brand-cell__apparition {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-cell__apparition { transform: translate(-50%, -50%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* static effects — nothing to disable, but keep the block for parity */
   .strata-band::before, .strata-band::after { }
@@ -259,6 +377,16 @@
   transition:
     padding 700ms cubic-bezier(0.25, 1, 0.5, 1),
     box-shadow 700ms cubic-bezier(0.25, 1, 0.5, 1);
+  /* Contain the entrance tab-skin's parked position. .module-tab-skin is
+     absolute (left:0;right:0) in this band, and at rest before arming it sits
+     at translateX(100%) — one band-width off the right edge. The whole ancestor
+     chain (main → root → body → html) is overflow-x: visible, so that parked
+     skin would escape to the document and add a viewport-wide horizontal
+     scrollbar. Clip it to the band's own box: the pan-in still emerges from the
+     band's right edge (motion unchanged), but never reaches page level.
+     clip (not hidden) keeps the viewport as the scroll container, so nothing
+     here becomes a scroll box and sticky/fixed descendants are unaffected. */
+  overflow-x: clip;
 }
 
 /* 1. Color wipe — olive sweeps in from the left edge across the WHOLE tab
@@ -368,6 +496,23 @@
   position: relative;
   overflow: hidden;
   min-height: 0;
+}
+/* Full-bleed escape for the 05 BRAND matrix only. overflow-x:visible lets the
+   100vw breakout escape the max-w-6xl container; overflow-y:clip keeps the
+   grid-template-rows:0fr fold collapse clipping vertically. Child combinator is
+   required to match the base .fold > .fold__inner specificity (0,2,0) — a bare
+   single-class modifier (0,1,0) would lose the cascade and do nothing. The
+   visible/clip pair is retained (not coerced to auto/hidden) because coercion
+   only triggers when the other axis is auto/scroll/hidden, not clip.
+   overflow-clip-margin is generous (not the usual few px) because the brand
+   grid's hover apparitions (.brand-cell__apparition) intentionally overflow
+   their cell — for a top/bottom-row cell that overflow lands close to this
+   box's own edge; the wide margin keeps the clip boundary well past it so no
+   apparition gets trimmed regardless of which row is hovered. */
+.fold > .fold__inner--fullbleed {
+  overflow-x: visible;
+  overflow-y: clip;
+  overflow-clip-margin: 240px;
 }
 
 /* ============================================================
@@ -1064,3 +1209,184 @@ body {
   animation-delay: var(--plate-trace-duration);
 }
 @keyframes plate-snap { to { opacity: 1; } }
+
+/* == BioArchival (01 BIOGRAPHY — flash-bulb archival print; --bioarch-* law) ==
+   Physical stack in a muddy void: blurred dark copy of the print (same asset,
+   cached) → two rotated blank print backs (hard offset shadows, matte) → the
+   photo (brightest element) → grain/dust → flash overlay. Base styles are the
+   FINAL states; entrance animations run from hidden with fill:both, gated on
+   .bio-cpo-row:hover / :focus-within — hovering the My First CPO ledger pulls
+   the print from the file. Un-hover unmatches the selector → animations cancel
+   to base (the exposed print) while the figure slow-fades into the void.
+   Touch / no-hover devices get the print statically, in flow, below the card.
+   No will-change / 3D (see the compositor warning above the fold-cue block). */
+
+/* Touch-first base: static, in flow, below the article card. */
+.bio-archival {
+  max-width: 480px;
+  margin-top: 2rem;
+}
+
+/* Hover-capable devices: the print is an overlay pinned to the right of the
+   article ledger, hidden until the row is hovered/focused. pointer-events
+   none — the print can overlap the card at narrower widths (physical
+   stacking) without stealing its hover (no flicker loop). */
+@media (hover: hover) and (min-width: 768px) {
+  .bio-archival {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: min(320px, 34vw);
+    max-width: none;
+    margin-top: 0;
+    transform: translateY(-50%) rotate(1.6deg);
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    /* the EXIT: linger fully exposed for the hold, THEN fade into the void.
+       Re-hover during hold/fade snaps straight back (gate rule: transition
+       none), so the delay never fights re-entry. */
+    transition: opacity var(--bioarch-exit) ease var(--bioarch-exit-hold),
+                visibility 0s linear calc(var(--bioarch-exit-hold) + var(--bioarch-exit));
+  }
+  .bio-cpo-row:hover .bio-archival,
+  .bio-cpo-row:focus-within .bio-archival {
+    opacity: 1;
+    visibility: visible;
+    transition: none;            /* entry is the flash, not a fade */
+  }
+}
+
+/* The print may overhang neighboring pleat rows while exposed; all pleats
+   carry transforms (stacking contexts, paint = DOM order), so the map row
+   below would paint OVER the overhang without this. */
+.pleat:has(> .bio-cpo-row) { z-index: 2; }
+
+.bio-archival__stage {
+  position: relative;
+  display: block;
+  overflow: hidden;                 /* clips the rotated backs + blurred void */
+  background: #211d17;              /* muddy brown-black void floor */
+  padding: clamp(22px, 7%, 40px);
+}
+
+/* Void backdrop — the print's own murk: same asset, blurred + crushed. */
+.bio-archival__void {
+  position: absolute;
+  inset: -6%;                       /* overscan hides blur edge bleed */
+  width: 112%;
+  height: 112%;
+  object-fit: cover;
+  filter: blur(22px) brightness(0.28) saturate(0.75);
+}
+
+/* Print backs — blank aged sheets under the photo, slightly skewed, hard
+   offset shadows (no blur radius: matte, not glow). */
+.bio-archival__back {
+  position: absolute;
+  background: #2b261e;
+  box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.38);
+}
+.bio-archival__back--1 { inset: 9% 6% 7% 8%; transform: rotate(-2.1deg); }
+.bio-archival__back--2 {
+  inset: 7% 8% 9% 6%;
+  transform: rotate(1.3deg);
+  background: #332d24;
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.42);
+}
+
+/* The photo — brightest element in the frame. aspect-ratio reserves height
+   before decode (no layout shift inside the measuring fold). Base = visible;
+   the gated snap below hides it until the flash. */
+.bio-archival__img {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1792 / 2400;
+  object-fit: cover;
+  box-shadow: 7px 9px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* Dust / grain — feTurbulence idiom shared with .strata-band::before, tuned
+   finer for a photographic print. Base = settled. */
+.bio-archival__grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+  mix-blend-mode: overlay;
+  opacity: var(--bioarch-grain-alpha);
+}
+
+/* Flash overlay — warm bulb white. Base 0; no backwards fill, so the delay
+   boundary IS the hard cut on. */
+.bio-archival__flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #f7f3e9;
+  opacity: 0;
+}
+
+/* ENTRANCE — gated on the hovered/focused article row (hover-capable only:
+   on touch the print is static and needs no ceremony). Hover-out unmatches
+   the selectors → animations cancel + reset → every hover-in re-fires the
+   full choreography from t=0. */
+@media (hover: hover) and (min-width: 768px) {
+  .bio-cpo-row:hover .bio-archival__flash,
+  .bio-cpo-row:focus-within .bio-archival__flash {
+    animation: bioarch-flash var(--bioarch-flash-duration) steps(1, end)
+      var(--bioarch-flash-delay);
+  }
+  .bio-cpo-row:hover .bio-archival__img,
+  .bio-cpo-row:focus-within .bio-archival__img {
+    animation: bioarch-appear 1ms steps(1, end) var(--bioarch-snap-delay) both;
+  }
+  .bio-cpo-row:hover .bio-archival__grain,
+  .bio-cpo-row:focus-within .bio-archival__grain {
+    animation: bioarch-grain var(--bioarch-grain-duration) ease-out
+      var(--bioarch-grain-delay) both;
+  }
+  .bio-cpo-row:hover .bio-archival__caption,
+  .bio-cpo-row:focus-within .bio-archival__caption {
+    animation: bioarch-appear 1ms steps(1, end) var(--bioarch-caption-delay) both;
+  }
+}
+
+/* steps(1,end) per segment: hold 1 (white, 0–60% = 144ms), cut to ember,
+   cut to 0. One up/down luminance pair = ONE flash per activation
+   (WCAG 2.3.1: <=3/s; JS debounces re-fires to 1 per 900ms). */
+@keyframes bioarch-flash {
+  0%   { opacity: 1; }
+  60%  { opacity: 0.28; }
+  100% { opacity: 0; }
+}
+/* Shared hard-cut reveal: backwards fill holds hidden through the delay,
+   the 1ms step is the exposure. End state == base state. */
+@keyframes bioarch-appear {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes bioarch-grain {
+  from { opacity: 0; }
+  to   { opacity: var(--bioarch-grain-alpha); }
+}
+
+/* Reduced motion: no flash, no delays, no slow fade — the print appears and
+   disappears with the hover instantly (base styles are the final states). */
+@media (prefers-reduced-motion: reduce) {
+  .bio-archival__img,
+  .bio-archival__grain,
+  .bio-archival__caption {
+    animation: none !important;
+  }
+  .bio-archival__flash {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .bio-archival {
+    transition: none !important;
+  }
+}

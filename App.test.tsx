@@ -1,7 +1,7 @@
 import { act, render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import App from './App';
-import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
+import { CT_DOSSIER_COPY as COPY } from './copy.v1_1';
 
 /** Find the accessible toggle button inside a module section. */
 const getModuleToggle = (sectionId: string) => {

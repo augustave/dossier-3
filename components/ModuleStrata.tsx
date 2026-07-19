@@ -44,6 +44,9 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
   // always-on flagship: wipe + numeral stay lit. `rowHover` drives the units
   // reel spin (the wipe + sibling-dim are pure CSS: :hover + main:has()).
   const isFlagship = module.index === '04';
+  // 05 BRAND renders its matrix full-bleed (100vw) instead of the capped,
+  // serif-chromed response column every other band uses.
+  const isBrand = module.index === '05';
   const [rowHover, setRowHover] = useState(false);
   // Which bands get the tab entrance motion — same set as before (cream/blue/clay),
   // no image attached to it on this version, just the pan-to-rest layer.
@@ -249,43 +252,57 @@ export const ModuleStrata: React.FC<ModuleStrataProps> = ({ module, isOpen, onTo
             Inert when collapsed: kept in the DOM for the fold animation but
             removed from tab order + a11y tree (mirrors aria-expanded=false).
             `large` selects the 700ms strata duration. */}
-        <Fold open={isOpen} large id={panelId}>
+        <Fold open={isOpen} large id={panelId} className={isBrand ? 'fold__inner--fullbleed' : undefined}>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 mt-8 pt-8">
             
             {/* Content column — full width (the evidence sidebar was removed in V3.1). */}
             <div className="md:col-span-12">
 
-              {/* Prompt block — chrome (the 'summary' line), not pleated. */}
-              <div className="mb-6">
-                <span className="font-mono text-micro uppercase tracking-widest block mb-2" style={{ color: 'var(--text-muted)' }}>
-                  Prompt
-                </span>
-                <div className="font-mono text-xs uppercase tracking-widest border-l-2 pl-4 py-1 leading-relaxed" style={{ color: 'var(--text-primary)', borderColor: 'var(--hairline)' }}>
-                  {module.promptText}
+              {/* Prompt block — chrome (the 'summary' line), not pleated.
+                  Skipped when a module has no prompt (e.g. BRAND, where the
+                  matrix replaces the prompt line). */}
+              {module.promptText && (
+                <div className="mb-6">
+                  <span className="font-mono text-micro uppercase tracking-widest block mb-2" style={{ color: 'var(--text-muted)' }}>
+                    Prompt
+                  </span>
+                  <div className="font-mono text-xs uppercase tracking-widest border-l-2 pl-4 py-1 leading-relaxed" style={{ color: 'var(--text-primary)', borderColor: 'var(--hairline)' }}>
+                    {module.promptText}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Response label — chrome. */}
-              <div className="mb-3">
-                <span className="font-mono text-micro uppercase tracking-widest block" style={{ color: 'var(--text-muted)' }}>
-                  Response
-                </span>
-              </div>
-              {/* Response — the origami PLEAT ACCORDION. The response wrapper is
-                  unwrapped into its rows; each becomes a mountain/valley pleat.
-                  The wrapper's spacing (space-y-*) + the serif base ride along
-                  via className, so typography + rhythm are unchanged. A single
-                  self-pleating component renders bare (it folds its own cards). */}
-              <div className="mb-12 font-serif text-xl md:text-3xl leading-relaxed" style={{ color: 'var(--text-primary)' }}>
-                {selfPleating ? (
-                  resp.rows[0]
-                ) : (
-                  <PleatFold open={isOpen} className={`pleatfold--prose${resp.className ? ` ${resp.className}` : ''}`}>
-                    {resp.rows}
-                  </PleatFold>
-                )}
-              </div>
+              {/* 05 BRAND renders the matrix bare + full-bleed: no "Response"
+                  chrome eyebrow, no serif/max-width wrapper — the grid is the
+                  statement. Every other band keeps the capped, serif-chromed
+                  response column. */}
+              {isBrand ? (
+                resp.rows[0]
+              ) : (
+                <>
+                  {/* Response label — chrome. */}
+                  <div className="mb-3">
+                    <span className="font-mono text-micro uppercase tracking-widest block" style={{ color: 'var(--text-muted)' }}>
+                      Response
+                    </span>
+                  </div>
+                  {/* Response — the origami PLEAT ACCORDION. The response wrapper is
+                      unwrapped into its rows; each becomes a mountain/valley pleat.
+                      The wrapper's spacing (space-y-*) + the serif base ride along
+                      via className, so typography + rhythm are unchanged. A single
+                      self-pleating component renders bare (it folds its own cards). */}
+                  <div className="mb-12 font-serif text-xl md:text-3xl leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                    {selfPleating ? (
+                      resp.rows[0]
+                    ) : (
+                      <PleatFold open={isOpen} className={`pleatfold--prose${resp.className ? ` ${resp.className}` : ''}`}>
+                        {resp.rows}
+                      </PleatFold>
+                    )}
+                  </div>
+                </>
+              )}
 
 
 

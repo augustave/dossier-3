@@ -1,5 +1,11 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 
+/* LEGACY (2026-07-18 eval): this component is imported NOWHERE — the live 02
+   INFLUENCES widget is the FERRIS astrolabe iframe (public/ferris/). Its data
+   (copy.v1_1.ts modules.influences.people + public/atlas/ images) rides along
+   as dead weight. Kept for potential revival; owner decides deletion (T7 in
+   audits/2026-07-18-venture-studio-eval/evaluation.md). */
+
 export interface InfluencePerson {
   id: string;
   number?: string;

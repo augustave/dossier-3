@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CONTENT_MODULES } from '../constants';
-import { CT_DOSSIER_COPY_V120 as COPY } from '../copy.v1_1';
+import { CT_DOSSIER_COPY as COPY } from '../copy.v1_1';
 import { ModuleType } from '../types';
 import { ArrowRightIcon, XIcon } from './icons';
 

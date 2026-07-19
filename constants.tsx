@@ -1,6 +1,8 @@
 import React from 'react';
 import { ModuleData, ModuleType } from './types';
-import { CT_DOSSIER_COPY_V120 as COPY } from './copy.v1_1';
+import { CT_DOSSIER_COPY as COPY } from './copy.v1_1';
+import { BioArchival } from './components/BioArchival';
+import { BrandMatrix } from './components/BrandMatrix';
 import { Card } from './components/Card';
 import { DynamismPlates } from './components/DynamismPlates';
 import { FerrisInfluences } from './components/FerrisInfluences';
@@ -103,12 +105,25 @@ export const CONTENT_MODULES: ModuleData[] = [
           ))}
         </div>
 
-        <div className="max-w-2xl">
-          <Card
-            href={COPY.modules.bio.article.href}
-            eyebrow={COPY.modules.bio.article.eyebrow}
-            title={COPY.modules.bio.article.title}
-            subtitle={COPY.modules.bio.article.subtitle}
+        {/* CPO row — the article ledger + BioArchival, the flash-exposed print
+            pulled from the file only while the article link is hovered/focused
+            (hover-capable devices; touch gets the print statically, in flow).
+            The wrapper is a plain div → a normal pleat row; the print is an
+            absolutely-positioned overlay gated in CSS (.bio-cpo-row:hover). */}
+        <div className="bio-cpo-row relative">
+          <div className="max-w-2xl">
+            <Card
+              href={COPY.modules.bio.article.href}
+              eyebrow={COPY.modules.bio.article.eyebrow}
+              title={COPY.modules.bio.article.title}
+              subtitle={COPY.modules.bio.article.subtitle}
+            />
+          </div>
+          <BioArchival
+            src="bio/archival-cpo.jpg"
+            alt={COPY.modules.bio.archival.alt}
+            eyebrow={COPY.modules.bio.archival.eyebrow}
+            caption={COPY.modules.bio.archival.caption}
           />
         </div>
 
@@ -229,28 +244,20 @@ export const CONTENT_MODULES: ModuleData[] = [
     title: COPY.modules.brand.title,
     promptText: COPY.modules.brand.prompt,
     themeColor: 'black',
-    responseText: COPY.modules.brand.hero,
+    responseText: 'Brand as a structural system — the grid is the argument.',
     responseDisplay: (
-      <div className="space-y-8">
-        <p className="font-serif text-2xl md:text-4xl leading-relaxed max-w-3xl">
-          {COPY.modules.brand.hero}
-        </p>
-        <p className="font-sans text-lg md:text-xl opacity-secondary leading-relaxed max-w-3xl">
-          {COPY.modules.brand.sub}
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {(COPY.modules.brand.essays as Array<{ eyebrow?: string; title: string; subtitle?: string; ctaLabel?: string; href: string; arrow?: string }>).map((e, i) => (
-            <Card key={i} href={resolveHref(e.href)} eyebrow={e.eyebrow ?? 'Essay'} title={e.title} subtitle={e.subtitle} cta={e.ctaLabel} arrow={(e.arrow as 'read' | 'visit') ?? 'read'} />
-          ))}
-        </div>
-      </div>
+      <BrandMatrix
+        hint={COPY.modules.brand.hint}
+        tiles={COPY.modules.brand.matrix}
+        links={COPY.modules.brand.links.map((l) => ({ ...l, href: resolveHref(l.href) }))}
+      />
     ),
   },
 ];
 
-// Retained for InquiryPanel (not part of the swap spine; kept for its component
-// + tests). Not rendered in the main App surface.
+// LEGACY (2026-07-18 eval): retained for InquiryPanel, which itself is
+// imported nowhere — the whole chain is dead but internally consistent.
+// Not rendered in the main App surface. Owner decides revival vs deletion.
 export const INQUIRY_OPTIONS = {
   assess: [
     "Taste & Direction",
