@@ -59,18 +59,13 @@ export const CT_DOSSIER_COPY = {
         alt: "Archival photograph from the family file: a smiling man in glasses and a striped shirt, foreground sharp against a dark ground.",
       },
 
-      // "Where Do I Fall" — the neighborhood map (moved into BIO per PRD §6/§7).
-      // Quadrants relabelled to neutral; framing line converts naming into
-      // citation. Chart geometry is locked.
       // LEGACY (2026-07-18 eval): the fieldPosition* blocks below fed a retired
-      // in-React chart and are referenced nowhere. The LIVE map is the
-      // neighboring-practices.html iframe (32 practitioners) — that file is the
-      // source of truth, incl. the peer roster. Only chartTitle/chartCaption
-      // are live copy. NOTE: peer names in the live iframe are still
-      // placeholders per TASKS.md (owner input needed).
-      chartTitle: "A MAP OF NEIGHBORING PRACTICES",
-      chartCaption:
-        "The corner where durable work meets AI-native production — a quiet part of the map.",
+      // in-React chart and are referenced nowhere. Kept as data only.
+      // NOTE (2026-07-18): the neighborhood map itself moved out of BIO into
+      // 02 INFLUENCES — its live copy (chartTitle) now lives under
+      // modules.influences. The LIVE map is the neighboring-practices.html
+      // iframe, which is the source of truth incl. the peer roster and its own
+      // framing line.
       fieldPositionAxes: {
         xLeft: "CRAFT-NATIVE",
         xRight: "AI-NATIVE",
@@ -118,6 +113,18 @@ export const CT_DOSSIER_COPY = {
       intro2:
         "A useful reference is not something to imitate. It is something that survived contact with reality.",
       quote: "I grew up between LOCKHEED and GQ Magazine.",
+
+      // "Where Do I Fall" — the neighboring-practices map. Moved here from BIO
+      // (2026-07-18): the astrolabe answers who shaped the eye, the map answers
+      // where the practice sits among peers. Quadrants are neutral; the framing
+      // line converts naming into citation. Chart geometry is locked, and the
+      // live plate is neighboring-practices.html (source of truth for the peer
+      // roster — names there are still placeholders per TASKS.md).
+      // Title only: the plate renders its OWN framing line inside the SVG
+      // ("…LESS QUIET THAN IT USED TO BE."), so the former chartCaption here
+      // duplicated it and was dropped (2026-07-18). Edit that line in the
+      // plate, not here.
+      chartTitle: "A MAP OF NEIGHBORING PRACTICES",
       // LEGACY (2026-07-18 eval): this people[] array fed InfluenceAtlas.tsx,
       // which is no longer imported anywhere. The LIVE 02 widget is the FERRIS
       // astrolabe iframe (public/ferris/), which renders 7 practitioners (N.B.

@@ -62,27 +62,31 @@ describe('CT Dossier V4 — five-section swap spine', () => {
 
   // --- Fold content --------------------------------------------------------
 
-  it('BIO carries the name and the neighborhood map', async () => {
+  it('BIO carries the name and the My First CPO article', async () => {
     render(<App />);
     const sec = await openModule('module-01');
     expect(within(sec).getByText(COPY.modules.bio.name)).toBeInTheDocument();
-    expect(within(sec).getByText(/A MAP OF NEIGHBORING PRACTICES/i)).toBeInTheDocument();
-    // The neighborhood map is now the interactive artifact, embedded as an iframe.
-    expect(
-      sec.querySelector('iframe[title*="neighboring practices"]')
-    ).toBeInTheDocument();
     // My First CPO article link.
     expect(
       within(sec).getByRole('link', { name: /My First CPO/i })
     ).toHaveAttribute('href', COPY.modules.bio.article.href);
+    // The neighborhood map moved to 02 INFLUENCES (2026-07-18).
+    expect(
+      sec.querySelector('iframe[title*="neighboring practices"]')
+    ).not.toBeInTheDocument();
   });
 
-  it('INFLUENCES embeds the Index of Influences astrolabe', async () => {
+  it('INFLUENCES embeds the astrolabe and the neighborhood map', async () => {
     // The lineage atlas was replaced by the FERRIS widget, embedded as an iframe.
     render(<App />);
     const sec = await openModule('module-02');
     expect(
       sec.querySelector('iframe[title*="Index of Influences"]')
+    ).toBeInTheDocument();
+    // The neighborhood map, moved here from BIO — its own interactive artifact.
+    expect(within(sec).getByText(/A MAP OF NEIGHBORING PRACTICES/i)).toBeInTheDocument();
+    expect(
+      sec.querySelector('iframe[title*="neighboring practices"]')
     ).toBeInTheDocument();
   });
 

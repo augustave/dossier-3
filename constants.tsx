@@ -82,8 +82,8 @@ export const CONTENT_MODULES: ModuleData[] = [
     responseDisplay: "Select a stratum to jump to its coordinates.",
   },
 
-  // 01 — BIO. The human root + the neighborhood map + the My First CPO article.
-  // Blue theme keeps the map's native identity (lime owned-zone on a dark field).
+  // 01 — BIO. The human root + the My First CPO article (with the flash-exposed
+  // archival print). The neighborhood map moved to 02 INFLUENCES on 2026-07-18.
   {
     id: ModuleType.BIO,
     index: "01",
@@ -126,19 +126,6 @@ export const CONTENT_MODULES: ModuleData[] = [
             caption={COPY.modules.bio.archival.caption}
           />
         </div>
-
-        {/* "Where Do I Fall" — the neighborhood map. Chart geometry locked. */}
-        <div className="pleat-chart mt-4 pt-8 border-t border-white/20">
-          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">
-            {COPY.modules.bio.chartTitle}
-          </h4>
-
-          <NeighborPracticesMap />
-
-          <p className="font-mono text-xs uppercase tracking-wide opacity-muted mt-4">
-            {COPY.modules.bio.chartCaption}
-          </p>
-        </div>
       </div>
     ),
   },
@@ -151,15 +138,31 @@ export const CONTENT_MODULES: ModuleData[] = [
     promptText: COPY.modules.influences.prompt,
     themeColor: 'cream',
     responseText: COPY.modules.influences.hero,
-    // A leading pull-quote over the FERRIS "Index of Influences" astrolabe
-    // (self-contained iframe widget, see FerrisInfluences). Two rows now, so the
-    // band pleats normally — safe: the iframe has no inner pleats to double-rotate.
+    // A leading pull-quote over the FERRIS "Index of Influences" astrolabe, then
+    // the neighboring-practices map (moved here from BIO 2026-07-18): the
+    // astrolabe answers who shaped the eye, the map answers where the practice
+    // sits among peers. Both are self-contained iframe widgets. Three rows, so
+    // the band pleats normally — safe: neither iframe has inner pleats to
+    // double-rotate, and .pleat-chart keeps the map on the flat 30deg hinge.
     responseDisplay: (
       <div className="space-y-10">
         <blockquote className="font-serif text-2xl md:text-4xl leading-tight max-w-3xl">
           &ldquo;{COPY.modules.influences.quote}&rdquo;
         </blockquote>
+
         <FerrisInfluences />
+
+        {/* "Where Do I Fall" — the neighborhood map. Chart geometry locked.
+            Hairline is black/20 (cream-band ink), not the white/20 it carried
+            on the dark BIO band. No caption here: the plate renders its own
+            framing line inside the SVG, so a React-side one doubled it. */}
+        <div className="pleat-chart mt-4 pt-8 border-t border-black/20">
+          <h4 className="font-mono text-xs uppercase tracking-widest opacity-muted mb-4">
+            {COPY.modules.influences.chartTitle}
+          </h4>
+
+          <NeighborPracticesMap />
+        </div>
       </div>
     ),
   },

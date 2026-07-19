@@ -5,9 +5,12 @@ import React, { useEffect, useRef, useState } from 'react';
  * `public/neighboring-practices.html`. That artifact is a self-contained olive
  * plate (32 practitioners + ranked side panel + hover/click doctrine-fit detail)
  * with its own palette, font import and JS; an iframe keeps all of it isolated
- * from the blue BIO band. The artifact posts its content height on load / resize
- * (see its `postHeight`), and we size the frame to it so there is no inner
- * scrollbar. Relative `src` respects Vite's `base: './'`.
+ * from the cream INFLUENCES band it now sits on (moved from BIO 2026-07-18),
+ * where it reads as a mounted instrument plate. The wrapper stays untinted for
+ * that reason — a dark wash would fight the cream field. The artifact posts its
+ * content height on load / resize (see its `postHeight`), and we size the frame
+ * to it so there is no inner scrollbar. Relative `src` respects Vite's
+ * `base: './'`.
  */
 export const NeighborPracticesMap: React.FC = () => {
   const frameRef = useRef<HTMLIFrameElement>(null);
@@ -31,7 +34,7 @@ export const NeighborPracticesMap: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-black/20 border border-white/10 overflow-hidden">
+    <div className="border border-black/10 overflow-hidden">
       <iframe
         ref={frameRef}
         src="neighboring-practices.html"
